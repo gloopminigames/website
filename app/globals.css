@@ -530,3 +530,9 @@ details.faq p{margin:0 0 16px}
   .level-btn{padding:0 12px;min-height:44px;font-size:15px;gap:6px}
   .lv-icon{font-size:19px}
 }
+/* Ruimte voor hoedjes die boven je Gloop uitsteken */
+.profile-blob.has-acc{margin-top:44px}
+.login-blob.has-acc{margin-top:30px}
+.avatar-preview.has-acc{margin-top:38px}
+.acc-opt .face-blob{transform:scale(.7) translateY(16%)}
+.acc-opt .face-blob:not(.has-acc){transform:none}
