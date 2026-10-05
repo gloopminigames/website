@@ -55,7 +55,7 @@ export default function ProfileClient() {
                 </div>
               )}
               <label className="check board-toggle"><input type="checkbox" checked={acc.user.onBoard !== false} onChange={async (e) => { const on = e.target.checked; try { await setOnBoard(on); toast(on ? 'Je staat bij de Gloop Kampioenen!' : 'Je staat niet meer bij de Gloop Kampioenen'); } catch (err: any) { toast(err.message); } }} /> <span>Zet mij bij de <Link href="/ranglijst">Gloop Kampioenen</Link> (alleen je spelersnaam, je Gloop en je records)</span></label>
-              <div><button type="button" className="btn btn-plain btn-sm" onClick={doLogout}>Uitloggen</button></div>
+              <div className="row"><button type="button" className="btn btn-plain btn-sm" onClick={doLogout}>Uitloggen</button>{acc.user.admin && <Link className="btn btn-sun btn-sm" href="/beheer">🛠️ Beheer</Link>}</div>
             </>
           ) : (
             <>

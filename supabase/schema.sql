@@ -142,3 +142,10 @@ returns json language sql stable security definer set search_path = public as $$
 $$;
 revoke all on function public.gloop_board(text, int, uuid) from public, anon, authenticated;
 grant execute on function public.gloop_board(text, int, uuid) to service_role;
+
+-- ============================================================
+-- Beheer (admin). Jezelf beheerder maken: Table Editor → players → jouw rij → is_admin = true.
+-- Daarnaast is in Vercel het beheerwachtwoord ADMIN_PASSWORD nodig (minstens 12 tekens).
+-- ============================================================
+alter table public.players add column if not exists is_admin boolean not null default false;
+alter table public.players add column if not exists cleared  jsonb   not null default '{}'::jsonb; -- door beheer weggehaalde scores (komen niet terug)

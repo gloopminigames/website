@@ -52,6 +52,22 @@ Lokaal (`npm run dev`) wordt zonder instellingen een tijdelijke database in het 
 | `lib/merge.js` | Records van apparaat en account samenvoegen (beste score wint) |
 | `lib/server/*` | Database, pincode-hashing (scrypt), sessies, beperking van inlogpogingen |
 | `app/api/account/*` | De account-API |
+| `lib/server/admin.js`, `app/api/beheer/*`, `app/beheer` | Beheer (zie hieronder) |
+
+## Beheer (admin)
+
+Op `/beheer` kan een beheerder spelers zoeken, verbergen op de ranglijst, hernoemen, hun scores wissen of het account verwijderen,
+en per spel/niveau losse scores van de ranglijst halen (bijv. bij valsspelen). Een weggehaalde score komt niet terug via een ander apparaat
+(staat in de kolom `players.cleared`). Elke beheeractie staat in de Vercel-logs (`[gloop beheer]`).
+
+Er zijn twee sloten, omdat een pincode van een kinderaccount makkelijk te raden is:
+
+1. Draai `supabase/schema.sql` opnieuw (voegt `is_admin` en `cleared` toe).
+2. Supabase → **Table Editor → players** → jouw eigen rij → zet `is_admin` op **true**.
+3. Vercel → **Settings → Environment Variables**: voeg `ADMIN_PASSWORD` toe (minstens 12 tekens, niet je pincode), en deploy opnieuw.
+4. Log in met je account; in **Profiel** staat dan de knop **Beheer**. Vul daar het beheerwachtwoord in (2 uur geldig).
+
+Lokaal zonder Supabase: `GLOOP_DEV_ADMIN=JouwNaam ADMIN_PASSWORD=... npm run dev`.
 
 ## Gloop als app (PWA)
 

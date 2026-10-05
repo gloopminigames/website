@@ -703,3 +703,26 @@ details.faq p{margin:0 0 16px}
 @keyframes tspFly{0%{transform:translate(-50%,0)}100%{transform:translate(-50%,-140px)}}
 @keyframes tspGrow{0%,100%{transform:scale(.8)}50%{transform:scale(1.05)}}
 @keyframes tutSide{0%,100%{transform:translate(-50%,0)}50%{transform:translate(10%,0)}}
+
+/* Beheer */
+.beheer .chip[aria-selected="true"]{background:var(--chip-bg);color:var(--chip-text)}
+.bh-top{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px}
+.bh-top .chips{margin:0;padding-bottom:4px}
+.bh-login{max-width:560px}
+.bh-login label,.bh-label{display:block;font-weight:800;margin-bottom:8px}
+.bh-err{color:#C02B48;font-weight:800;margin-top:10px}
+.bh-search,.bh-select{width:100%;max-width:520px;margin-bottom:10px}
+.bh-select{border-radius:20px;cursor:pointer}
+.bh-list{list-style:none;padding:0;margin:14px 0 0;display:grid;gap:12px}
+.bh-item{display:flex;flex-wrap:wrap;align-items:center;gap:12px;background:var(--surface);border:3px solid var(--line);border-radius:22px;box-shadow:0 4px 0 var(--shadow);padding:12px 14px}
+.bh-item.is-hidden{opacity:.7;border-style:dashed}
+.bh-rank{font:700 20px/1 'Fredoka',system-ui,sans-serif;min-width:28px;text-align:center}
+.bh-blob{width:46px;height:46px;flex:none}
+.bh-info{flex:1 1 220px;min-width:0;display:flex;flex-direction:column;gap:4px}
+.bh-info .field{min-width:0}
+.bh-name{font-size:18px;overflow-wrap:anywhere;display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.bh-meta{font-size:14px}
+.bh-tag{font-size:12px;font-weight:800;border:2px solid var(--line);border-radius:999px;padding:2px 8px;background:var(--bg)}
+.bh-tag.warn{background:#FFD84A;color:#221A48}
+.bh-actions{display:flex;flex-wrap:wrap;gap:8px}
+.bh-actions .btn{font-size:15px;min-height:42px;padding:6px 14px}
