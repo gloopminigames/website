@@ -13,7 +13,7 @@ type Row = { rank: number; name: string; avatar?: string; score: number; extra: 
 type Board = { top: Row[]; total: number; me: { rank: number; score: number; extra: number | null } | null };
 const MEDAL: Record<number, string> = { 1: '🥇', 2: '🥈', 3: '🥉' };
 
-// Wereldranglijst: per spel de 10 beste spelers met een account.
+// Gloop Kampioenen (wereldranglijst): per spel de 10 beste spelers met een account.
 export default function WorldBoard() {
   const acc = useAccount();
   const [game, setGame] = useState(PLAYABLE[0].id);
@@ -38,11 +38,15 @@ export default function WorldBoard() {
   if (acc.available === false) return null;
   return (
     <section className="world" aria-labelledby="worldTitle">
-      <h2 id="worldTitle">Wereldranglijst</h2>
-      <p className="muted">Wie is de beste? Hier staan de 10 beste spelers per game. Alleen spelers met een account komen op de wereldranglijst.</p>
-      <div className="chips" role="group" aria-label="Kies een game">
+      <h2 id="worldTitle"><span aria-hidden="true">🏆</span> Gloop Kampioenen</h2>
+      <p className="muted">Wie is de allerbeste? Kies een spel en kijk wie bovenaan staat! Met een account kun jij er ook tussen komen.</p>
+      {/* Spelkiezer als tegels met plaatje: overzichtelijk, ook met veel games en voor kinderen die nog niet lezen */}
+      <div className="game-tiles" role="radiogroup" aria-label="Kies een spel">
         {PLAYABLE.map((x) => (
-          <button key={x.id} type="button" className="chip" aria-pressed={x.id === game} onClick={() => setGame(x.id)}>{x.title}</button>
+          <button key={x.id} type="button" role="radio" aria-checked={x.id === game} className="game-tile" onClick={() => setGame(x.id)}>
+            <span className="gt-art" style={{ background: x.bg }}><Html html={blob(x.blob, x.face, 'gt-blob')} /></span>
+            <span className="gt-name">{x.title}</span>
+          </button>
         ))}
       </div>
       {levels.length > 1 && (

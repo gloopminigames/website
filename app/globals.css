@@ -555,3 +555,12 @@ details.faq p{margin:0 0 16px}
 .tut-tempo{border:3px solid var(--line);border-radius:999px;background:var(--surface);color:var(--text);font:800 14px/1 'Nunito',system-ui,sans-serif;padding:7px 12px;cursor:pointer}
 .tut-tempo[aria-pressed="true"]{background:#6BE38A;color:#221A48}
 @media (max-width:520px){.tut-top{flex-wrap:wrap}.tut-skip{padding:6px}}
+/* Spelkiezer op de ranglijst: tegels met plaatje */
+.game-tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:10px;margin:16px 0 14px;max-width:720px}
+.game-tile{display:grid;justify-items:center;gap:6px;padding:8px 6px 10px;border:3px solid var(--line);border-radius:20px;background:var(--surface);color:var(--text);cursor:pointer;box-shadow:0 4px 0 var(--shadow);transition:transform .08s}
+.game-tile:active{transform:translateY(3px);box-shadow:0 1px 0 var(--shadow)}
+.game-tile[aria-checked="true"]{background:#6A4BEB;color:#fff;outline:3px solid #FFD84A;outline-offset:2px}
+.gt-art{display:grid;place-items:center;width:58px;height:58px;border-radius:16px;border:3px solid #221A48}
+.gt-blob{width:46px;height:46px}
+.gt-name{font:600 14px/1.15 'Fredoka',system-ui,sans-serif;text-align:center}
+@media (max-width:520px){.game-tiles{grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-bottom:16px}.game-tile{padding:6px 2px 8px;border-radius:16px}.gt-art{width:46px;height:46px;border-radius:12px}.gt-blob{width:36px;height:36px}.gt-name{font-size:12px}}

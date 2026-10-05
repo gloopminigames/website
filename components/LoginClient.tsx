@@ -98,7 +98,7 @@ export default function LoginClient() {
               <div className="row"><PinInput id="acc-pin2" value={pin2} onChange={(v) => { setPin2(v); setError(''); }} show={show} autoComplete="new-password" /></div>
               <p className="login-label"><span className="lstep">4</span> Kies jouw eigen Gloop</p>
               <AvatarPicker value={avatar} onChange={setAvatar} stickers={stickerCount()} />
-              <p className="muted small">Met een account kom je met je spelersnaam en records op de wereldranglijst. Dat kun je uitzetten in Profiel.</p>
+              <p className="muted small">Met een account kom je met je spelersnaam en records bij de Gloop Kampioenen. Dat kun je uitzetten in Profiel.</p>
               <p className="muted small">Onthoud je pincode goed! Zonder e-mailadres kunnen we hem niet voor je terughalen. Tip: vraag je ouder om hem op te schrijven. Kies geen makkelijke code zoals 1234 of 0000.</p>
               <label className="check"><input type="checkbox" checked={ok} onChange={(e) => setOk(e.target.checked)} /> <span>Ik ben 16 jaar of ouder, of mijn ouder of verzorger vindt het goed dat ik een account maak. (<Link href="/privacy">privacy</Link>)</span></label>
             </>

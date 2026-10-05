@@ -17,7 +17,7 @@ export default function RankClient() {
   return (
     <section className="page">
       <h1>Ranglijst</h1>
-      <p className="lead">Zie wie de beste is van de wereld, en hoe jij het doet.</p>
+      <p className="lead">Wie is de kampioen? En hoe goed ben jij?</p>
       <WorldBoard />
       <h2 className="rank-sub">{acc.user ? `Jouw records, ${acc.user.name}` : 'Jouw records op dit apparaat'}</h2>
       <div className="rank-grid">
