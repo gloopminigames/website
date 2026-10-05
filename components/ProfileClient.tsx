@@ -30,7 +30,7 @@ export default function ProfileClient() {
   return (
     <section className="page">
       <h1>Profiel</h1>
-      <p className="lead">Je gegevens blijven op dit apparaat.</p>
+      <p className="lead">{acc.user ? 'Je records worden bewaard bij je account.' : 'Je gegevens blijven op dit apparaat.'}</p>
       <div className="profile-card">
         <Html html={blob('#6BE38A', 'happy', 'profile-blob')} />
         <div className="profile-form">
@@ -39,7 +39,7 @@ export default function ProfileClient() {
               <p className="lead" style={{ margin: 0 }}>Ingelogd als <b>{acc.user.name}</b></p>
               <p className="muted">Gespeelde potjes: <b>{total}</b></p>
               <p className="muted">Je records worden bewaard bij je account. Log op een ander apparaat in met dezelfde naam en pincode om verder te spelen.</p>
-              <button type="button" className="btn btn-plain btn-sm" onClick={doLogout}>Uitloggen</button>
+              <div><button type="button" className="btn btn-plain btn-sm" onClick={doLogout}>Uitloggen</button></div>
             </>
           ) : (
             <>
