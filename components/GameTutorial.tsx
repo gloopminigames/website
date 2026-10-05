@@ -19,16 +19,17 @@ export default function GameTutorial({ id, color, level = 'normaal', onDone }: {
   const [shake, setShake] = useState(false);
   const sceneRef = useRef<HTMLDivElement>(null);
   const drag = useRef<{ x: number; y: number } | null>(null);
-  // Tempo: langzamer maakt alle animaties en wachttijden 1,6× zo lang. Standaard aan bij niveau Makkelijk.
+  // Tempo: langzamer maakt alle animaties en wachttijden 1,6× zo lang. Volgt het gekozen niveau (Makkelijk = langzamer).
   const [slow, setSlow] = useState(false);
   const tf = slow ? 1.6 : 1;
   const step = steps[i];
   const last = i === steps.length - 1;
 
   const boxRef = useRef<HTMLDivElement>(null);
+  useEffect(() => { setSlow(level === 'rustig'); }, [level]);
   useEffect(() => {
-    setSlow(typeof data.tutSlow === 'boolean' ? data.tutSlow : level === 'rustig');
-    if (window.matchMedia('(max-width:760px)').matches) boxRef.current?.scrollIntoView({ block: 'start' });
+    // Op een telefoon in beeld scrollen, met de niveauknoppen erboven (als die er zijn).
+    if (window.matchMedia('(max-width:760px)').matches) ((document.querySelector('.levels') as HTMLElement) || boxRef.current)?.scrollIntoView({ block: 'start' });
   }, []);
   // Nieuwe stap: alles terugzetten.
   useEffect(() => {
@@ -79,7 +80,7 @@ export default function GameTutorial({ id, color, level = 'normaal', onDone }: {
       <div className="tut-top">
         <div className="tut-dots" role="img" aria-label={`Stap ${i + 1} van ${steps.length}`}>{steps.map((_, k) => <span key={k} className={k <= i ? 'on' : ''} />)}</div>
         <div className="tut-top-btns">
-          <button type="button" className="tut-tempo" aria-pressed={slow} onClick={() => { const v = !slow; setSlow(v); data.tutSlow = v; save(); sfx('click'); }}>🐢 Langzamer</button>
+          <button type="button" className="tut-tempo" aria-pressed={slow} onClick={() => { setSlow(!slow); sfx('click'); }}>🐢 Langzamer</button>
           <button type="button" className="tut-skip" onClick={finish}>Overslaan ⏭</button>
         </div>
       </div>

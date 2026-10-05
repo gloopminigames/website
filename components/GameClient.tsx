@@ -82,7 +82,7 @@ export default function GameClient({ id }: { id: string }) {
           {tutorial === false && <button type="button" className="help-btn" onClick={() => setTutorial(true)} aria-label="Uitleg bekijken" title="Uitleg bekijken">?</button>}
         </div>
       </div>
-      {tutorial === false && levels.length > 1 && (
+      {tutorial !== null && levels.length > 1 && (
         <div className="levels" role="radiogroup" aria-label="Kies hoe snel">
           {LEVELS.filter((l) => levels.includes(l.id)).map((l) => (
             <button key={l.id} type="button" role="radio" aria-checked={l.id === level} className="level-btn" onClick={() => pickLevel(l.id)}>
