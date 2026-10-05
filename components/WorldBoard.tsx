@@ -1,10 +1,10 @@
 'use client';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Html from './Html';
 import { avatarSvg } from '@/lib/avatar';
 import { blob } from '@/lib/blob';
-import { PLAYABLE } from '@/lib/games';
+import { PLAYABLE, CATS, CAT_ICONS } from '@/lib/games';
 import { fmtScore } from '@/lib/store';
 import { useAccount } from '@/lib/useAccount';
 import { GAME_LEVELS, LEVELS, recKey } from '@/lib/levels';
@@ -35,20 +35,38 @@ export default function WorldBoard() {
   }, [key, acc.user, acc.available]);
 
   const g = PLAYABLE.find((x) => x.id === game)!;
+  const cardRef = useRef<HTMLDivElement>(null);
+  // Op een telefoon na het kiezen meteen naar de ranglijst van dat spel scrollen.
+  const pick = (id: string) => {
+    setGame(id);
+    if (window.matchMedia('(max-width:760px)').matches) setTimeout(() => cardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
+  };
   if (acc.available === false) return null;
   return (
     <section className="world" aria-labelledby="worldTitle">
       <h2 id="worldTitle"><span aria-hidden="true">🏆</span> Gloop Kampioenen</h2>
       <p className="muted">Wie is de allerbeste? Kies een spel en kijk wie bovenaan staat! Met een account kun jij er ook tussen komen.</p>
-      {/* Spelkiezer als tegels met plaatje: overzichtelijk, ook met veel games en voor kinderen die nog niet lezen */}
-      <div className="game-tiles" role="radiogroup" aria-label="Kies een spel">
-        {PLAYABLE.map((x) => (
-          <button key={x.id} type="button" role="radio" aria-checked={x.id === game} className="game-tile" onClick={() => setGame(x.id)}>
-            <span className="gt-art" style={{ background: x.bg }}><Html html={blob(x.blob, x.face, 'gt-blob')} /></span>
-            <span className="gt-name">{x.title}</span>
-          </button>
-        ))}
+      {/* Spelkiezer: tegels met plaatje, gegroepeerd per categorie. Nieuwe games komen vanzelf in de juiste groep. */}
+      <div className="tile-groups" role="radiogroup" aria-label="Kies een spel">
+        {CATS.filter((c) => c !== 'Alles').map((c) => {
+          const games = PLAYABLE.filter((x) => x.cat === c);
+          if (!games.length) return null;
+          return (
+            <div key={c} className="tile-group" role="group" aria-label={c}>
+              <p className="tg-title"><span aria-hidden="true">{(CAT_ICONS as Record<string, string>)[c]}</span> {c}</p>
+              <div className="game-tiles">
+                {games.map((x) => (
+                  <button key={x.id} type="button" role="radio" aria-checked={x.id === game} className="game-tile" onClick={() => pick(x.id)}>
+                    <span className="gt-art" style={{ background: x.bg }}><Html html={blob(x.blob, x.face, 'gt-blob')} /></span>
+                    <span className="gt-name">{x.title}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          );
+        })}
       </div>
+      <div ref={cardRef} className="world-anchor" />
       {levels.length > 1 && (
         <div className="levels levels-sm" role="radiogroup" aria-label="Niveau">
           {LEVELS.filter((l) => levels.includes(l.id)).map((l) => (

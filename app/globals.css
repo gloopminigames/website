@@ -564,3 +564,17 @@ details.faq p{margin:0 0 16px}
 .gt-blob{width:46px;height:46px}
 .gt-name{font:600 14px/1.15 'Fredoka',system-ui,sans-serif;text-align:center}
 @media (max-width:520px){.game-tiles{grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-bottom:16px}.game-tile{padding:6px 2px 8px;border-radius:16px}.gt-art{width:46px;height:46px;border-radius:12px}.gt-blob{width:36px;height:36px}.gt-name{font-size:12px}}
+/* Spelkiezer gegroepeerd per categorie */
+.tile-groups{display:flex;flex-wrap:wrap;gap:12px;margin:16px 0 16px;max-width:1000px}
+.tile-group{flex:0 1 auto;border:3px dashed color-mix(in srgb,var(--line) 30%,transparent);border-radius:24px;padding:8px 10px 10px}
+.tg-title{margin:0 0 8px 4px;font:600 17px/1 'Fredoka',system-ui,sans-serif;display:flex;align-items:center;gap:6px}
+.tile-group .game-tiles{display:flex;flex-wrap:wrap;gap:10px;margin:0;max-width:none}
+.tile-group .game-tile{width:104px}
+@media (max-width:520px){
+  .tile-groups{gap:8px}
+  .tile-group{flex:0 1 auto;padding:6px 6px 8px;border-radius:18px}
+  .tg-title{font-size:14px;margin:0 0 6px 2px}
+  .tile-group .game-tiles{gap:6px}
+  .tile-group .game-tile{width:74px;padding:6px 2px 8px;border-radius:14px}
+}
+.world-anchor{scroll-margin-top:12px}
