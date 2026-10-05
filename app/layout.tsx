@@ -12,6 +12,7 @@ import Footer from '@/components/Footer';
 import Tabbar from '@/components/Tabbar';
 import HashRedirect from '@/components/HashRedirect';
 import PwaInit from '@/components/PwaInit';
+import WhatsNew from '@/components/WhatsNew';
 import { SITE, siteUrl } from '@/lib/site';
 
 const DESC = 'Gloop: gratis mini games voor tussendoor. Direct spelen in je browser, zonder download, zonder account en zonder tracking.';
@@ -44,6 +45,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
         <HashRedirect />
         <PwaInit />
+        <WhatsNew />
         <Header />
         <main className="wrap" id="app">{children}</main>
         <Footer />

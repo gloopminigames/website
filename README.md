@@ -65,6 +65,13 @@ Gloop is te installeren als app op telefoon, tablet en computer, zonder app stor
 | `app/sw.js/route.ts` | Service worker: bewaart pagina's en games, zodat ze ook offline werken |
 | `components/InstallApp.tsx` | Knop/banner "Installeren" (met uitleg voor iPhone/iPad en Mac) |
 
+## Nieuwtjes ("Wat is er nieuw?")
+
+Leuke vernieuwingen voor spelers staan in `lib/updates.js` en op de pagina `/nieuw`.
+Zet een nieuw nieuwtje **bovenaan** de lijst. Met `popup: true` krijgen spelers één keer een pop-up
+"Nieuw in Gloop!" (nooit tijdens het spelen; nieuwe bezoekers krijgen geen oude nieuwtjes).
+Technische of kleine verbeteringen horen er niet in.
+
 ## Mappenstructuur
 
 | Map / bestand | Wat staat erin |

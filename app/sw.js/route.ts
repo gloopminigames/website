@@ -5,7 +5,7 @@ import { PAGE_SLUGS } from '@/lib/content';
 // Wordt bij elke build opnieuw gemaakt, zodat een nieuwe versie de oude cache vervangt.
 export const dynamic = 'force-static';
 const VERSION = (process.env.VERCEL_GIT_COMMIT_SHA || String(Date.now())).slice(0, 12);
-const PAGES = ['/', '/games', '/ranglijst', '/profiel', '/inloggen', ...PLAYABLE.map((g: { id: string }) => '/games/' + g.id), ...PAGE_SLUGS.map((s: string) => '/' + s)];
+const PAGES = ['/', '/games', '/ranglijst', '/profiel', '/inloggen', '/nieuw', ...PLAYABLE.map((g: { id: string }) => '/games/' + g.id), ...PAGE_SLUGS.map((s: string) => '/' + s)];
 
 const SW = `
 const CACHE='gloop-${VERSION}';
