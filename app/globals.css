@@ -672,5 +672,16 @@ details.faq p{margin:0 0 16px}
   .pause-panel .level-btn,.game-setup .level-btn{padding:0 12px;font-size:15px;min-height:44px}
   .pause-panel{padding:16px 12px 18px}
 }
-.pause-cover{inset:-6px;border-radius:0;padding:14px 0}
+.pause-cover{inset:-6px 0 0;border-radius:0;padding:14px 0}
 #pauseTitle:focus{outline:none}
+/* Niveauknoppen in startscherm en pauze: altijd passend, bij elke schermbreedte */
+.pause-panel .levels,.game-setup .levels{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;max-width:100%}
+.pause-panel .level-btn,.game-setup .level-btn{flex:0 1 auto;min-width:0;max-width:100%;padding:0 clamp(10px,3vw,18px);font-size:clamp(14px,3.8vw,17px)}
+.pause-panel,.game-setup{box-sizing:border-box;max-width:min(520px,100%)}
+.pause-panel *,.game-setup *{box-sizing:border-box}
+.foot-col{min-width:0}.foot-col a{overflow-wrap:anywhere;hyphens:auto}
+@media (max-width:520px){.levels,.levels-sm{flex-wrap:wrap}.levels-sm .level-btn{padding:0 12px;font-size:15px}}
+/* Niveaus in startscherm en pauze: één nette rij, icoon boven de naam */
+.pause-panel .levels,.game-setup .levels{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:8px;max-width:420px;margin-left:auto;margin-right:auto}
+.pause-panel .level-btn,.game-setup .level-btn{flex-direction:column;justify-content:center;gap:4px;min-height:74px;padding:8px 4px;border-radius:20px;font-size:clamp(14px,3.6vw,17px)}
+.pause-panel .level-btn .lv-icon,.game-setup .level-btn .lv-icon{font-size:26px;line-height:1}
