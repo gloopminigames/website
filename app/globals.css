@@ -390,30 +390,30 @@ details.faq p{margin:0 0 16px}
 .tut-dots span.on{background:#6A4BEB}
 .tut-skip{background:none;border:0;font:800 15px/1 'Nunito',system-ui,sans-serif;color:var(--text);cursor:pointer;padding:8px;text-decoration:underline}
 .tut-scene{position:relative;height:260px;border:3px solid var(--line);border-radius:22px;background:#E9F7FF;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none}
-.tut-scene.shake{animation:tutShake .4s}
+.tut-scene.shake{animation:tutShake calc(.4s * var(--tf,1))}
 .tut-scene button{font:inherit;color:#221A48;-webkit-tap-highlight-color:transparent}
 .tut-say{display:flex;align-items:center;gap:12px;margin:14px 0}
 .tut-say p{margin:0;font:600 22px/1.25 'Fredoka',system-ui,sans-serif}
 .tut-bottom{display:flex;align-items:center;justify-content:space-between;gap:10px}
 .tut-next{min-width:150px}
 .tut-next:disabled{opacity:.4;cursor:default}
-.tut-next.ready{animation:tutPulse 1s ease-in-out infinite}
-.tut-hand{position:absolute;font-size:44px;transform:translate(-50%,0);pointer-events:none;animation:tutTap 1.1s ease-in-out infinite;filter:drop-shadow(0 3px 0 rgba(0,0,0,.25));z-index:3}
-.tut-hand.late{opacity:0;animation:tutShow .3s ease forwards,tutTap 1.1s ease-in-out .3s infinite;animation-delay:2.2s,2.5s}
-.tut-hand.drag{animation:tutDrag 1.6s ease-in-out infinite}
+.tut-next.ready{animation:tutPulse calc(1s * var(--tf,1)) ease-in-out infinite}
+.tut-hand{position:absolute;font-size:44px;transform:translate(-50%,0);pointer-events:none;animation:tutTap calc(1.1s * var(--tf,1)) ease-in-out infinite;filter:drop-shadow(0 3px 0 rgba(0,0,0,.25));z-index:3}
+.tut-hand.late{opacity:0;animation:tutShow calc(.3s * var(--tf,1)) ease forwards,tutTap calc(1.1s * var(--tf,1)) ease-in-out calc(.3s * var(--tf,1)) infinite;animation-delay:calc(2.2s * var(--tf,1)),calc(2.5s * var(--tf,1))}
+.tut-hand.drag{animation:tutDrag calc(1.6s * var(--tf,1)) ease-in-out infinite}
 .tut-done .tut-hand{display:none}
 .tut-big{display:block;text-align:center;font-size:96px;line-height:1.2;margin-top:28px}
 .tut-row{display:flex;justify-content:center;align-items:center;gap:12px;margin-top:8px}
 .tut-s{width:72px;height:72px}
 .tut-final{display:grid;place-items:center;background:#FFF6CC}
-.tut-final-blob{width:180px;height:180px;animation:tutBounce 1.2s ease-in-out infinite}
+.tut-final-blob{width:180px;height:180px;animation:tutBounce calc(1.2s * var(--tf,1)) ease-in-out infinite}
 /* Mep de Blob */
 .tut-holes{position:absolute;inset:auto 0 28px;display:flex;justify-content:space-around;align-items:flex-end;height:150px}
 .tut-holes .hole{position:relative;width:26%;height:120px;border:0;padding:0;background:radial-gradient(ellipse 50% 14% at 50% 92%,#221A48 96%,transparent 100%);cursor:pointer}
 .tut-holes .hole svg{width:100%;height:100%;display:block}
-.tut-holes .hole.pop svg{animation:tutPop .5s ease-out}
+.tut-holes .hole.pop svg{animation:tutPop calc(.5s * var(--tf,1)) ease-out}
 .tut-holes .heart{position:absolute;top:-24px;left:50%;transform:translateX(-50%);font-size:26px}
-.tut-done .tut-holes .tut-target svg{animation:tutBonk .5s ease forwards}
+.tut-done .tut-holes .tut-target svg{animation:tutBonk calc(.5s * var(--tf,1)) ease forwards}
 /* Reactie Rush */
 .tut-react{position:absolute;inset:14px;border:3px solid #221A48;border-radius:18px;background:#FF7AC6;cursor:pointer;display:grid;place-items:center;font:700 40px/1 'Fredoka',system-ui,sans-serif}
 .tut-react .go-txt{display:none}
@@ -437,31 +437,31 @@ details.faq p{margin:0 0 16px}
 .tut-bots .bot svg{width:58px;height:58px}
 .tut-bots .shooter{position:absolute;left:50%;bottom:10px;transform:translateX(-50%)}
 .tut-bots .shooter svg{width:64px;height:64px}
-.tut-done .tut-bots .tut-target,.tut-done .tut-bots .shooter{animation:tutBurst .5s ease forwards}
+.tut-done .tut-bots .tut-target,.tut-done .tut-bots .shooter{animation:tutBurst calc(.5s * var(--tf,1)) ease forwards}
 /* Stapelslijm */
 .tut-stack{position:absolute;inset:0;border:0;background:none;padding:0;cursor:pointer}
 .tut-stack .slab{position:absolute;left:30%;width:40%;height:34px;border:3px solid #221A48;border-radius:10px;background:#FF7AC6}
 .tut-stack .base2{bottom:10px;background:#6BE38A}
 .tut-stack .base{bottom:44px;background:#FFD84A}
-.tut-stack .move{bottom:150px;animation:tutSlide 1.6s ease-in-out infinite alternate}
-.tut-done .tut-stack .move{animation:tutDrop .4s ease-in forwards}
+.tut-stack .move{bottom:150px;animation:tutSlide calc(1.6s * var(--tf,1)) ease-in-out infinite alternate}
+.tut-done .tut-stack .move{animation:tutDrop calc(.4s * var(--tf,1)) ease-in forwards}
 .tut-stack.static .over{bottom:78px;left:30%;width:40%}
 .tut-stack.static .cut{bottom:60px;left:70%;width:12%;background:#FF7AC6;opacity:.6;transform:rotate(25deg)}
 /* Klikkerklok */
 .tut-clock{position:absolute;left:50%;top:50%;width:200px;height:200px;margin:-100px 0 0 -100px;border-radius:50%;border:4px solid #221A48;background:#fff;padding:0;cursor:pointer}
 .tut-clock .ball{position:absolute;left:50%;top:6px;width:30px;height:30px;margin-left:-15px;border-radius:50%;background:#FFD84A;border:3px solid #221A48}
-.tut-clock .arm{position:absolute;left:50%;bottom:50%;width:8px;height:80px;margin-left:-4px;background:#221A48;border-radius:6px;transform-origin:50% 100%;animation:tutSweep 2s ease-in forwards}
+.tut-clock .arm{position:absolute;left:50%;bottom:50%;width:8px;height:80px;margin-left:-4px;background:#221A48;border-radius:6px;transform-origin:50% 100%;animation:tutSweep calc(2s * var(--tf,1)) ease-in forwards}
 .tut-clock .pivot{position:absolute;left:50%;top:50%;width:18px;height:18px;margin:-9px;border-radius:50%;background:#221A48}
-.armed .tut-clock .ball{animation:tutGlow .6s ease-in-out infinite alternate}
+.armed .tut-clock .ball{animation:tutGlow calc(.6s * var(--tf,1)) ease-in-out infinite alternate}
 .tut-done .tut-clock .ball{background:#6BE38A}
 /* Blubber Blast */
 .tut-blast{position:absolute;inset:0;--p:0}
 .tut-blast .opp{position:absolute;top:6px;left:50%;transform:translateX(-50%)}
 .tut-blast .opp svg{width:62px;height:62px}
-.tut-blast .blubber{position:absolute;left:50%;width:56px;height:56px;margin-left:-28px;border-radius:50%;background:#B8F25A;border:3px solid #221A48;bottom:calc(36% + var(--p,0) * 34%);transition:bottom .15s}
+.tut-blast .blubber{position:absolute;left:50%;width:56px;height:56px;margin-left:-28px;border-radius:50%;background:#B8F25A;border:3px solid #221A48;bottom:calc(36% + var(--p,0) * 34%);transition:bottom calc(.15s * var(--tf,1))}
 .tut-blast .half{position:absolute;left:0;right:0;bottom:0;height:34%;border:0;border-top:3px dashed #221A48;background:#FFE0EF;cursor:pointer;font:700 22px/1 'Fredoka',system-ui,sans-serif}
-.tut-blast .bell{position:absolute;left:44%;top:30%;border:0;background:none;font-size:64px;cursor:pointer;animation:tutWiggle 1s ease-in-out infinite;padding:0}
-.tut-done .tut-blast .bell{animation:tutBurst .5s ease forwards}
+.tut-blast .bell{position:absolute;left:44%;top:30%;border:0;background:none;font-size:64px;cursor:pointer;animation:tutWiggle calc(1s * var(--tf,1)) ease-in-out infinite;padding:0}
+.tut-done .tut-blast .bell{animation:tutBurst calc(.5s * var(--tf,1)) ease forwards}
 .tut-duo{position:absolute;inset:0;display:grid;grid-template-rows:1fr 1fr}
 .tut-duo span{display:flex;align-items:center;justify-content:center;gap:12px;font-size:40px}
 .tut-duo span:first-child{background:#FFE0EF;border-bottom:3px dashed #221A48;transform:rotate(180deg)}
@@ -471,7 +471,7 @@ details.faq p{margin:0 0 16px}
 .tut-golf .flag{position:absolute;top:18px;left:50%;transform:translateX(-50%);font-size:46px}
 .tut-golf .golf-ball{position:absolute;left:50%;bottom:30px;transform:translateX(-50%);width:66px;height:66px;border:0;background:none;padding:0;cursor:grab;touch-action:none}
 .tut-golf .golf-ball svg{width:100%;height:100%}
-.tut-done .tut-golf .golf-ball{animation:tutFly .7s ease-out forwards}
+.tut-done .tut-golf .golf-ball{animation:tutFly calc(.7s * var(--tf,1)) ease-out forwards}
 .tut-golf .water{position:absolute;left:12%;top:45%;font-size:48px}
 .tut-golf .sand{position:absolute;right:12%;top:52%;font-size:48px}
 @keyframes tutTap{0%,100%{transform:translate(-50%,0)}50%{transform:translate(-50%,-14px)}}
@@ -550,3 +550,8 @@ details.faq p{margin:0 0 16px}
 .install-dlg ol{padding-left:22px;font-size:18px;line-height:1.6}
 .install-dlg form{text-align:right;margin:8px 0 0}
 @media (max-width:520px){.install-banner{flex-wrap:wrap}.install-banner .btn{width:100%}}
+
+.tut-top-btns{display:flex;align-items:center;gap:6px}
+.tut-tempo{border:3px solid var(--line);border-radius:999px;background:var(--surface);color:var(--text);font:800 14px/1 'Nunito',system-ui,sans-serif;padding:7px 12px;cursor:pointer}
+.tut-tempo[aria-pressed="true"]{background:#6BE38A;color:#221A48}
+@media (max-width:520px){.tut-top{flex-wrap:wrap}.tut-skip{padding:6px}}

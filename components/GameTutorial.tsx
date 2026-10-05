@@ -9,7 +9,7 @@ import { sfx } from '@/lib/sfx';
 type Step = { say: string; scene: string; action: 'tap' | 'taps' | 'drag' | 'next'; ok?: string; wrong?: string; early?: string; armAfter?: number; taps?: number };
 
 // Interactieve uitleg voor de eerste keer spelen: bewegende plaatjes en zelf doen.
-export default function GameTutorial({ id, color, onDone }: { id: string; color: string; onDone: () => void }) {
+export default function GameTutorial({ id, color, level = 'normaal', onDone }: { id: string; color: string; level?: string; onDone: () => void }) {
   const steps: Step[] = [...(TUTORIALS as Record<string, Step[]>)[id] || [], { say: 'Klaar? Nu ben jij aan de beurt. Veel plezier!', scene: '', action: 'next' }];
   const [i, setI] = useState(0);
   const [done, setDone] = useState(false);
@@ -19,20 +19,24 @@ export default function GameTutorial({ id, color, onDone }: { id: string; color:
   const [shake, setShake] = useState(false);
   const sceneRef = useRef<HTMLDivElement>(null);
   const drag = useRef<{ x: number; y: number } | null>(null);
+  // Tempo: langzamer maakt alle animaties en wachttijden 1,6× zo lang. Standaard aan bij niveau Makkelijk.
+  const [slow, setSlow] = useState(false);
+  const tf = slow ? 1.6 : 1;
   const step = steps[i];
   const last = i === steps.length - 1;
 
   const boxRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
+    setSlow(typeof data.tutSlow === 'boolean' ? data.tutSlow : level === 'rustig');
     if (window.matchMedia('(max-width:760px)').matches) boxRef.current?.scrollIntoView({ block: 'start' });
   }, []);
   // Nieuwe stap: alles terugzetten.
   useEffect(() => {
     setDone(step.action === 'next'); setMsg(''); setCount(0); setArmed(!step.armAfter);
     sceneRef.current?.style.removeProperty('--p');
-    const t = step.armAfter ? setTimeout(() => setArmed(true), step.armAfter) : undefined;
+    const t = step.armAfter ? setTimeout(() => setArmed(true), step.armAfter * tf) : undefined;
     return () => { if (t) clearTimeout(t); };
-  }, [i]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [i, slow]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const say = (t: string) => setMsg(t);
   const success = () => { setDone(true); sfx('good'); say(step.ok || 'Goed zo!'); };
@@ -71,10 +75,13 @@ export default function GameTutorial({ id, color, onDone }: { id: string; color:
   }
 
   return (
-    <div ref={boxRef} className="tut" role="region" aria-label="Uitleg van het spel">
+    <div ref={boxRef} className="tut" role="region" aria-label="Uitleg van het spel" style={{ ['--tf' as string]: tf } as React.CSSProperties}>
       <div className="tut-top">
         <div className="tut-dots" role="img" aria-label={`Stap ${i + 1} van ${steps.length}`}>{steps.map((_, k) => <span key={k} className={k <= i ? 'on' : ''} />)}</div>
-        <button type="button" className="tut-skip" onClick={finish}>Overslaan ⏭</button>
+        <div className="tut-top-btns">
+          <button type="button" className="tut-tempo" aria-pressed={slow} onClick={() => { const v = !slow; setSlow(v); data.tutSlow = v; save(); sfx('click'); }}>🐢 Langzamer</button>
+          <button type="button" className="tut-skip" onClick={finish}>Overslaan ⏭</button>
+        </div>
       </div>
       {last
         ? <div className="tut-scene tut-final"><Html html={blob(color, 'grin', 'tut-final-blob', true)} /></div>

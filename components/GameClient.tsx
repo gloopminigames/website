@@ -91,7 +91,7 @@ export default function GameClient({ id }: { id: string }) {
           ))}
         </div>
       )}
-      {tutorial && <GameTutorial id={g.id} color={g.blob} onDone={() => setTutorial(false)} />}
+      {tutorial && <GameTutorial id={g.id} color={g.blob} level={level} onDone={() => setTutorial(false)} />}
       <div id="stage" ref={stageRef} hidden={tutorial !== false} />
     </section>
   );
