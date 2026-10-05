@@ -14,7 +14,7 @@ export const POST = safe(async (req: NextRequest) => {
   const perr = pinError(body.pin);
   if (perr) return fail(perr);
   if ((await hit('reg:' + clientIp(req), 3600)) > 5) return fail('Er zijn hier net veel accounts gemaakt. Probeer het over een uurtje nog eens.', 429);
-  const u = await createUser(body.name, body.pin, body.data);
+  const u = await createUser(body.name, body.pin, body.data, body.avatar);
   if (!u) return fail('Deze naam is al bezet. Kies een andere naam.', 409);
   const token = await createSession(u);
   return withSession(json({ user: publicUser(u) }), token);

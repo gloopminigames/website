@@ -92,3 +92,29 @@ returns json language sql stable security definer set search_path = public as $$
 $$;
 revoke all on function public.gloop_board(text, int, uuid) from public, anon, authenticated;
 grant execute on function public.gloop_board(text, int, uuid) to service_role;
+
+-- ============================================================
+-- Eigen Gloop per speler (kleur|gezicht), ook getoond op de ranglijst
+-- ============================================================
+alter table public.players add column if not exists avatar text not null default '#6BE38A|happy';
+
+create or replace function public.gloop_board(g text, n int, me uuid default null)
+returns json language sql stable security definer set search_path = public as $$
+  with ranked as (
+    select s.player_id, p.name, p.avatar, s.score, s.extra, s.updated_at,
+      rank() over (order by
+        case when g in ('reactie','gloopiegolf','memo') then s.score end asc,
+        case when g not in ('reactie','gloopiegolf','memo') then s.score end desc,
+        s.extra asc nulls last) as pos
+    from scores s join players p on p.id = s.player_id
+    where s.game = g and p.on_board and not p.hidden
+  )
+  select json_build_object(
+    'top', coalesce((select json_agg(json_build_object('rank', pos, 'name', name, 'avatar', avatar, 'score', score, 'extra', extra, 'me', player_id = me) order by pos, updated_at)
+                     from (select * from ranked order by pos, updated_at limit n) t), '[]'::json),
+    'total', (select count(*) from ranked),
+    'me', (select json_build_object('rank', pos, 'score', score, 'extra', extra) from ranked where player_id = me)
+  );
+$$;
+revoke all on function public.gloop_board(text, int, uuid) from public, anon, authenticated;
+grant execute on function public.gloop_board(text, int, uuid) to service_role;
