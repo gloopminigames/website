@@ -2,6 +2,8 @@
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 import Html from './Html';
+import GameTutorial from './GameTutorial';
+import { TUTORIALS } from '@/lib/tutorials';
 import { blob, ICON } from '@/lib/blob';
 import { gameById } from '@/lib/games';
 import { data, save, statsHtml } from '@/lib/store';
@@ -13,6 +15,10 @@ export default function GameClient({ id }: { id: string }) {
   const stageRef = useRef<HTMLDivElement>(null);
   const statsRef = useRef<HTMLDivElement>(null);
   const [run, setRun] = useState(0);
+  // null = nog niet bekend (eerst localStorage lezen), true = uitleg tonen
+  const [tutorial, setTutorial] = useState<boolean | null>(null);
+  useEffect(() => { if (g && statsRef.current) statsRef.current.innerHTML = statsHtml(g.id); }, [g]);
+  useEffect(() => { if (g) setTutorial(Boolean((TUTORIALS as Record<string, unknown>)[g.id]) && !(data.tutorials || {})[g.id]); }, [g]);
 
   useEffect(() => {
     document.addEventListener('click', shareClick);
@@ -20,7 +26,7 @@ export default function GameClient({ id }: { id: string }) {
   }, []);
 
   useEffect(() => {
-    if (!g || !stageRef.current) return;
+    if (!g || !stageRef.current || tutorial !== false) return;
     data.lastGame = g.id; save();
     if (statsRef.current) statsRef.current.innerHTML = statsHtml(g.id);
     let cleanup: (() => void) | undefined;
@@ -39,7 +45,7 @@ export default function GameClient({ id }: { id: string }) {
       stage.querySelector('#retry')?.addEventListener('click', () => setRun((r) => r + 1));
     });
     return () => { cancelled = true; if (cleanup) cleanup(); };
-  }, [g, run]);
+  }, [g, run, tutorial]);
 
   if (!g) return null;
   return (
@@ -47,9 +53,13 @@ export default function GameClient({ id }: { id: string }) {
       <Link className="back" href="/games"><Html html={ICON.back} /> Alle games</Link>
       <div className="game-head">
         <div className="game-title"><Html html={blob(g.blob, g.face, 'mini-blob')} /><div><h1>{g.title}</h1><p>{g.desc}</p></div></div>
-        <div className="stats" id="stats" ref={statsRef} />
+        <div className="game-side">
+          <div className="stats" id="stats" ref={statsRef} />
+          {tutorial === false && <button type="button" className="help-btn" onClick={() => setTutorial(true)} aria-label="Uitleg bekijken" title="Uitleg bekijken">?</button>}
+        </div>
       </div>
-      <div id="stage" ref={stageRef} />
+      {tutorial && <GameTutorial id={g.id} color={g.blob} onDone={() => setTutorial(false)} />}
+      <div id="stage" ref={stageRef} hidden={tutorial !== false} />
     </section>
   );
 }
