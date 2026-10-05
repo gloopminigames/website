@@ -3,7 +3,6 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect } from 'react';
 import Logo from './Logo';
-import { toast } from '@/lib/toast';
 
 export function navKey(path: string) {
   const p = path.split('/')[1] || 'home';
@@ -43,7 +42,7 @@ export default function Header() {
           {link('/ranglijst', 'ranglijst', 'Ranglijst')}
           {link('/profiel', 'profiel', 'Profiel')}
         </nav>
-        <button type="button" className="btn btn-plain btn-sm login" onClick={() => toast('Accounts komen binnenkort!')}>Inloggen</button>
+        <button type="button" className="btn btn-plain btn-sm login" disabled title="Accounts komen binnenkort">Inloggen <span className="soon-mini">Binnenkort</span></button>
       </div>
     </header>
   );

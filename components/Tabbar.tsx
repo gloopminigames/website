@@ -8,7 +8,10 @@ const I = (d: React.ReactNode) => (
 );
 
 export default function Tabbar() {
-  const cur = navKey(usePathname() || '/');
+  const path = usePathname() || '/';
+  const cur = navKey(path);
+  // Tijdens het spelen geen menubalk over het speelveld.
+  if (/^\/games\/./.test(path)) return null;
   const items: [string, string, string, React.ReactNode][] = [
     ['/', 'home', 'Home', <path key="h" d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z" />],
     ['/games', 'games', 'Games', <g key="g"><rect x="3" y="3" width="7" height="7" rx="2" /><rect x="14" y="3" width="7" height="7" rx="2" /><rect x="3" y="14" width="7" height="7" rx="2" /><rect x="14" y="14" width="7" height="7" rx="2" /></g>],

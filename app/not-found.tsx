@@ -1,6 +1,9 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import Html from '@/components/Html';
 import { blob } from '@/lib/blob';
+
+export const metadata: Metadata = { title: 'Pagina niet gevonden', robots: { index: false } };
 
 export default function NotFound() {
   return (

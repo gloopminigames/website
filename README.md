@@ -24,7 +24,8 @@ npm start
 2. Vercel → **Add New → Project** → kies de repo. Vercel herkent Next.js vanzelf → **Deploy**.
 3. **Settings → Domains**: koppel je domein.
 4. Vul in `lib/site.js` het veld `url` in (bijv. `https://gloop.nl`) en push. Dit wordt gebruikt
-   voor deellinks, de sitemap en Google.
+   voor deellinks, de sitemap en Google. Laat je het leeg, dan gebruikt de site op Vercel
+   automatisch het productiedomein van het project.
 
 ## Mappenstructuur
 

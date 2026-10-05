@@ -29,8 +29,14 @@ export default function GameClient({ id }: { id: string }) {
     stage.innerHTML = '<p class="stapel-help">Laden…</p>';
     LOADERS[g.id]().then((mod: any) => {
       if (cancelled) return;
-      window.scrollTo(0, 0);
+      // Op een telefoon scrollen we het speelveld in beeld, anders valt het half onder de vouw.
+      const top = window.matchMedia('(max-width:760px)').matches ? stage.getBoundingClientRect().top + window.scrollY - 12 : 0;
+      window.scrollTo(0, top);
       cleanup = mod.default(stage, g, () => setRun((r) => r + 1));
+    }).catch(() => {
+      if (cancelled) return;
+      stage.innerHTML = '<div class="load-error" role="alert"><p>De game kon niet worden geladen. Controleer je internetverbinding.</p><button type="button" class="btn btn-primary" id="retry">Opnieuw proberen</button></div>';
+      stage.querySelector('#retry')?.addEventListener('click', () => setRun((r) => r + 1));
     });
     return () => { cancelled = true; if (cleanup) cleanup(); };
   }, [g, run]);

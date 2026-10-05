@@ -261,6 +261,7 @@ details.faq p{margin:0 0 16px}
   .topbar-in{height:72px}
   .logo-word{font-size:34px}
   body{padding-bottom:92px}
+  body:has(.game-page){padding-bottom:0}
   .tabbar{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));position:fixed;left:0;right:0;bottom:0;background:var(--surface);border-top:3px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px);z-index:20}
   .tabbar a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-height:64px;text-decoration:none;font-weight:800;font-size:13px;color:var(--text)}
   .tabbar a[aria-current="page"]{color:var(--tab-active)}
@@ -314,3 +315,12 @@ details.faq p{margin:0 0 16px}
 .soon-grid .card-body{padding:10px 14px 12px}
 .soon-grid .card-body h3{font-size:18px}
 @media (max-width:600px){.grid.soon-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.soon-grid .card-top{height:84px}.soon-grid .card-blob{width:86px;height:86px;margin-bottom:-24px}.soon-grid .card-body h3{font-size:15px}}
+
+/* Laadfout in een game */
+.load-error{text-align:center;padding:40px 16px;font-weight:700}
+.load-error p{margin:0 0 18px}
+/* Inlogknop zolang er nog geen accounts zijn */
+.login:disabled{cursor:default;opacity:1;gap:8px}
+.login .soon-mini{font:600 12px/1 'Fredoka',system-ui,sans-serif;background:#221A48;color:#fff;border-radius:8px;padding:4px 7px}
+/* Link onder de ingekorte Binnenkort-lijst op home */
+.soon-more{margin:22px 0 0;text-align:center}

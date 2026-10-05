@@ -9,7 +9,7 @@ export default function Home() {
     <>
       <Hero />
       <ContinueBlock />
-      <GamesSection title="Populair vandaag" />
+      <GamesSection title="Populair vandaag" soonLimit={4} />
       <ChallengeBlock />
       <HowBlock />
     </>
