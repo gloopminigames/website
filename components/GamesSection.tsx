@@ -1,15 +1,19 @@
 'use client';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import GameCard from './GameCard';
 import Html from './Html';
-import { GAMES, CATS } from '@/lib/games';
+import { GAMES, CATS, isNewFor } from '@/lib/games';
+import { data } from '@/lib/store';
 import { blob, ICON } from '@/lib/blob';
 
 // soonLimit: toon maar een paar Binnenkort-kaarten (home), met een link naar de rest.
 export default function GamesSection({ title, soonLimit }: { title: string; soonLimit?: number }) {
   const [cat, setCat] = useState('Alles');
   const [query, setQuery] = useState('');
+  // Pas na het laden weten we wat deze speler al heeft gespeeld (staat in de browser).
+  const [played, setPlayed] = useState<Record<string, number> | null>(null);
+  useEffect(() => { setPlayed({ ...(data.played || {}) }); }, []);
   const q = query.trim().toLowerCase();
   const list = GAMES.filter((g) => (cat === 'Alles' || g.cat === cat) && (!q || g.title.toLowerCase().includes(q) || g.cat.toLowerCase().includes(q)));
   const playable = list.filter((g) => g.playable);
@@ -36,7 +40,7 @@ export default function GamesSection({ title, soonLimit }: { title: string; soon
       {playable.length > 0 && (
         <>
           <div className="sub-head"><h3>Nu speelbaar</h3><span className="count">{playable.length}</span></div>
-          <div className="grid">{playable.map((g) => <GameCard key={g.id} g={g} />)}</div>
+          <div className="grid">{playable.map((g) => <GameCard key={g.id} g={g} isNew={played !== null && isNewFor(g, played)} />)}</div>
         </>
       )}
       {soon.length > 0 && (

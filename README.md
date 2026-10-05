@@ -105,6 +105,9 @@ Technische of kleine verbeteringen horen er niet in.
 3. Zet in `lib/games.js` bij de game `playable:true` en een `desc`.
 4. Voeg een recordtekst toe in `fmtRec()` (`lib/store.js`) en een deeltekst in `shareText()` (`lib/engine/common.js`).
 
+
+Zet bij een nieuwe game in `lib/games.js` ook `added:'JJJJ-MM-DD'` (de datum van vandaag). Dan krijgt hij 30 dagen lang een "Nieuw!"-sticker, maar alleen voor spelers die hem nog niet hebben gespeeld.
+
 ## Oude links
 
 Links uit de vorige versie (zoals `/#/game/memo`) worden automatisch doorgestuurd naar `/games/memo`.
