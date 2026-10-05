@@ -319,8 +319,27 @@ details.faq p{margin:0 0 16px}
 /* Laadfout in een game */
 .load-error{text-align:center;padding:40px 16px;font-weight:700}
 .load-error p{margin:0 0 18px}
-/* Inlogknop zolang er nog geen accounts zijn */
-.login:disabled{cursor:default;opacity:1;gap:8px}
-.login .soon-mini{font:600 12px/1 'Fredoka',system-ui,sans-serif;background:#221A48;color:#fff;border-radius:8px;padding:4px 7px}
+/* Accounts en inloggen */
+.login{gap:8px}
+.login-mini{width:28px;height:28px;flex:none}
+.login-page{display:flex;justify-content:center}
+.login-card{width:100%;max-width:560px;background:var(--surface);border:3px solid var(--line);border-radius:32px;box-shadow:0 6px 0 var(--shadow);padding:28px 24px}
+.login-card h1{text-align:center;margin:6px 0 14px}
+.login-blob{display:block;width:96px;height:96px;margin:0 auto}
+.login-tabs{justify-content:center;flex-wrap:wrap;overflow:visible;margin-bottom:18px}
+.login-label{display:flex;align-items:center;gap:10px;font:600 20px/1.2 'Fredoka',system-ui,sans-serif;margin:22px 0 10px}
+.lstep{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:#6A4BEB;color:#fff;font-size:17px;line-height:1;flex:none}
+.login-card .row{display:flex;gap:10px;flex-wrap:wrap}
+.login-card .row .field{flex:1 1 180px;min-width:0}
+.small{font-size:15px}
+.pin-field{font:700 30px/1 'Fredoka',system-ui,sans-serif;letter-spacing:.35em;text-align:center;max-width:260px}
+.pin-field::placeholder{letter-spacing:.2em}
+.check{display:flex;gap:10px;align-items:flex-start;margin:18px 0 0;font-weight:700}
+.check input{width:24px;height:24px;flex:none;margin-top:2px;accent-color:#6A4BEB}
+.login-error{background:#FFE0EF;color:#221A48;border:3px solid #221A48;border-radius:16px;padding:10px 14px;font-weight:800;margin:16px 0 0}
+.login-go{width:100%;margin:20px 0 14px}
+.linkish{background:none;border:0;padding:0;font:inherit;font-weight:800;color:inherit;text-decoration:underline;cursor:pointer}
+.account-box{margin-top:20px}
+.account-box .btns{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
 /* Link onder de ingekorte Binnenkort-lijst op home */
 .soon-more{margin:22px 0 0;text-align:center}

@@ -27,6 +27,32 @@ npm start
    voor deellinks, de sitemap en Google. Laat je het leeg, dan gebruikt de site op Vercel
    automatisch het productiedomein van het project.
 
+## Accounts (Supabase)
+
+Spelers kunnen een account maken met alleen een **spelersnaam en een pincode van 4 of 6 cijfers** (geen e-mail).
+Records gaan dan automatisch mee naar elk apparaat. Accounts staan in Supabase; alleen de server praat met de database.
+
+1. Maak een project op [supabase.com](https://supabase.com). Kies als regio **Frankfurt (EU)** – de privacyverklaring zegt dat de data in de EU staat.
+2. Open **SQL Editor**, plak de inhoud van `supabase/schema.sql` en klik **Run**.
+3. Zet in Supabase (Database → Extensions) **pg_cron** aan en voer uit:
+   `select cron.schedule('gloop-cleanup', '17 3 * * *', 'select public.gloop_cleanup()');`
+   Zo worden accounts die 400 dagen niet zijn gebruikt automatisch verwijderd (dat belooft de privacyverklaring).
+4. Vercel → **Settings → Environment Variables**: voeg toe
+   - `SUPABASE_URL` – Project Settings → API → Project URL
+   - `SUPABASE_SERVICE_ROLE_KEY` – Project Settings → API → `service_role` key (**geheim**, nooit `NEXT_PUBLIC_` ervoor zetten)
+5. Deploy opnieuw.
+
+Zonder deze instellingen werkt de site gewoon; op de inlogpagina staat dan dat inloggen nog niet beschikbaar is.
+Lokaal (`npm run dev`) wordt zonder instellingen een tijdelijke database in het geheugen gebruikt.
+
+| Bestand | Wat |
+|---|---|
+| `lib/accountRules.js` | Regels voor namen en pincodes (o.a. blokkade van makkelijke codes) |
+| `lib/account.js` | Inloggen/uitloggen in de browser en records automatisch bewaren |
+| `lib/merge.js` | Records van apparaat en account samenvoegen (beste score wint) |
+| `lib/server/*` | Database, pincode-hashing (scrypt), sessies, beperking van inlogpogingen |
+| `app/api/account/*` | De account-API |
+
 ## Mappenstructuur
 
 | Map / bestand | Wat staat erin |

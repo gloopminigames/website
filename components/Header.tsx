@@ -3,6 +3,9 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect } from 'react';
 import Logo from './Logo';
+import Html from './Html';
+import { blob } from '@/lib/blob';
+import { useAccount } from '@/lib/useAccount';
 
 export function navKey(path: string) {
   const p = path.split('/')[1] || 'home';
@@ -12,6 +15,7 @@ export function navKey(path: string) {
 export default function Header() {
   const path = usePathname() || '/';
   const cur = navKey(path);
+  const acc = useAccount();
   useEffect(() => {
     const logo = document.getElementById('logoWord');
     if (!logo) return;
@@ -42,7 +46,7 @@ export default function Header() {
           {link('/ranglijst', 'ranglijst', 'Ranglijst')}
           {link('/profiel', 'profiel', 'Profiel')}
         </nav>
-        <button type="button" className="btn btn-plain btn-sm login" disabled title="Accounts komen binnenkort">Inloggen <span className="soon-mini">Binnenkort</span></button>
+        <Link href={acc.user ? '/profiel' : '/inloggen'} className="btn btn-plain btn-sm login">{acc.user ? <><Html html={blob('#6BE38A', 'happy', 'login-mini')} />{acc.user.name}</> : 'Inloggen'}</Link>
       </div>
     </header>
   );

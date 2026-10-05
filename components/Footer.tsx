@@ -17,7 +17,7 @@ export default function Footer() {
         <div className="foot-grid">
           <div className="foot-brand">
             <Link href="/" className="logo" aria-label="Gloop, naar home"><Logo /></Link>
-            <p>Gratis mini games voor tussendoor. Geen download, geen account en geen advertenties.</p>
+            <p>Gratis mini games voor tussendoor. Geen download, geen advertenties en geen account nodig.</p>
             <ul className="foot-pills">
               {['Geen tracking', 'Geen advertenties', 'Gemaakt in Nederland'].map((t) => <li key={t}><Html html={ICON.check} />{t}</li>)}
             </ul>

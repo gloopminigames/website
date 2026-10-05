@@ -6,11 +6,13 @@ import Html from './Html';
 import { blob, ICON } from '@/lib/blob';
 import { PLAYABLE } from '@/lib/games';
 import { data } from '@/lib/store';
+import { useAccount } from '@/lib/useAccount';
 
 export default function Hero() {
   const router = useRouter();
   const [name, setName] = useState('');
-  useEffect(() => setName(data.name || ''), []);
+  const acc = useAccount();
+  useEffect(() => setName(data.name || ''), [acc.user]);
   const random = () => router.push('/games/' + PLAYABLE[Math.floor(Math.random() * PLAYABLE.length)].id);
   return (
     <section className="hero">
