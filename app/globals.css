@@ -685,3 +685,21 @@ details.faq p{margin:0 0 16px}
 .pause-panel .levels,.game-setup .levels{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:8px;max-width:420px;margin-left:auto;margin-right:auto}
 .pause-panel .level-btn,.game-setup .level-btn{flex-direction:column;justify-content:center;gap:4px;min-height:74px;padding:8px 4px;border-radius:20px;font-size:clamp(14px,3.6vw,17px)}
 .pause-panel .level-btn .lv-icon,.game-setup .level-btn .lv-icon{font-size:26px;line-height:1}
+/* Gloop in de Ruimte */
+.stapel.ruimte{background:#120C33}
+.tut-space{position:absolute;inset:0;background:radial-gradient(circle at 50% 120%,#2A1F6B,#120C33 70%)}
+.tsp-star{position:absolute;width:4px;height:4px;border-radius:50%;background:#fff;opacity:.8}
+.tsp-star.s1{left:20%;top:20%}.tsp-star.s2{left:75%;top:35%}.tsp-star.s3{left:40%;top:60%}
+.tut-space .tsp-me{position:absolute;left:50%;bottom:24px;transform:translateX(-50%);border:0;background:none;padding:0;cursor:grab;touch-action:none}
+.tsp-rocket{display:block;font-size:56px;line-height:1;transform:rotate(-45deg)}
+.tsp-rocket.big{position:absolute;left:50%;bottom:30px;margin-left:-28px;animation:tspFly calc(2.4s * var(--tf,1)) ease-in-out infinite}
+.tut-space .tsp-o{position:absolute;border:0;background:none;padding:0;cursor:pointer}
+.tsp-obj{display:block;font-size:46px;line-height:1}
+.tsp-glow{animation:tutWiggle calc(1s * var(--tf,1)) ease-in-out infinite}
+.tsp-planet{position:absolute;left:50%;top:-60px;width:180px;height:180px;margin-left:-90px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#F28A63,#E0603A 60%,#B53C1E);border:3px solid #221A48;animation:tspGrow calc(2.4s * var(--tf,1)) ease-in-out infinite}
+.tut-hand.drag.sideways{animation:tutSide calc(1.6s * var(--tf,1)) ease-in-out infinite}
+.tut-done .tut-space .tsp-me{animation:tspFly calc(.8s * var(--tf,1)) ease-in forwards}
+.tut-done .tut-space .tsp-glow{animation:tutBurst .5s ease forwards}
+@keyframes tspFly{0%{transform:translate(-50%,0)}100%{transform:translate(-50%,-140px)}}
+@keyframes tspGrow{0%,100%{transform:scale(.8)}50%{transform:scale(1.05)}}
+@keyframes tutSide{0%,100%{transform:translate(-50%,0)}50%{transform:translate(10%,0)}}
