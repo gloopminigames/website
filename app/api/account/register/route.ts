@@ -1,11 +1,11 @@
 import type { NextRequest } from 'next/server';
-import { json, fail, notReady, readJson, clientIp, withSession, publicUser } from '@/lib/server/http';
+import { json, fail, notReady, readJson, clientIp, withSession, publicUser, safe } from '@/lib/server/http';
 import { createUser, createSession, hit } from '@/lib/server/auth';
 import { nameError, pinError } from '@/lib/accountRules';
 
 export const dynamic = 'force-dynamic';
 
-export async function POST(req: NextRequest) {
+export const POST = safe(async (req: NextRequest) => {
   const nr = notReady(); if (nr) return nr;
   const body = await readJson(req);
   if (!body) return fail('Ongeldig verzoek.');
@@ -18,4 +18,4 @@ export async function POST(req: NextRequest) {
   if (!u) return fail('Deze naam is al bezet. Kies een andere naam.', 409);
   const token = await createSession(u);
   return withSession(json({ user: publicUser(u) }), token);
-}
+});

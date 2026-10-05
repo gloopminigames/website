@@ -1,4 +1,4 @@
--- Gloop: database voor accounts. Plak dit één keer in Supabase → SQL Editor → Run.
+-- Gloop: database voor accounts. Plak dit in Supabase → SQL Editor → Run. Opnieuw draaien kan geen kwaad.
 -- Alleen de server van Gloop (met de service_role-sleutel) mag erbij: RLS staat aan en er zijn geen policies.
 
 create table if not exists public.players (
@@ -40,6 +40,7 @@ returns int language sql security definer set search_path = public as $$
   returning hits;
 $$;
 revoke all on function public.gloop_hit(text, int) from public, anon, authenticated;
+grant execute on function public.gloop_hit(text, int) to service_role;
 
 -- Opruimen (handmatig of met pg_cron dagelijks): verlopen sessies en accounts die ruim een jaar niet zijn gebruikt.
 create or replace function public.gloop_cleanup()
@@ -49,5 +50,6 @@ returns void language sql security definer set search_path = public as $$
   delete from players     where last_seen  < now() - interval '400 days';
 $$;
 revoke all on function public.gloop_cleanup() from public, anon, authenticated;
+grant execute on function public.gloop_cleanup() to service_role;
 -- Met pg_cron (Database → Extensions → pg_cron aanzetten):
 -- select cron.schedule('gloop-cleanup', '17 3 * * *', 'select public.gloop_cleanup()');
