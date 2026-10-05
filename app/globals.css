@@ -228,7 +228,7 @@ details.faq p{margin:0 0 16px}
 .rank-card{background:var(--surface);border:3px solid var(--line);border-radius:30px;box-shadow:0 6px 0 var(--shadow);overflow:hidden}
 .rank-top{height:140px;border-bottom:3px solid var(--line);display:flex;align-items:flex-end;justify-content:center;overflow:hidden}
 .rank-body{padding:18px 20px 22px;display:grid;gap:10px;justify-items:start}
-.rank-body h2{font-size:26px;font-weight:600}
+.rank-body h2,.rank-body h3{font-size:26px;font-weight:600;margin:0}
 .rec{font:600 22px 'Fredoka',system-ui,sans-serif;margin:0}
 .profile-card{display:flex;gap:28px;align-items:center;flex-wrap:wrap;background:var(--surface);border:3px solid var(--line);border-radius:36px;box-shadow:0 8px 0 var(--shadow);padding:28px}
 .profile-blob{width:140px;height:140px}
@@ -343,3 +343,25 @@ details.faq p{margin:0 0 16px}
 .account-box .btns{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
 /* Link onder de ingekorte Binnenkort-lijst op home */
 .soon-more{margin:22px 0 0;text-align:center}
+/* Wereldranglijst */
+.world{margin:8px 0 40px}
+.world h2{margin-bottom:4px}
+.world .chips{margin-top:14px}
+.world-card{background:var(--surface);border:3px solid var(--line);border-radius:28px;box-shadow:0 6px 0 var(--shadow);overflow:hidden;max-width:720px}
+.world-head{display:flex;align-items:center;gap:14px;padding:14px 20px;border-bottom:3px solid var(--line);color:#221A48}
+.world-head h3{margin:0;font-size:24px}
+.world-head span{font-weight:800;font-size:15px}
+.world-blob{width:64px;height:64px;flex:none}
+.world-list{list-style:none;margin:0;padding:8px 12px}
+.world-list li{display:grid;grid-template-columns:44px 1fr auto;align-items:center;gap:10px;padding:10px 8px;border-bottom:2px dashed color-mix(in srgb,var(--line) 18%,transparent);font-weight:700}
+.world-list li:last-child{border-bottom:0}
+.world-list li.me{background:color-mix(in srgb,#6BE38A 30%,transparent);border-radius:14px}
+.world-list .pos{font:700 22px/1 'Fredoka',system-ui,sans-serif;text-align:center}
+.world-list .who{overflow-wrap:anywhere}
+.world-list .val{font-weight:800;text-align:right;font-size:15px}
+.world-empty,.world-me{padding:18px 20px;margin:0;font-weight:700}
+.world-me{border-top:3px solid var(--line)}
+.world-foot{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;padding:14px 20px;border-top:3px solid var(--line);font-weight:700}
+.rank-sub{margin:10px 0 16px}
+.board-toggle{margin:4px 0 14px;font-weight:600}
+@media (max-width:520px){.world-list li{grid-template-columns:36px 1fr;}.world-list .val{grid-column:2;text-align:left;font-weight:600}}
