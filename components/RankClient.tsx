@@ -7,6 +7,8 @@ import { blob } from '@/lib/blob';
 import { PLAYABLE } from '@/lib/games';
 import { fmtRec } from '@/lib/store';
 import { useAccount } from '@/lib/useAccount';
+import { GAME_LEVELS, LEVELS, recKey } from '@/lib/levels';
+import { data } from '@/lib/store';
 
 export default function RankClient() {
   const [ready, setReady] = useState(false);
@@ -25,6 +27,10 @@ export default function RankClient() {
             <div className="rank-body">
               <h3>{g.title}</h3>
               <p className="rec">{ready ? fmtRec(g.id) : '…'}</p>
+              {ready && (((GAME_LEVELS as Record<string, string[]>)[g.id]) || []).filter((l) => l !== 'normaal' && data.records[recKey(g.id, l)]).map((l) => {
+                const info = LEVELS.find((x) => x.id === l)!;
+                return <p key={l} className="rec-lvl">{info.icon} {info.label}: {fmtRec(recKey(g.id, l))}</p>;
+              })}
               <Link className="btn btn-primary btn-sm" href={`/games/${g.id}`}>Verbeter je record</Link>
             </div>
           </div>

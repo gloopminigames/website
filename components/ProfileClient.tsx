@@ -2,12 +2,14 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import Html from './Html';
+import { avatarSvg } from '@/lib/avatar';
 import { blob } from '@/lib/blob';
 import { data, save, wipe } from '@/lib/store';
 import { toast } from '@/lib/toast';
 import { logout, deleteAccount, setOnBoard, setAvatar } from '@/lib/account';
 import AvatarPicker from './AvatarPicker';
-import { parseAvatar } from '@/lib/accountRules';
+import StickerBook from './StickerBook';
+import { stickerCount } from '@/lib/stickers';
 import { useAccount } from '@/lib/useAccount';
 
 export default function ProfileClient() {
@@ -37,7 +39,7 @@ export default function ProfileClient() {
       <div className="profile-card">
         {acc.user
           ? <button type="button" className="gloop-btn" onClick={() => setEditGloop(!editGloop)} aria-expanded={editGloop} aria-label="Verander je Gloop">
-              <Html html={blob(parseAvatar(acc.user.avatar).color, parseAvatar(acc.user.avatar).face, 'profile-blob')} /><span>Verander</span>
+              <Html html={avatarSvg(acc.user.avatar, 'profile-blob')} /><span>Verander</span>
             </button>
           : <Html html={blob('#6BE38A', 'happy', 'profile-blob')} />}
         <div className="profile-form">
@@ -48,7 +50,7 @@ export default function ProfileClient() {
               <p className="muted">Je records worden bewaard bij je account. Log op een ander apparaat in met dezelfde naam en pincode om verder te spelen.</p>
               {editGloop && (
                 <div className="gloop-edit">
-                  <AvatarPicker value={acc.user.avatar || ''} onChange={async (v) => { try { await setAvatar(v); } catch (err: any) { toast(err.message); } }} />
+                  <AvatarPicker value={acc.user.avatar || ''} stickers={stickerCount()} onChange={async (v) => { try { await setAvatar(v); } catch (err: any) { toast(err.message); } }} />
                   <button type="button" className="btn btn-primary btn-sm" onClick={() => { setEditGloop(false); toast('Mooie Gloop!'); }}>Klaar</button>
                 </div>
               )}
@@ -69,6 +71,7 @@ export default function ProfileClient() {
           )}
         </div>
       </div>
+      <StickerBook />
       <div className="prose" style={{ marginTop: 36 }}>
         <h2>Jouw gegevens</h2>
         {acc.user ? (

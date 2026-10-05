@@ -4,6 +4,7 @@ import Html from './Html';
 import { blob } from '@/lib/blob';
 import { TUTORIALS } from '@/lib/tutorials';
 import { data, save } from '@/lib/store';
+import { sfx } from '@/lib/sfx';
 
 type Step = { say: string; scene: string; action: 'tap' | 'taps' | 'drag' | 'next'; ok?: string; wrong?: string; early?: string; armAfter?: number; taps?: number };
 
@@ -34,8 +35,8 @@ export default function GameTutorial({ id, color, onDone }: { id: string; color:
   }, [i]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const say = (t: string) => setMsg(t);
-  const success = () => { setDone(true); say(step.ok || 'Goed zo!'); };
-  const oops = (t: string) => { say(t); setShake(true); setTimeout(() => setShake(false), 450); };
+  const success = () => { setDone(true); sfx('good'); say(step.ok || 'Goed zo!'); };
+  const oops = (t: string) => { sfx('oops'); say(t); setShake(true); setTimeout(() => setShake(false), 450); };
   const next = () => { if (last) finish(); else setI(i + 1); };
   const finish = () => { data.tutorials = { ...(data.tutorials || {}), [id]: true }; save(); onDone(); };
 
@@ -46,7 +47,7 @@ export default function GameTutorial({ id, color, onDone }: { id: string; color:
     if (!el.closest('.tut-target')) return;
     if (!armed) return oops(step.early || 'Nog even wachten!');
     if (step.action === 'taps') {
-      const c = count + 1; setCount(c);
+      const c = count + 1; setCount(c); sfx('tap');
       sceneRef.current?.style.setProperty('--p', String(c / (step.taps || 5)));
       if (c >= (step.taps || 5)) success();
       return;

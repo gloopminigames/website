@@ -3,10 +3,12 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import Html from './Html';
+import { avatarSvg } from '@/lib/avatar';
 import PinInput from './PinInput';
 import AvatarPicker from './AvatarPicker';
+import { stickerCount } from '@/lib/stickers';
 import { blob } from '@/lib/blob';
-import { nameError, pinError, randomName, randomAvatar, parseAvatar } from '@/lib/accountRules';
+import { nameError, pinError, randomName, randomAvatar } from '@/lib/accountRules';
 import { login, register } from '@/lib/account';
 import { useAccount } from '@/lib/useAccount';
 import { toast } from '@/lib/toast';
@@ -56,7 +58,7 @@ export default function LoginClient() {
     return (
       <section className="page login-page">
         <div className="login-card" style={{ textAlign: 'center' }}>
-          <Html html={blob(parseAvatar(acc.user.avatar).color, parseAvatar(acc.user.avatar).face, 'login-blob')} />
+          <Html html={avatarSvg(acc.user.avatar, 'login-blob')} />
           <h1>Hoi {acc.user.name}!</h1>
           <p className="lead">Je bent al ingelogd.</p>
           <Link className="btn btn-primary" href="/games">Ga spelen</Link>
@@ -68,7 +70,7 @@ export default function LoginClient() {
   return (
     <section className="page login-page">
       <div className="login-card">
-        <Html html={isNew ? blob(parseAvatar(avatar).color, parseAvatar(avatar).face, 'login-blob') : blob('#8B6CFF', 'happy', 'login-blob')} />
+        <Html html={isNew ? avatarSvg(avatar, 'login-blob') : blob('#8B6CFF', 'happy', 'login-blob')} />
         <h1>{isNew ? 'Maak een account' : 'Inloggen'}</h1>
         <div className="chips login-tabs" role="group" aria-label="Kies">
           <button type="button" className="chip" aria-pressed={!isNew} onClick={() => switchMode('login')}>Inloggen</button>
@@ -95,7 +97,7 @@ export default function LoginClient() {
               <label htmlFor="acc-pin2" className="login-label"><span className="lstep">3</span> Typ je pincode nog een keer</label>
               <div className="row"><PinInput id="acc-pin2" value={pin2} onChange={(v) => { setPin2(v); setError(''); }} show={show} autoComplete="new-password" /></div>
               <p className="login-label"><span className="lstep">4</span> Kies jouw eigen Gloop</p>
-              <AvatarPicker value={avatar} onChange={setAvatar} />
+              <AvatarPicker value={avatar} onChange={setAvatar} stickers={stickerCount()} />
               <p className="muted small">Met een account kom je met je spelersnaam en records op de wereldranglijst. Dat kun je uitzetten in Profiel.</p>
               <p className="muted small">Onthoud je pincode goed! Zonder e-mailadres kunnen we hem niet voor je terughalen. Tip: vraag je ouder om hem op te schrijven. Kies geen makkelijke code zoals 1234 of 0000.</p>
               <label className="check"><input type="checkbox" checked={ok} onChange={(e) => setOk(e.target.checked)} /> <span>Ik ben 16 jaar of ouder, of mijn ouder of verzorger vindt het goed dat ik een account maak. (<Link href="/privacy">privacy</Link>)</span></label>

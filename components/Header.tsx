@@ -4,9 +4,9 @@ import { usePathname } from 'next/navigation';
 import { useEffect } from 'react';
 import Logo from './Logo';
 import Html from './Html';
+import { avatarSvg } from '@/lib/avatar';
 import { blob } from '@/lib/blob';
 import { useAccount } from '@/lib/useAccount';
-import { parseAvatar } from '@/lib/accountRules';
 
 export function navKey(path: string) {
   const p = path.split('/')[1] || 'home';
@@ -47,7 +47,7 @@ export default function Header() {
           {link('/ranglijst', 'ranglijst', 'Ranglijst')}
           {link('/profiel', 'profiel', 'Profiel')}
         </nav>
-        <Link href={acc.user ? '/profiel' : '/inloggen'} className="btn btn-plain btn-sm login">{acc.user ? <><Html html={blob(parseAvatar(acc.user.avatar).color, parseAvatar(acc.user.avatar).face, 'login-mini')} />{acc.user.name}</> : 'Inloggen'}</Link>
+        <Link href={acc.user ? '/profiel' : '/inloggen'} className="btn btn-plain btn-sm login">{acc.user ? <><Html html={avatarSvg(acc.user.avatar, 'login-mini')} />{acc.user.name}</> : 'Inloggen'}</Link>
       </div>
     </header>
   );
