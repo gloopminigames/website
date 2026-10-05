@@ -394,9 +394,7 @@ details.faq p{margin:0 0 16px}
 .tut-scene button{font:inherit;color:#221A48;-webkit-tap-highlight-color:transparent}
 .tut-say{display:flex;align-items:center;gap:12px;margin:14px 0}
 .tut-say p{margin:0;font:600 22px/1.25 'Fredoka',system-ui,sans-serif}
-.tut-sound{flex:none;width:56px;height:56px;border-radius:50%;border:3px solid var(--line);background:#5CC8FF;font-size:26px;cursor:pointer;box-shadow:0 4px 0 var(--shadow)}
 .tut-bottom{display:flex;align-items:center;justify-content:space-between;gap:10px}
-.tut-voice{background:none;border:3px solid var(--line);border-radius:999px;padding:8px 14px;font:800 15px/1 'Nunito',system-ui,sans-serif;color:var(--text);cursor:pointer}
 .tut-next{min-width:150px}
 .tut-next:disabled{opacity:.4;cursor:default}
 .tut-next.ready{animation:tutPulse 1s ease-in-out infinite}
