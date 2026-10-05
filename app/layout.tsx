@@ -11,6 +11,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import Tabbar from '@/components/Tabbar';
 import HashRedirect from '@/components/HashRedirect';
+import PwaInit from '@/components/PwaInit';
 import { SITE, siteUrl } from '@/lib/site';
 
 const DESC = 'Gloop: gratis mini games voor tussendoor. Direct spelen in je browser, zonder download, zonder account en zonder tracking.';
@@ -20,7 +21,7 @@ export const metadata: Metadata = {
   title: { default: 'Gloop – Even een potje?', template: '%s – Gloop' },
   description: DESC,
   applicationName: 'Gloop',
-  appleWebApp: { title: 'Gloop' },
+  appleWebApp: { capable: true, title: 'Gloop', statusBarStyle: 'default' },
   openGraph: { type: 'website', siteName: 'Gloop', locale: 'nl_NL', title: 'Gloop – Even een potje?', description: 'Gratis mini games voor tussendoor, direct in je browser.' },
   twitter: { card: 'summary' },
   robots: { index: true, follow: true },
@@ -42,6 +43,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
         <HashRedirect />
+        <PwaInit />
         <Header />
         <main className="wrap" id="app">{children}</main>
         <Footer />

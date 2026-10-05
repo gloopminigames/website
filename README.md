@@ -53,6 +53,18 @@ Lokaal (`npm run dev`) wordt zonder instellingen een tijdelijke database in het 
 | `lib/server/*` | Database, pincode-hashing (scrypt), sessies, beperking van inlogpogingen |
 | `app/api/account/*` | De account-API |
 
+## Gloop als app (PWA)
+
+Gloop is te installeren als app op telefoon, tablet en computer, zonder app store.
+
+| Bestand | Wat |
+|---|---|
+| `app/manifest.ts` | Naam, kleuren, icoontjes en snelkoppelingen van de app |
+| `public/icons/` | App-icoontjes (`icon-*` gewoon, `maskable-*` met extra rand voor Android) |
+| `app/apple-icon.png` | Icoontje voor iPhone/iPad |
+| `app/sw.js/route.ts` | Service worker: bewaart pagina's en games, zodat ze ook offline werken |
+| `components/InstallApp.tsx` | Knop/banner "Installeren" (met uitleg voor iPhone/iPad en Mac) |
+
 ## Mappenstructuur
 
 | Map / bestand | Wat staat erin |
