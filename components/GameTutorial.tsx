@@ -6,7 +6,7 @@ import { TUTORIALS } from '@/lib/tutorials';
 import { data, save } from '@/lib/store';
 import { sfx } from '@/lib/sfx';
 
-type Step = { say: string; scene: string; action: 'tap' | 'taps' | 'drag' | 'next'; ok?: string; wrong?: string; early?: string; armAfter?: number; taps?: number };
+type Step = { say: string; scene: string; action: 'tap' | 'taps' | 'drag' | 'next' | 'seq'; ok?: string; wrong?: string; early?: string; armAfter?: number; taps?: number };
 
 // Interactieve uitleg voor de eerste keer spelen: bewegende plaatjes en zelf doen.
 export default function GameTutorial({ id, color, level = 'normaal', onDone }: { id: string; color: string; level?: string; onDone: () => void }) {
@@ -48,6 +48,16 @@ export default function GameTutorial({ id, color, level = 'normaal', onDone }: {
   function onClick(e: React.MouseEvent) {
     if (done || step.action === 'drag') return;
     const el = e.target as HTMLElement;
+    if (step.action === 'seq') {
+      // Rij natikken: knoppen met data-seq 1, 2, … in volgorde; data-seq="0" hoort er niet bij.
+      const b = el.closest('[data-seq]') as HTMLElement | null;
+      if (!b) return;
+      const want = count + 1, total = sceneRef.current?.querySelectorAll('[data-seq]:not([data-seq="0"])').length || 0;
+      if (Number(b.dataset.seq) !== want) { setCount(0); sceneRef.current?.querySelectorAll('.seq-ok').forEach((x) => x.classList.remove('seq-ok')); return oops(step.wrong || 'Probeer het nog eens!'); }
+      b.classList.add('seq-ok'); sfx('tap'); setCount(want);
+      if (want >= total) success();
+      return;
+    }
     if (el.closest('.tut-wrong')) return oops(step.wrong || 'Probeer het nog eens!');
     if (!el.closest('.tut-target')) return;
     if (!armed) return oops(step.early || 'Nog even wachten!');

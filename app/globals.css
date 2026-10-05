@@ -607,3 +607,28 @@ details.faq p{margin:0 0 16px}
 .news-pop li{padding:8px 12px;border-radius:14px;background:color-mix(in srgb,var(--line) 6%,transparent);font-size:17px}
 .news-pop-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:12px}
 @media (max-width:520px){.news-hero{flex-direction:column;text-align:center}.news-item{grid-template-columns:44px 1fr}.news-item .btn{grid-column:1/-1;justify-self:start}.ni-emoji{width:44px;height:44px;font-size:24px}}
+/* Gloopie Zegt */
+.zegt{max-width:560px;margin:0 auto}
+.zegt-bar{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+.zegt-msg{margin:0;font:600 22px/1.2 'Fredoka',system-ui,sans-serif;min-height:1.2em}
+.zegt-pads{display:grid;gap:14px;grid-template-columns:repeat(2,minmax(0,1fr));margin:0 auto 24px;width:min(100%,56vh,480px)}
+.zegt-pads.n3{grid-template-columns:repeat(3,minmax(0,1fr));width:min(100%,90vh,560px)}
+.zegt-pads.n6{grid-template-columns:repeat(3,minmax(0,1fr));width:min(100%,78vh,560px)}
+.zpad{position:relative;aspect-ratio:1;border:4px solid var(--line);border-radius:28px;background:color-mix(in srgb,var(--pc) 30%,var(--surface));box-shadow:0 6px 0 var(--shadow);cursor:pointer;padding:10%;transition:transform .08s,background .08s,box-shadow .08s;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.zpad:disabled{cursor:default}
+.zpad-blob{width:100%;height:100%;display:block;opacity:.8;transition:opacity .1s,transform .1s}
+.zpad.lit{background:var(--pc);transform:translateY(4px) scale(1.04);box-shadow:0 2px 0 var(--shadow),0 0 0 8px color-mix(in srgb,var(--pc) 55%,transparent),0 0 30px 6px color-mix(in srgb,var(--pc) 60%,transparent)}
+.zpad.lit .zpad-blob{opacity:1;transform:scale(1.12)}
+.zpad.hint{animation:tutShake .4s 2;background:var(--pc)}
+.zpad.hint .zpad-blob{opacity:1}
+/* uitleg Gloopie Zegt */
+.tut-zegt{position:absolute;inset:40px 16px 60px;display:grid;grid-template-columns:repeat(3,1fr);gap:12px;align-items:center}
+.tut-zegt .zp{aspect-ratio:1;border:3px solid #221A48;border-radius:20px;background:#fff;padding:8%;cursor:pointer;box-shadow:0 4px 0 #221A48}
+.tut-zegt .zp svg{width:100%;height:100%;display:block;opacity:.6}
+.tut-zegt .zt-lit{animation:ztLit calc(1.2s * var(--tf,1)) ease-in-out 2}
+.tut-zegt.two .zt-a{animation:ztLit calc(1s * var(--tf,1)) ease-in-out}
+.tut-zegt.two .zt-b{animation:ztLit calc(1s * var(--tf,1)) ease-in-out calc(1s * var(--tf,1))}
+.tut-zegt .seq-ok,.tut-done .tut-zegt .zt-lit{background:#FFF1A8}
+.tut-zegt .seq-ok svg,.tut-done .tut-zegt .zt-lit svg{opacity:1}
+@keyframes ztLit{0%,100%{background:#fff}40%,60%{background:#FFD84A;transform:scale(1.06)}}
+@media (max-width:520px){.zegt-pads{gap:10px}.zpad{border-radius:22px}}
