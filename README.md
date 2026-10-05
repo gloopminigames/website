@@ -1,6 +1,6 @@
 # Gloop 🫧
 
-Gratis mini games voor tussendoor, gemaakt door NDR Creatives.
+Gratis mini games voor tussendoor, gemaakt door Gloop.
 Gebouwd met **Next.js** (App Router). Alle pagina's worden vooraf als statische HTML gebouwd,
 en elke game wordt pas geladen als iemand hem opent.
 

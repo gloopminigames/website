@@ -27,7 +27,7 @@ export default function Footer() {
           {col('f3', 'Juridisch', [['/privacy', 'Privacyverklaring'], ['/cookies', 'Cookieverklaring'], ['/voorwaarden', 'Gebruiksvoorwaarden'], ['/disclaimer', 'Disclaimer en copyright']])}
         </div>
         <div className="foot-bottom">
-          <p>© {SITE.year} {SITE.name}, {SITE.owner}. Alle rechten voorbehouden.</p>
+          <p>© {SITE.year} {SITE.owner}. Alle rechten voorbehouden.</p>
           <p>{SITE.kvk ? `KvK ${SITE.kvk}. ` : ''}Contact: <a href={`mailto:${SITE.email}`}>{SITE.email}</a></p>
         </div>
       </div>
