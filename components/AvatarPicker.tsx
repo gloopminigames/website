@@ -2,7 +2,8 @@
 import Html from './Html';
 import { blob } from '@/lib/blob';
 import { AVATAR_COLORS, AVATAR_FACES, parseAvatar } from '@/lib/accountRules';
-import { ACCESSORIES } from '@/lib/stickers';
+import { ACCESSORIES, accUnlocked, accLockText, THEMES } from '@/lib/stickers';
+import { data } from '@/lib/store';
 
 // Kies je eigen Gloop: kleur, gezichtje en (met genoeg stickers) een spulletje. Grote knoppen, met een voorbeeld.
 export default function AvatarPicker({ value, onChange, stickers = 0 }: { value: string; onChange: (v: string) => void; stickers?: number }) {
@@ -31,14 +32,16 @@ export default function AvatarPicker({ value, onChange, stickers = 0 }: { value:
         <p className="avatar-q" id="av-acc">Spulletje <small>({stickers} {stickers === 1 ? 'sticker' : 'stickers'})</small></p>
         <div className="avatar-row" role="radiogroup" aria-labelledby="av-acc">
           {ACCESSORIES.map((a) => {
-            const locked = stickers < a.need;
+            const locked = !accUnlocked(a, data);
+            const why = locked ? accLockText(a, data) : '';
+            const th = a.theme ? THEMES.find((t) => t.id === a.theme) : null;
             return (
               <button key={a.id} type="button" role="radio" aria-checked={a.id === acc} disabled={locked}
-                aria-label={locked ? `${a.name}, op slot: nog ${a.need - stickers} stickers` : a.name}
-                title={locked ? `Nog ${a.need - stickers} stickers` : a.name}
+                aria-label={locked ? `${a.name}, op slot: ${why}` : a.name}
+                title={locked ? why : a.name}
                 className={'face-opt acc-opt' + (locked ? ' locked' : '')} onClick={() => onChange(make(color, face, a.id))}>
                 {a.id === 'none' ? <span className="acc-none" aria-hidden="true">✖</span> : <Html html={blob(color, face, 'face-blob', false, a.id)} />}
-                {locked && <span className="lock" aria-hidden="true">🔒<b>{a.need}</b></span>}
+                {locked && <span className="lock" aria-hidden="true">🔒<b>{th ? th.emoji : a.need}</b></span>}
               </button>
             );
           })}

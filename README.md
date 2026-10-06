@@ -104,6 +104,19 @@ Technische of kleine verbeteringen horen er niet in.
 | `components/` | React-onderdelen (header, footer, gamekaarten, uitdaging…) |
 | `app/globals.css` | Alle vormgeving (Gloop-huisstijl) |
 
+## Stickers en thema-albums
+
+Alles staat in `lib/stickers.js`:
+
+- **Nieuw thema/album:** voeg een regel toe aan `THEMES` (`id`, `name`, `emoji`, `color`).
+  Seizoensthema? Geef `from`/`to` (`'MM-DD'`) en `season` (tekst). Het komt dan elk jaar terug; buiten die periode zijn de stickers niet te verdienen.
+- **Beloning:** `reward` = id van een spulletje. Zet dat in `ACCESSORIES` met `theme:'<id>'` en teken het in `lib/blob.js` (`ACC`),
+  en voeg het id toe aan `ACC_IDS` in `lib/accountRules.js`.
+- **Stickers:** een lijst zoals `HALLOWEEN`, met `test(e)`. `e` is het potje dat net klaar is: `{game, level, r, challenge}`
+  (`r` is het resultaat van de game, bijv. `r.score`, `r.planets`). `secret:true` verbergt de hint tot je hem hebt.
+  Aantal potjes in een seizoen: `seasonPlays('<thema-id>')`.
+- Zet de nieuwe stickers in `STICKERS` met `theme:'<id>'`. Een id nooit meer veranderen (dan raken spelers hun sticker kwijt).
+
 ## Een nieuwe game toevoegen
 
 1. Maak `lib/engine/<id>.js` met:
