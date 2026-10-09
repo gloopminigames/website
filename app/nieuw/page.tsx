@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import Html from '@/components/Html';
 import { blob } from '@/lib/blob';
-import { UPDATES, fmtDate } from '@/lib/updates';
+import { shownUpdates, fmtDate } from '@/lib/updates';
 import { GAMES } from '@/lib/games';
 
 export const metadata: Metadata = {
@@ -10,6 +10,9 @@ export const metadata: Metadata = {
   description: 'Alle leuke nieuwe dingen in Gloop, en waar we nu aan werken.',
   alternates: { canonical: '/nieuw' },
 };
+
+// Elk uur opnieuw opbouwen, zodat nieuwtjes met een toekomstige datum vanzelf verschijnen.
+export const revalidate = 3600;
 
 export default function NieuwPage() {
   const soon = GAMES.filter((g) => !g.playable);
@@ -24,7 +27,7 @@ export default function NieuwPage() {
       </div>
 
       <ol className="news-list">
-        {UPDATES.map((u) => (
+        {shownUpdates().map((u) => (
           <li key={u.id} className="news-entry">
             <div className="news-date"><span className="news-emoji" aria-hidden="true">{u.emoji}</span><time dateTime={u.date}>{fmtDate(u.date)}</time></div>
             <h2>{u.title}</h2>
