@@ -119,10 +119,10 @@ Alles staat in `lib/stickers.js`:
 
 ## Gloopmunten en de Gloop-winkel
 
-- `lib/shop.js`: alles wat te koop is (`SHOP`: kleur, gezicht of spulletje met een prijs) en hoeveel munten een potje oplevert (`coinsFor`).
+- `lib/shop.js`: alles wat te koop is (`SHOP`: gezicht, spulletje of achtergrond met een prijs; alleen exclusieve dingen, kleuren zijn gratis) en hoeveel munten een potje oplevert (`coinsFor`).
 - In de spelersdata: `coins` = totaal ooit verdiend, `owned` = gekochte ids. Saldo = `coins` min de prijzen; de server bewaart nooit meer aankopen dan je kunt betalen,
   en een Gloop mag alleen dingen dragen die echt gekocht zijn (`allowedAvatar` in `lib/server/auth.js`).
-- Nieuw gezicht of spulletje? Teken het in `lib/blob.js` (`FACES`/`MOUTH`/`ACC`). Een id nooit meer veranderen.
+- Nieuw gezicht of spulletje? Teken het in `lib/blob.js` (`FACES`/`MOUTH`/`ACC`/`BG`). Een id nooit meer veranderen.
 - Munten zijn nooit met echt geld te koop.
 
 ## Een nieuwe game toevoegen

@@ -1,7 +1,7 @@
 'use client';
 import Html from './Html';
 import { blob } from '@/lib/blob';
-import { AVATAR_COLORS, AVATAR_FACES, parseAvatar } from '@/lib/accountRules';
+import { AVATAR_COLORS, AVATAR_FACES, parseAvatar, makeAvatar } from '@/lib/accountRules';
 import { ACCESSORIES, accUnlocked, accLockText, THEMES } from '@/lib/stickers';
 import { data } from '@/lib/store';
 import Link from 'next/link';
@@ -9,14 +9,14 @@ import { SHOP, owns } from '@/lib/shop';
 
 // Kies je eigen Gloop: kleur, gezichtje en (met genoeg stickers) een spulletje. Grote knoppen, met een voorbeeld.
 export default function AvatarPicker({ value, onChange, stickers = 0 }: { value: string; onChange: (v: string) => void; stickers?: number }) {
-  const { color, face, acc } = parseAvatar(value);
+  const { color, face, acc, bg } = parseAvatar(value);
   // Gekocht in de Gloop-winkel? Dan staat het er ook tussen.
   const bought = (t: string) => (SHOP as { id: string; type: string; value: string; name: string }[]).filter((s) => s.type === t && owns(data, s.id)).map((s) => [s.value, s.name]);
-  const colors = [...AVATAR_COLORS, ...bought('color')], faces = [...AVATAR_FACES, ...bought('face')], shopAccs = bought('acc');
-  const make = (c: string, f: string, a: string) => c + '|' + f + (a && a !== 'none' ? '|' + a : '');
+  const colors = AVATAR_COLORS, faces = [...AVATAR_FACES, ...bought('face')], shopAccs = bought('acc'), bgs = bought('bg');
+  const make = (c: string, f: string, a: string, b: string = bg) => makeAvatar(c, f, a, b);
   return (
     <div className="avatar-picker">
-      <Html html={blob(color, face, 'avatar-preview', false, acc)} />
+      <Html html={blob(color, face, 'avatar-preview', false, acc, bg)} />
       <div className="avatar-opts">
         <p className="avatar-q" id="av-color">Kleur</p>
         <div className="avatar-row" role="radiogroup" aria-labelledby="av-color">
@@ -57,7 +57,19 @@ export default function AvatarPicker({ value, onChange, stickers = 0 }: { value:
             </button>
           ))}
         </div>
-        <p className="shop-link"><Link href="/winkel">🪙 Meer kleuren, gezichtjes en spulletjes in de Gloop-winkel</Link></p>
+        {bgs.length > 0 && <>
+          <p className="avatar-q" id="av-bg">Achtergrond</p>
+          <div className="avatar-row" role="radiogroup" aria-labelledby="av-bg">
+            <button type="button" role="radio" aria-checked={!bg} aria-label="Geen achtergrond" className="face-opt acc-opt" onClick={() => onChange(make(color, face, acc, ''))}><span className="acc-none" aria-hidden="true">✖</span></button>
+            {bgs.map(([id, label]) => (
+              <button key={id} type="button" role="radio" aria-checked={id === bg} aria-label={label} title={label}
+                className="face-opt acc-opt" onClick={() => onChange(make(color, face, acc, id))}>
+                <Html html={blob(color, face, 'face-blob', false, 'none', id)} />
+              </button>
+            ))}
+          </div>
+        </>}
+        <p className="shop-link"><Link href="/winkel">🪙 Meer gezichtjes, spulletjes en achtergronden in de Gloop-winkel</Link></p>
       </div>
     </div>
   );

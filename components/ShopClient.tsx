@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import Html from './Html';
 import { blob } from '@/lib/blob';
 import { data, save, onSave } from '@/lib/store';
-import { parseAvatar } from '@/lib/accountRules';
+import { parseAvatar, makeAvatar } from '@/lib/accountRules';
 import { SHOP, balance, owns } from '@/lib/shop';
 import { setAvatar, syncAccount } from '@/lib/account';
 import { useAccount } from '@/lib/useAccount';
@@ -12,9 +12,9 @@ import { toast } from '@/lib/toast';
 import { sfx } from '@/lib/sfx';
 import { confetti } from '@/lib/confetti';
 
-type Item = { id: string; type: 'color' | 'face' | 'acc'; value: string; name: string; price: number };
+type Item = { id: string; type: 'face' | 'acc' | 'bg'; value: string; name: string; price: number };
 const ITEMS = SHOP as Item[];
-const GROUPS: [Item['type'], string, string][] = [['color', '🎨', 'Kleuren'], ['face', '😊', 'Gezichtjes'], ['acc', '🎩', 'Spulletjes']];
+const GROUPS: [Item['type'], string, string][] = [['bg', '🖼️', 'Achtergronden'], ['face', '😊', 'Gezichtjes'], ['acc', '🎩', 'Spulletjes']];
 
 // De Gloop-winkel: koop met Gloopmunten (alleen te verdienen door te spelen) iets nieuws voor je Gloop.
 export default function ShopClient() {
@@ -30,11 +30,10 @@ export default function ShopClient() {
   const coins = balance(D);
   const me = parseAvatar(acc.user?.avatar || '');
   const wear = (it: Item) => {
-    const c = it.type === 'color' ? it.value : me.color, f = it.type === 'face' ? it.value : me.face, a = it.type === 'acc' ? it.value : me.acc;
-    return c + '|' + f + (a && a !== 'none' ? '|' + a : '');
+    return makeAvatar(me.color, it.type === 'face' ? it.value : me.face, it.type === 'acc' ? it.value : me.acc, it.type === 'bg' ? it.value : me.bg);
   };
-  const wearing = (it: Item) => (it.type === 'color' ? me.color : it.type === 'face' ? me.face : me.acc) === it.value;
-  const preview = (it: Item) => { const p = parseAvatar(wear(it)); return blob(p.color, p.face, 'shop-blob', false, p.acc); };
+  const wearing = (it: Item) => (it.type === 'bg' ? me.bg : it.type === 'face' ? me.face : me.acc) === it.value;
+  const preview = (it: Item) => { const p = parseAvatar(wear(it)); return blob(p.color, p.face, 'shop-blob', false, p.acc, p.bg); };
 
   const buy = async (it: Item) => {
     if (!acc.user || owns(data, it.id) || balance(data) < it.price) return;
@@ -53,10 +52,10 @@ export default function ShopClient() {
   return (
     <section className="page shop">
       <div className="shop-hero">
-        <Html html={blob(me.color, me.face, 'shop-hero-blob', false, me.acc)} />
+        <Html html={blob(me.color, me.face, 'shop-hero-blob', false, me.acc, me.bg)} />
         <div>
           <h1>Gloop-winkel</h1>
-          <p className="lead">Verdien Gloopmunten door te spelen en geef je Gloop iets nieuws!</p>
+          <p className="lead">Verdien Gloopmunten door te spelen en geef je Gloop iets bijzonders! Alles hier kun je alleen in de winkel krijgen.</p>
           <p className="wallet" aria-live="polite"><span aria-hidden="true">🪙</span> <b>{coins}</b> {coins === 1 ? 'Gloopmunt' : 'Gloopmunten'}</p>
         </div>
       </div>
