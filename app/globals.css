@@ -758,3 +758,27 @@ details.faq p{margin:0 0 16px}
 .tpb.cloud{background:#7D7896}
 .tpb.star{background:#FFE27A}
 .tut-pop .tut-row .tpb{width:64px;height:64px;font-size:32px}
+
+/* Gloopmunten en winkel */
+.coin-pill{display:inline-flex;align-items:center;gap:6px;margin-left:auto;margin-right:10px;font:700 17px/1 'Fredoka',system-ui,sans-serif;color:#221A48;background:#FFE98A;border:3px solid var(--line);border-radius:999px;padding:0 14px;min-height:44px;text-decoration:none;box-shadow:0 4px 0 var(--shadow);white-space:nowrap}
+.coin-pill[aria-current="page"]{background:#FFD84A}
+.coin-msg{display:inline-flex;align-items:center;gap:6px;margin:8px auto 0;font-weight:800;color:#221A48;background:#FFE98A;border:3px solid #221A48;border-radius:999px;padding:6px 14px;text-decoration:none;animation:tutPop .5s ease-out}
+.shop-hero{display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+.shop-hero-blob{width:120px;height:120px;flex:none;margin-top:30px}
+.wallet{display:inline-flex;align-items:center;gap:8px;font:600 22px/1 'Fredoka',system-ui,sans-serif;background:#FFE98A;color:#221A48;border:3px solid #221A48;border-radius:999px;padding:10px 18px;margin:0;box-shadow:0 5px 0 #221A48}
+.shop-how{margin:22px 0 6px;background:var(--surface);border:3px solid var(--line);border-radius:20px;padding:12px 16px}
+.shop-how summary{font-weight:800;cursor:pointer}
+.shop-how ul{margin:10px 0;padding-left:4px;list-style:none;display:grid;gap:4px}
+.shop-login{margin-top:16px}
+.shop-group h2{font-size:26px;font-weight:600;margin:28px 0 12px}
+.shop-grid{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px}
+.shop-card{display:grid;justify-items:center;gap:8px;text-align:center;background:var(--surface);border:3px solid var(--line);border-radius:24px;box-shadow:0 5px 0 var(--shadow);padding:16px 10px 14px}
+.shop-card.owned{background:#E9FBEF;color:#221A48}
+.shop-card b{font:600 18px/1.1 'Fredoka',system-ui,sans-serif}
+.shop-card .btn{font-size:16px;min-height:44px;padding:6px 14px}
+.shop-blob{width:84px;height:84px;margin-top:22px}
+.shop-state{font-weight:800;font-size:14px;min-height:44px;display:grid;place-items:center}
+.shop-link{margin:12px 0 0;font-weight:700}
+@media (max-width:520px){.shop-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.coin-pill{font-size:15px;padding:0 10px;margin-right:6px}}
+.coin-pill+.login{margin-left:-24px}
+@media (max-width:760px){.coin-pill+.login{margin-left:-28px}}

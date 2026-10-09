@@ -1,7 +1,9 @@
 'use client';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { data, onSave } from '@/lib/store';
+import { balance } from '@/lib/shop';
 import Logo from './Logo';
 import Html from './Html';
 import { avatarSvg } from '@/lib/avatar';
@@ -17,6 +19,9 @@ export default function Header() {
   const path = usePathname() || '/';
   const cur = navKey(path);
   const acc = useAccount();
+  // Gloopmunten: bijwerken na elk potje of elke aankoop.
+  const [coins, setCoins] = useState<number | null>(null);
+  useEffect(() => { const upd = () => setCoins(balance(data)); upd(); return onSave(upd); }, [acc.user]);
   useEffect(() => {
     const logo = document.getElementById('logoWord');
     if (!logo) return;
@@ -47,6 +52,7 @@ export default function Header() {
           {link('/ranglijst', 'ranglijst', 'Ranglijst')}
           {link('/profiel', 'profiel', 'Profiel')}
         </nav>
+        {coins !== null && <Link href="/winkel" className="coin-pill" aria-current={cur === 'winkel' ? 'page' : undefined} aria-label={`Gloop-winkel: je hebt ${coins} Gloopmunten`}><span aria-hidden="true">🪙</span> {coins}</Link>}
         <Link href={acc.user ? '/profiel' : '/inloggen'} className="btn btn-plain btn-sm login">{acc.user ? <><Html html={avatarSvg(acc.user.avatar, 'login-mini')} />{acc.user.name}</> : 'Inloggen'}</Link>
       </div>
     </header>

@@ -10,6 +10,7 @@ import { logout, deleteAccount, setOnBoard, setAvatar } from '@/lib/account';
 import AvatarPicker from './AvatarPicker';
 import StickerBook from './StickerBook';
 import { stickerCount } from '@/lib/stickers';
+import { balance } from '@/lib/shop';
 import { useAccount } from '@/lib/useAccount';
 
 export default function ProfileClient() {
@@ -47,6 +48,7 @@ export default function ProfileClient() {
             <>
               <p className="lead" style={{ margin: 0 }}>Ingelogd als <b>{acc.user.name}</b></p>
               <p className="muted">Gespeelde potjes: <b>{total}</b></p>
+              <p className="muted">Gloopmunten: <b>🪙 {balance(data)}</b> <Link href="/winkel">Naar de winkel</Link></p>
               <p className="muted">Je records worden bewaard bij je account. Log op een ander apparaat in met dezelfde naam en pincode om verder te spelen.</p>
               {editGloop && (
                 <div className="gloop-edit">

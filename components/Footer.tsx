@@ -24,7 +24,7 @@ export default function Footer() {
             </ul>
             <div className="foot-install"><InstallApp /></div>
           </div>
-          {col('f1', 'Spelen', [['/games', 'Alle games'], ['/ranglijst', 'Ranglijst'], ['/profiel', 'Profiel']])}
+          {col('f1', 'Spelen', [['/games', 'Alle games'], ['/ranglijst', 'Ranglijst'], ['/winkel', 'Gloop-winkel'], ['/profiel', 'Profiel']])}
           {col('f2', 'Gloop', [['/nieuw', 'Wat is er nieuw?'], ['/over', 'Over Gloop'], ['/faq', 'Veelgestelde vragen'], ['/contact', 'Contact'], ['/toegankelijkheid', 'Toegankelijkheid']])}
           {col('f3', 'Juridisch', [['/privacy', 'Privacyverklaring'], ['/cookies', 'Cookieverklaring'], ['/voorwaarden', 'Gebruiksvoorwaarden'], ['/disclaimer', 'Disclaimer en copyright']])}
         </div>

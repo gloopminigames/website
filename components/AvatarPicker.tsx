@@ -4,10 +4,15 @@ import { blob } from '@/lib/blob';
 import { AVATAR_COLORS, AVATAR_FACES, parseAvatar } from '@/lib/accountRules';
 import { ACCESSORIES, accUnlocked, accLockText, THEMES } from '@/lib/stickers';
 import { data } from '@/lib/store';
+import Link from 'next/link';
+import { SHOP, owns } from '@/lib/shop';
 
 // Kies je eigen Gloop: kleur, gezichtje en (met genoeg stickers) een spulletje. Grote knoppen, met een voorbeeld.
 export default function AvatarPicker({ value, onChange, stickers = 0 }: { value: string; onChange: (v: string) => void; stickers?: number }) {
   const { color, face, acc } = parseAvatar(value);
+  // Gekocht in de Gloop-winkel? Dan staat het er ook tussen.
+  const bought = (t: string) => (SHOP as { id: string; type: string; value: string; name: string }[]).filter((s) => s.type === t && owns(data, s.id)).map((s) => [s.value, s.name]);
+  const colors = [...AVATAR_COLORS, ...bought('color')], faces = [...AVATAR_FACES, ...bought('face')], shopAccs = bought('acc');
   const make = (c: string, f: string, a: string) => c + '|' + f + (a && a !== 'none' ? '|' + a : '');
   return (
     <div className="avatar-picker">
@@ -15,14 +20,14 @@ export default function AvatarPicker({ value, onChange, stickers = 0 }: { value:
       <div className="avatar-opts">
         <p className="avatar-q" id="av-color">Kleur</p>
         <div className="avatar-row" role="radiogroup" aria-labelledby="av-color">
-          {AVATAR_COLORS.map(([c, label]) => (
+          {colors.map(([c, label]) => (
             <button key={c} type="button" role="radio" aria-checked={c === color} aria-label={label}
               className="swatch" style={{ background: c }} onClick={() => onChange(make(c, face, acc))} />
           ))}
         </div>
         <p className="avatar-q" id="av-face">Gezichtje</p>
         <div className="avatar-row" role="radiogroup" aria-labelledby="av-face">
-          {AVATAR_FACES.map(([f, label]) => (
+          {faces.map(([f, label]) => (
             <button key={f} type="button" role="radio" aria-checked={f === face} aria-label={label}
               className="face-opt" onClick={() => onChange(make(color, f, acc))}>
               <Html html={blob(color, f, 'face-blob')} />
@@ -45,7 +50,14 @@ export default function AvatarPicker({ value, onChange, stickers = 0 }: { value:
               </button>
             );
           })}
+          {shopAccs.map(([id, label]) => (
+            <button key={id} type="button" role="radio" aria-checked={id === acc} aria-label={label} title={label}
+              className="face-opt acc-opt" onClick={() => onChange(make(color, face, id))}>
+              <Html html={blob(color, face, 'face-blob', false, id)} />
+            </button>
+          ))}
         </div>
+        <p className="shop-link"><Link href="/winkel">🪙 Meer kleuren, gezichtjes en spulletjes in de Gloop-winkel</Link></p>
       </div>
     </div>
   );
