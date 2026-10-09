@@ -786,3 +786,40 @@ details.faq p{margin:0 0 16px}
 /* Makershoed / beheerder */
 .maker-badge{display:inline-block;margin-left:6px;font:800 12px/1 'Nunito',system-ui,sans-serif;color:#fff;background:#6A4BEB;border:2px solid #221A48;border-radius:999px;padding:3px 8px;vertical-align:middle;white-space:nowrap}
 .maker-opt{box-shadow:0 0 0 3px #FFD84A}
+
+/* Homepagina: kort welkom of 'Hoi!' met verder spelen en de uitdaging */
+.hero-compact{min-height:0;padding:32px clamp(22px,5vw,64px)}
+.hero-compact h1{font-size:clamp(40px,5.6vw,72px)}
+.hero-compact p{margin:14px 0 20px}
+.hero-compact .badges{margin-top:18px}
+.hero-compact .hero-art{height:240px}
+.hero-compact .hero-blob{width:min(230px,100%)}
+.home-hi{margin-top:16px}
+.home-hi h1{font-size:clamp(36px,5vw,60px);font-weight:700;margin:0 0 14px}
+.today-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px}
+.today-card{margin-top:0;font:inherit;text-align:left;cursor:pointer;width:100%}
+.today-ch{display:flex;align-items:center;justify-content:space-between;gap:14px;background:var(--grape);color:#fff;border:3px solid var(--line);border-radius:28px;box-shadow:0 6px 0 var(--shadow);padding:14px 18px}
+.today-ch.done{background:#3A9B5C}
+.tc-txt{min-width:0}
+.tc-txt small{font-size:14px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;opacity:.9}
+.tc-txt p{margin:4px 0 0;font-weight:700;line-height:1.3}
+.tc-done{display:inline-flex;align-items:center;gap:6px;font-weight:800;white-space:nowrap}
+.soon-line{margin:22px 0 0;text-align:center;font-weight:800}
+.soon-line a{color:var(--text);text-decoration:none;border-bottom:3px dashed var(--muted);padding-bottom:2px}
+.how-row{margin-top:48px;text-align:center}
+.how-row h2{font-size:clamp(24px,3vw,32px);font-weight:600;margin:0 0 14px}
+.how-row ol{list-style:none;padding:0;margin:0 0 10px;display:flex;justify-content:center;gap:clamp(12px,4vw,48px);flex-wrap:wrap}
+.how-row li{display:flex;flex-direction:column;align-items:center;gap:6px;font-weight:700;max-width:120px}
+.how-blob{width:64px;height:64px}
+@media (max-width:760px){
+  .today-row{grid-template-columns:1fr;gap:12px}
+  .hero-compact{padding:22px 20px}
+  .hero-compact .hero-art{height:120px}
+  .hero-compact .hero-art .bubble{display:none}
+  .hero-compact h1{font-size:38px}
+  .hero-compact p{font-size:16px;margin:10px 0 14px}
+  .hero-compact .badges li{font-size:13px;padding:3px 10px}
+}
+.today-ch .btn{white-space:nowrap;flex:none}
+@media (max-width:520px){.how-row ol{flex-wrap:nowrap;gap:10px}.how-row li{max-width:100px;font-size:14px}.how-blob{width:52px;height:52px}}
+@media (max-width:760px){.hero-compact p{max-width:calc(100% - 84px)}}
