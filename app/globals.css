@@ -749,3 +749,12 @@ details.faq p{margin:0 0 16px}
 .album-reward:not(.got) .reward-blob{filter:grayscale(1);opacity:.55}
 .reward-blob{width:56px;height:56px;flex:none;margin:14px 6px 4px}
 .album-reward small{font-size:14px;line-height:1.3}
+
+/* Gloop Popper */
+.tut-pop{position:absolute;inset:0;background:linear-gradient(#BDE6FF,#F4F2FF)}
+.tut-pop .tp-o{position:absolute;margin:-45px 0 0 -45px;border:0;background:none;padding:0;cursor:pointer}
+.tpb{display:grid;place-items:center;width:84px;height:84px;border-radius:50%;background:rgba(255,255,255,.6);border:3px solid #221A48;box-shadow:inset -8px -10px 0 rgba(106,75,235,.12);font-size:42px;line-height:1}
+.tpb svg{width:62px;height:62px}
+.tpb.cloud{background:#7D7896}
+.tpb.star{background:#FFE27A}
+.tut-pop .tut-row .tpb{width:64px;height:64px;font-size:32px}
