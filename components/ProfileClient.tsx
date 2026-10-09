@@ -46,13 +46,13 @@ export default function ProfileClient() {
         <div className="profile-form">
           {acc.user ? (
             <>
-              <p className="lead" style={{ margin: 0 }}>Ingelogd als <b>{acc.user.name}</b></p>
+              <p className="lead" style={{ margin: 0 }}>Ingelogd als <b>{acc.user.name}</b>{acc.user.admin && <span className="maker-badge">🛠️ Maker van Gloop</span>}</p>
               <p className="muted">Gespeelde potjes: <b>{total}</b></p>
               <p className="muted">Gloopmunten: <b>🪙 {balance(data)}</b> <Link href="/winkel">Naar de winkel</Link></p>
               <p className="muted">Je records worden bewaard bij je account. Log op een ander apparaat in met dezelfde naam en pincode om verder te spelen.</p>
               {editGloop && (
                 <div className="gloop-edit">
-                  <AvatarPicker value={acc.user.avatar || ''} stickers={stickerCount()} onChange={async (v) => { try { await setAvatar(v); } catch (err: any) { toast(err.message); } }} />
+                  <AvatarPicker value={acc.user.avatar || ''} stickers={stickerCount()} admin={acc.user.admin === true} onChange={async (v) => { try { await setAvatar(v); } catch (err: any) { toast(err.message); } }} />
                   <button type="button" className="btn btn-primary btn-sm" onClick={() => { setEditGloop(false); toast('Mooie Gloop!'); }}>Klaar</button>
                 </div>
               )}

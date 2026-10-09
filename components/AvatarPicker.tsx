@@ -8,7 +8,7 @@ import Link from 'next/link';
 import { SHOP, owns } from '@/lib/shop';
 
 // Kies je eigen Gloop: kleur, gezichtje en (met genoeg stickers) een spulletje. Grote knoppen, met een voorbeeld.
-export default function AvatarPicker({ value, onChange, stickers = 0 }: { value: string; onChange: (v: string) => void; stickers?: number }) {
+export default function AvatarPicker({ value, onChange, stickers = 0, admin = false }: { value: string; onChange: (v: string) => void; stickers?: number; admin?: boolean }) {
   const { color, face, acc, bg } = parseAvatar(value);
   // Gekocht in de Gloop-winkel? Dan staat het er ook tussen.
   const bought = (t: string) => (SHOP as { id: string; type: string; value: string; name: string }[]).filter((s) => s.type === t && owns(data, s.id)).map((s) => [s.value, s.name]);
@@ -50,6 +50,12 @@ export default function AvatarPicker({ value, onChange, stickers = 0 }: { value:
               </button>
             );
           })}
+          {admin && (
+            <button type="button" role="radio" aria-checked={acc === 'maker'} aria-label="Makershoed (alleen voor de maker van Gloop)" title="Makershoed: alleen voor jou als maker van Gloop"
+              className="face-opt acc-opt maker-opt" onClick={() => onChange(make(color, face, 'maker'))}>
+              <Html html={blob(color, face, 'face-blob', false, 'maker')} />
+            </button>
+          )}
           {shopAccs.map(([id, label]) => (
             <button key={id} type="button" role="radio" aria-checked={id === acc} aria-label={label} title={label}
               className="face-opt acc-opt" onClick={() => onChange(make(color, face, id))}>

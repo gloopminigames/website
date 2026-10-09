@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 import Html from './Html';
 import { avatarSvg } from '@/lib/avatar';
+import { parseAvatar } from '@/lib/accountRules';
 import { blob } from '@/lib/blob';
 import { PLAYABLE, CATS, CAT_ICONS } from '@/lib/games';
 import { fmtScore } from '@/lib/store';
@@ -89,7 +90,7 @@ export default function WorldBoard() {
             {board.top.map((r, i) => (
               <li key={i} className={r.me ? 'me' : ''}>
                 <span className="pos" aria-label={`Plek ${r.rank}`}>{MEDAL[r.rank] || r.rank}</span>
-                <span className="who"><Html html={avatarSvg(r.avatar, 'row-blob')} /><span>{r.name}{r.me && <small> (jij)</small>}</span></span>
+                <span className="who"><Html html={avatarSvg(r.avatar, 'row-blob')} /><span>{r.name}{r.me && <small> (jij)</small>}{parseAvatar(r.avatar || '').acc === 'maker' && <span className="maker-badge">🛠️ Maker van Gloop</span>}</span></span>
                 <span className="val">{fmtScore(game, r.score, r.extra)}</span>
               </li>
             ))}

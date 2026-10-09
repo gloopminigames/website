@@ -782,3 +782,7 @@ details.faq p{margin:0 0 16px}
 @media (max-width:520px){.shop-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.coin-pill{font-size:15px;padding:0 10px;margin-right:6px}}
 .coin-pill+.login{margin-left:-24px}
 @media (max-width:760px){.coin-pill+.login{margin-left:-28px}}
+
+/* Makershoed / beheerder */
+.maker-badge{display:inline-block;margin-left:6px;font:800 12px/1 'Nunito',system-ui,sans-serif;color:#fff;background:#6A4BEB;border:2px solid #221A48;border-radius:999px;padding:3px 8px;vertical-align:middle;white-space:nowrap}
+.maker-opt{box-shadow:0 0 0 3px #FFD84A}
