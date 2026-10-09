@@ -2,12 +2,12 @@
 import { useEffect, useState } from 'react';
 import Html from './Html';
 import { blob } from '@/lib/blob';
-import { STICKERS as ALL, ACCESSORIES, THEMES as ALL_THEMES, themeActive } from '@/lib/stickers';
+import { STICKERS as ALL, ACCESSORIES, THEMES as ALL_THEMES, themeActive, themeSoon } from '@/lib/stickers';
 import { data } from '@/lib/store';
 import { useAccount } from '@/lib/useAccount';
 
 type Sticker = { id: string; emoji: string; name: string; hint: string; theme: string; secret?: boolean };
-type Theme = { id: string; name: string; emoji: string; color: string; text?: string; reward?: string; from?: string; season?: string };
+type Theme = { id: string; name: string; emoji: string; color: string; text?: string; reward?: string; from?: string; season?: string; starts?: string };
 const STICKERS = ALL as Sticker[];
 const THEMES = ALL_THEMES as Theme[];
 const ACCS = ACCESSORIES as { id: string; name: string; need?: number; theme?: string }[];
@@ -27,6 +27,9 @@ export default function StickerBook() {
   const done = got === list.length;
   const reward = theme.reward ? ACCS.find((a) => a.id === theme.reward) : null;
   const active = themeActive(theme);
+  const soon = themeSoon(theme);
+  // Seizoen nog niet bezig: stickers die je nog niet hebt blijven een verrassing.
+  const teaser = Boolean(theme.from) && !active;
   return (
     <section className="stickerbook" id="stickers" aria-labelledby="sbTitle">
       <h2 id="sbTitle">Stickerboek <span className="count">{n} / {STICKERS.length}</span></h2>
@@ -40,6 +43,7 @@ export default function StickerBook() {
               <span className="at-name">{t.name}</span>
               <span className="at-count">{g}/{all.length}</span>
               {t.from && themeActive(t) && <span className="at-live">Nu!</span>}
+              {themeSoon(t) && <span className="at-live soon">Binnenkort</span>}
             </button>
           );
         })}
@@ -49,7 +53,7 @@ export default function StickerBook() {
           <div>
             <h3><span aria-hidden="true">{theme.emoji}</span> {theme.name}-album</h3>
             <div className="album-bar" role="progressbar" aria-label={`${theme.name}-album`} aria-valuemin={0} aria-valuemax={list.length} aria-valuenow={got}><span style={{ width: (got / list.length) * 100 + '%' }} /></div>
-            {theme.from && <p className="album-season">{active ? <>🗓️ Nu te verdienen! ({theme.season})</> : <>🗓️ Deze stickers kun je verdienen van {theme.season}. Elk jaar komen ze terug!</>}</p>}
+            {theme.from && <p className="album-season">{active ? <>🗓️ Nu te verdienen! ({theme.season})</> : soon ? <>⏳ Binnenkort! Vanaf {theme.starts} kun je deze stickers verdienen.</> : <>🗓️ Deze stickers komen elk jaar terug, van {theme.season}.</>}</p>}
           </div>
           {reward && (
             <div className={'album-reward' + (done ? ' got' : '')}>
@@ -64,8 +68,8 @@ export default function StickerBook() {
             return (
               <li key={s.id} className={'sticker-card' + (g ? ' got' : '')}>
                 <span className="sticker-face" aria-hidden="true">{g ? s.emoji : '?'}</span>
-                <b>{g ? s.name : s.secret ? 'Geheime sticker' : 'Nog geheim'}</b>
-                <small>{g || !s.secret ? s.hint : 'Een verrassing… blijf spelen! 🤫'}</small>
+                <b>{g ? s.name : teaser ? 'Verrassing!' : s.secret ? 'Geheime sticker' : 'Nog geheim'}</b>
+                <small>{g ? s.hint : teaser ? `Vanaf ${theme.starts}` : s.secret ? 'Een verrassing… blijf spelen! 🤫' : s.hint}</small>
                 <span className="sr-only">{g ? 'Verdiend' : 'Nog niet verdiend'}</span>
               </li>
             );
