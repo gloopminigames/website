@@ -1,5 +1,5 @@
 import type { NextRequest } from 'next/server';
-import { clientIp } from '@/lib/server/http';
+import { clientIp, currentUser } from '@/lib/server/http';
 import { dbReady } from '@/lib/server/db';
 import { getUser, checkPin, createSession, sessionUser, endSession, saveData, hit, count, reset } from '@/lib/server/auth';
 import { allowedOrigin, xlJson, xlFail, xlPreflight, bearer, readXlJson, xlUser } from '@/lib/server/xl';
@@ -12,8 +12,13 @@ type Ctx = { params: Promise<{ action: string }> };
 
 // Gloop XL: /api/xl/login, /api/xl/me, /api/xl/sync, /api/xl/logout (zie lib/server/xl.js).
 async function handle(req: NextRequest, { params }: Ctx) {
-  const origin = allowedOrigin(req.headers.get('origin'));
-  if (req.headers.get('origin') && !origin) return xlFail('', 'Niet toegestaan.', 403);
+  const host = req.headers.get('host'), sent = req.headers.get('origin');
+  const origin = allowedOrigin(sent, host);
+  if (sent && !origin) return xlFail('', 'Niet toegestaan.', 403);
+  // XL op Gloop zelf (/xl/) mag ook de gewone Gloop-inlogcookie gebruiken.
+  // Een POST van een andere site heeft altijd een Origin; dan alleen met een inlogcode.
+  let sameSite = !sent;
+  try { if (sent) sameSite = new URL(sent).host === host; } catch (e) { sameSite = false; }
   const { action } = await params;
   try {
     if (!dbReady()) return xlFail(origin, 'Inloggen is nog niet beschikbaar. Probeer het later nog eens.', 503);
@@ -36,9 +41,10 @@ async function handle(req: NextRequest, { params }: Ctx) {
     const token = bearer(req);
     if (action === 'logout' && req.method === 'POST') { await endSession(token); return xlJson(origin, { ok: true }); }
 
-    const u = await sessionUser(token);
+    const viaCookie = !token && sameSite;
+    const u = token ? await sessionUser(token) : viaCookie ? await currentUser(req) : null;
     if (!u) return xlFail(origin, 'Je bent niet ingelogd.', 401);
-    if (action === 'me' && req.method === 'GET') return xlJson(origin, { user: xlUser(u) });
+    if (action === 'me' && req.method === 'GET') return xlJson(origin, { user: xlUser(u, viaCookie ? 'gloop' : 'token') });
     if (action === 'sync' && req.method === 'POST') {
       const body = await readXlJson(req, 80000);
       if (!body || typeof body.lfi !== 'object') return xlFail(origin, 'Ongeldig verzoek.');
@@ -54,4 +60,4 @@ async function handle(req: NextRequest, { params }: Ctx) {
 }
 export const GET = handle;
 export const POST = handle;
-export async function OPTIONS(req: NextRequest) { return xlPreflight(allowedOrigin(req.headers.get('origin'))); }
+export async function OPTIONS(req: NextRequest) { return xlPreflight(allowedOrigin(req.headers.get('origin'), req.headers.get('host'))); }

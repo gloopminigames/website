@@ -9,7 +9,7 @@ export default function Footer() {
   const col = (id: string, title: string, links: [string, string][]) => (
     <nav className="foot-col" aria-labelledby={id}>
       <h2 id={id}>{title}</h2>
-      <ul>{links.map(([href, label]) => <li key={href}><Link href={href}>{label}</Link></li>)}</ul>
+      <ul>{links.map(([href, label]) => <li key={href}>{href.startsWith('/xl/') ? <a href={href}>{label}</a> : <Link href={href}>{label}</Link>}</li>)}</ul>
     </nav>
   );
   return (
@@ -24,7 +24,7 @@ export default function Footer() {
             </ul>
             <div className="foot-install"><InstallApp /></div>
           </div>
-          {col('f1', 'Spelen', [['/games', 'Alle games'], [SITE.xlUrl, 'Gloop XL'], ['/ranglijst', 'Ranglijst'], ['/winkel', 'Gloop-winkel'], ['/profiel', 'Profiel']])}
+          {col('f1', 'Spelen', [['/games', 'Alle games'], [SITE.xlPath, 'Gloop XL (12+)'], ['/ranglijst', 'Ranglijst'], ['/winkel', 'Gloop-winkel'], ['/profiel', 'Profiel']])}
           {col('f2', 'Gloop', [['/nieuw', 'Wat is er nieuw?'], ['/over', 'Over Gloop'], ['/faq', 'Veelgestelde vragen'], ['/contact', 'Contact'], ['/toegankelijkheid', 'Toegankelijkheid']])}
           {col('f3', 'Juridisch', [['/privacy', 'Privacyverklaring'], ['/cookies', 'Cookieverklaring'], ['/voorwaarden', 'Gebruiksvoorwaarden'], ['/disclaimer', 'Disclaimer en copyright']])}
         </div>

@@ -36,7 +36,7 @@ export default function NieuwPage() {
                 <li key={it.title} className="news-item">
                   <span className="ni-emoji" aria-hidden="true">{it.emoji}</span>
                   <div><b>{it.title}</b><p>{it.text}</p></div>
-                  {it.href && <Link className="btn btn-plain btn-sm" href={it.href}>Probeer het!</Link>}
+                  {it.href && (it.href.startsWith('/xl/') ? <a className="btn btn-plain btn-sm" href={it.href}>Probeer het!</a> : <Link className="btn btn-plain btn-sm" href={it.href}>Probeer het!</Link>)}
                 </li>
               ))}
             </ul>

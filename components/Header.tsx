@@ -51,9 +51,9 @@ export default function Header() {
         <nav className="topnav" aria-label="Hoofdmenu">
           {link('/games', 'games', 'Games')}
           {link('/ranglijst', 'ranglijst', 'Ranglijst')}
-          <a href={SITE.xlUrl} className="topnav-xl">XL</a>
           {link('/profiel', 'profiel', 'Profiel')}
         </nav>
+        <a href={SITE.xlPath} className="xl-pill" aria-label="Gloop XL: grotere games voor tieners en volwassenen"><img src="/xl-192.png" alt="" width={30} height={30} />XL</a>
         {coins !== null && <Link href="/winkel" className="coin-pill" aria-current={cur === 'winkel' ? 'page' : undefined} aria-label={`Gloop-winkel: je hebt ${coins} Gloopmunten`}><span aria-hidden="true">🪙</span> {coins}</Link>}
         <Link href={acc.user ? '/profiel' : '/inloggen'} className="btn btn-plain btn-sm login">{acc.user ? <><Html html={avatarSvg(acc.user.avatar, 'login-mini')} />{acc.user.name}</> : 'Inloggen'}</Link>
       </div>
