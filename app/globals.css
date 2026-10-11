@@ -982,3 +982,13 @@ details.faq p{margin:0 0 16px}
 .foot-url{margin-top:6px!important;font-weight:700}
 @media (max-width:760px){.say{display:none}}
 @media (prefers-reduced-motion:reduce){.say{animation:none}}
+
+/* Knop naar Gloop XL: uiterst rechts, zelfde vorm als '← Gloop' op XL (in de kleuren van XL) */
+.topbar-in>.logo{margin-right:auto}
+.topnav{margin-left:0}
+.xl-pill{gap:6px;margin:0;padding:0 16px;font:600 18px/1 'Fredoka',system-ui,sans-serif;color:#6BE38A;background:#221A48;white-space:nowrap}
+.xl-pill:hover{color:#fff}
+@media (max-width:760px){.xl-pill{margin-left:0}.coin-pill{margin-left:0}}
+@media (max-width:520px){.xl-pill-long{display:none}.xl-pill{padding:0 13px;font-size:16px}}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .xl-pill{border-color:#6BE38A}}
+:root[data-theme="dark"] .xl-pill{border-color:#6BE38A}

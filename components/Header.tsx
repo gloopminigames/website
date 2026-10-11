@@ -54,9 +54,10 @@ export default function Header() {
           {/* Ingelogd? Dan gaat de knop met je naam al naar je profiel; geen dubbele link. */}
           {!acc.user && link('/profiel', 'profiel', 'Profiel')}
         </nav>
-        <a href={SITE.xlPath} className="xl-pill" aria-label="Gloop XL: grotere games voor tieners en volwassenen"><img src="/xl-192.png" alt="" width={30} height={30} />XL</a>
         {coins !== null && <Link href="/winkel" className="coin-pill" aria-current={cur === 'winkel' ? 'page' : undefined} aria-label={`Gloop-winkel: je hebt ${coins} Gloopmunten`}><span aria-hidden="true">🪙</span> {coins}</Link>}
         <Link href={acc.user ? '/profiel' : '/inloggen'} className="btn btn-plain btn-sm login" aria-current={acc.user && cur === 'profiel' ? 'page' : undefined}>{acc.user ? <><Html html={avatarSvg(acc.user.avatar, 'login-mini')} />{acc.user.name}</> : 'Inloggen'}</Link>
+        {/* Naar Gloop XL: het spiegelbeeld van de knop '← Gloop' op XL */}
+        <a href={SITE.xlPath} className="xl-pill" aria-label="Naar Gloop XL: grotere games voor tieners en volwassenen"><span className="xl-pill-long">Gloop </span>XL <span aria-hidden="true">→</span></a>
       </div>
     </header>
   );
