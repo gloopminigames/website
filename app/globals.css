@@ -913,3 +913,23 @@ details.faq p{margin:0 0 16px}
 .tfm-b{border:0;background:none;padding:0;cursor:pointer}
 .tfm-plot{display:grid;place-items:center;width:76px;height:76px;background:#A8744F;border:3px solid #221A48;border-radius:14px;font-size:38px;color:#fff}
 .tfm-plot.ready{box-shadow:0 0 0 5px #FFD84A}
+
+/* Brede schermen (computer): games liggend in plaats van een smalle telefoonkolom */
+@media (min-width:900px){
+  .memo.n16{grid-template-columns:repeat(8,minmax(0,1fr));max-width:min(1000px,150vh)}
+  .memo.n12{grid-template-columns:repeat(6,minmax(0,1fr));max-width:min(860px,130vh)}
+  .zegt-pads{grid-template-columns:repeat(4,minmax(0,1fr));width:min(100%,920px,130vh)}
+  .zegt-pads.n6{grid-template-columns:repeat(6,minmax(0,1fr));width:min(100%,1040px,150vh)}
+  .zegt-pads.n3{width:min(100%,720px,100vh)}
+  .zegt{max-width:none}
+  .zegt .stapel-help{margin:0 auto}
+  .zegt-bar{max-width:920px;margin-left:auto;margin-right:auto}
+  .farm{max-width:1040px}
+  .fm-island{display:grid;grid-template-columns:minmax(0,1fr) 300px;grid-template-areas:"guide guide" "plots side" "deco deco";gap:14px 18px;border-radius:120px/60px;padding:22px 40px 26px}
+  .fm-guide{grid-area:guide;margin:0}
+  .fm-plots{grid-area:plots;grid-template-columns:repeat(4,minmax(0,1fr));align-content:start}
+  .fm-row{grid-area:side;grid-template-columns:1fr;margin-top:0;align-content:start}
+  .fm-pen{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .fm-work{min-height:96px}
+  .fm-deco{grid-area:deco;margin-top:0}
+}
