@@ -2,6 +2,7 @@ import Link from 'next/link';
 import Logo from './Logo';
 import { SITE } from '@/lib/site';
 import InstallApp from './InstallApp';
+import ThemeToggle from './ThemeToggle';
 
 // Footer: rustig en voor kinderen. Alles voor ouders (uitleg, privacy, voorwaarden) staat op /ouders.
 const PLAY: [string, string][] = [['/games', 'Alle games'], ['/ranglijst', 'Ranglijst'], ['/winkel', 'Gloop-winkel'], ['/nieuw', 'Wat is er nieuw?']];
@@ -26,7 +27,7 @@ export default function Footer() {
         </nav>
         <div className="foot-bottom">
           <p>© {SITE.year} {SITE.owner}</p>
-          <nav aria-label="Informatie">{SMALL.map(a)}</nav>
+          <nav aria-label="Informatie">{SMALL.map(a)}<ThemeToggle text /></nav>
         </div>
       </div>
     </footer>

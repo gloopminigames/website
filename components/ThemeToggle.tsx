@@ -9,7 +9,7 @@ const isDark = () => {
   return t ? t === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
 };
 
-export default function ThemeToggle() {
+export default function ThemeToggle({ text }: { text?: boolean }) {
   const [dark, setDark] = useState<boolean | null>(null);
   useEffect(() => setDark(isDark()), []);
   const toggle = () => {
@@ -18,7 +18,12 @@ export default function ThemeToggle() {
     try { localStorage.setItem(THEME_KEY, next ? 'dark' : 'light'); } catch (e) {}
     setDark(next);
   };
-  // Het icoontje kiest CSS (geen flits); de tekst voor schermlezers volgt na het laden.
+  // Welke tekst/icoon zichtbaar is, kiest CSS (geen flits); de tekst voor schermlezers volgt na het laden.
+  if (text) return (
+    <button type="button" className="theme-link" onClick={toggle}>
+      <span className="ic-moon">Donker thema</span><span className="ic-sun">Licht thema</span>
+    </button>
+  );
   return (
     <button type="button" className="theme-btn" onClick={toggle}
       aria-label={dark === null ? 'Licht of donker thema' : dark ? 'Zet licht thema aan' : 'Zet donker thema aan'}

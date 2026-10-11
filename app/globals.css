@@ -1026,3 +1026,9 @@ details.faq p{margin:0 0 16px}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark}}
 :root[data-theme="dark"]{color-scheme:dark}
 
+.theme-link{font:700 14px/1.4 'Nunito',system-ui,sans-serif;color:var(--muted);background:none;border:0;padding:0;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.theme-link:hover{color:var(--text)}
+.theme-link .ic-sun{display:none}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .theme-link .ic-moon{display:none}:root:not([data-theme="light"]) .theme-link .ic-sun{display:inline}}
+:root[data-theme="dark"] .theme-link .ic-moon{display:none}
+:root[data-theme="dark"] .theme-link .ic-sun{display:inline}
