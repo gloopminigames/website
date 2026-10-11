@@ -975,3 +975,10 @@ details.faq p{margin:0 0 16px}
 .login[aria-current="page"]{background:var(--chip-bg);color:var(--chip-text)}
 @media (max-width:760px){.topbar-in{height:72px;gap:10px}.xl-pill{margin-left:auto}}
 @media (max-width:520px){.xl-pill,.coin-pill{margin-right:0}}
+
+/* Gloopie stelt zich voor (home, nieuwe bezoekers) */
+.say{position:absolute;top:8%;left:2%;z-index:2;font:600 18px/1.2 'Fredoka',system-ui,sans-serif;color:#221A48;background:#fff;border:3px solid #221A48;border-radius:20px;padding:9px 14px;box-shadow:0 4px 0 #221A48;animation:pop .5s ease-out both .3s;white-space:nowrap}
+.say::after{content:'';position:absolute;left:38px;bottom:-12px;width:16px;height:16px;background:#fff;border-right:3px solid #221A48;border-bottom:3px solid #221A48;transform:rotate(45deg)}
+.foot-url{margin-top:6px!important;font-weight:700}
+@media (max-width:760px){.say{display:none}}
+@media (prefers-reduced-motion:reduce){.say{animation:none}}

@@ -6,7 +6,7 @@ export default function manifest(): MetadataRoute.Manifest {
     id: '/',
     name: 'Gloop – mini games',
     short_name: 'Gloop',
-    description: 'Gratis mini games voor tussendoor. Zonder advertenties en zonder tracking.',
+    description: 'Gloop, het huis van Gloopie: gratis mini games voor tussendoor. Zonder advertenties en zonder tracking.',
     lang: 'nl',
     start_url: '/?bron=app',
     scope: '/',

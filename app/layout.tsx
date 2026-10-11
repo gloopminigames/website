@@ -15,7 +15,7 @@ import PwaInit from '@/components/PwaInit';
 import WhatsNew from '@/components/WhatsNew';
 import { SITE, siteUrl } from '@/lib/site';
 
-const DESC = 'Gloop: gratis mini games voor tussendoor. Direct spelen in je browser, zonder download, zonder account en zonder tracking.';
+const DESC = 'Gloop, het huis van Gloopie: gratis mini games voor tussendoor. Direct spelen in je browser, zonder download, zonder account en zonder tracking.';
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl()),
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
   description: DESC,
   applicationName: 'Gloop',
   appleWebApp: { capable: true, title: 'Gloop', statusBarStyle: 'default' },
-  openGraph: { type: 'website', siteName: 'Gloop', locale: 'nl_NL', title: 'Gloop – Even een potje?', description: 'Gratis mini games voor tussendoor, direct in je browser.' },
+  openGraph: { type: 'website', siteName: 'Gloop', locale: 'nl_NL', title: 'Gloop – Even een potje?', description: 'Gratis mini games voor tussendoor bij Gloop, het huis van Gloopie. Direct in je browser.' },
   twitter: { card: 'summary' },
   robots: { index: true, follow: true },
 };

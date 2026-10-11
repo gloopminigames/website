@@ -63,7 +63,7 @@ export default function HomeTop() {
     <section className="hero hero-compact">
       <div className="hero-text">
         <h1>Even een potje?</h1>
-        <p>Korte spelletjes voor tussendoor. Kies er een en je speelt meteen!</p>
+        <p>Welkom bij Gloop, het huis van Gloopie! Korte spelletjes voor tussendoor. Kies er een en je speelt meteen.</p>
         <div className="hero-btns">
           <button type="button" className="btn btn-primary" onClick={random}><Html html={ICON.play} /> Speel meteen</button>
         </div>
@@ -73,6 +73,7 @@ export default function HomeTop() {
       </div>
       <div className="hero-art" aria-hidden="true">
         <span className="bubble b1" /><span className="bubble b2" /><span className="bubble b3" />
+        <span className="say">Welkom bij Gloopie thuis! <span aria-hidden="true">👋</span></span>
         <Html html={blob('#8B6CFF', 'grin', 'hero-blob')} />
       </div>
     </section>

@@ -18,7 +18,8 @@ export default function Footer() {
         <div className="foot-grid">
           <div className="foot-brand">
             <Link href="/" className="logo" aria-label="Gloop, naar home"><Logo /></Link>
-            <p>Gratis mini games voor tussendoor. Geen download, geen advertenties en geen account nodig.</p>
+            <p>Gloop is het huis van Gloopie: gratis mini games voor tussendoor. Geen download, geen advertenties en geen account nodig.</p>
+            {SITE.url && <p className="foot-url"><span aria-hidden="true">🏠</span> Speel op <b>{SITE.url.replace(/^https?:\/\//, '')}</b></p>}
             <ul className="foot-pills">
               {['Geen tracking', 'Geen advertenties', 'Gemaakt in Nederland'].map((t) => <li key={t}><Html html={ICON.check} />{t}</li>)}
             </ul>
