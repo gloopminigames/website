@@ -50,6 +50,7 @@ export default function Header() {
         <nav className="topnav" aria-label="Hoofdmenu">
           {link('/games', 'games', 'Games')}
           {link('/ranglijst', 'ranglijst', 'Ranglijst')}
+          {link('/plus', 'plus', '12+')}
           {link('/profiel', 'profiel', 'Profiel')}
         </nav>
         {coins !== null && <Link href="/winkel" className="coin-pill" aria-current={cur === 'winkel' ? 'page' : undefined} aria-label={`Gloop-winkel: je hebt ${coins} Gloopmunten`}><span aria-hidden="true">🪙</span> {coins}</Link>}

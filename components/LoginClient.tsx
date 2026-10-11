@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Html from './Html';
 import { avatarSvg } from '@/lib/avatar';
 import PinInput from './PinInput';
@@ -15,6 +15,12 @@ import { toast } from '@/lib/toast';
 
 type Mode = 'login' | 'new';
 
+// ?terug=/pad: na het inloggen terug naar die pagina (alleen paden op Gloop zelf).
+function backPath() {
+  const t = new URLSearchParams(window.location.search).get('terug') || '';
+  return /^\/(?![\/\\])[\w\-\/]*$/.test(t) ? t : '';
+}
+
 export default function LoginClient() {
   const router = useRouter();
   const acc = useAccount();
@@ -27,6 +33,8 @@ export default function LoginClient() {
   const [avatar, setAvatar] = useState(randomAvatar);
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
+  const [back, setBack] = useState('');
+  useEffect(() => setBack(backPath()), []);
   const isNew = mode === 'new';
 
   const switchMode = (m: Mode) => { setMode(m); setPin(''); setPin2(''); setError(''); };
@@ -47,7 +55,8 @@ export default function LoginClient() {
     try {
       if (isNew) { await register(name, pin, avatar); toast(`Welkom bij Gloop, ${name.trim()}!`); }
       else { await login(name, pin); toast(`Hoi ${name.trim()}! Je bent ingelogd.`); }
-      router.push('/profiel');
+      // Een gewone pagina-overgang: het doel kan ook een los spel zijn (bijv. Little Farm Island).
+      if (back) window.location.assign(back); else router.push('/profiel');
     } catch (err: any) {
       setError(err.message);
       if (!isNew) setPin('');
@@ -61,7 +70,7 @@ export default function LoginClient() {
           <Html html={avatarSvg(acc.user.avatar, 'login-blob')} />
           <h1>Hoi {acc.user.name}!</h1>
           <p className="lead">Je bent al ingelogd.</p>
-          <Link className="btn btn-primary" href="/games">Ga spelen</Link>
+          {back ? <a className="btn btn-primary" href={back}>Verder spelen</a> : <Link className="btn btn-primary" href="/games">Ga spelen</Link>}
         </div>
       </section>
     );
