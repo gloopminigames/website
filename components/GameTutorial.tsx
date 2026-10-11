@@ -80,10 +80,6 @@ export default function GameTutorial({ id, color, level = 'normaal', onDone }: {
     drag.current = null;
     if (d > 35) success(); else oops('Houd vast en sleep een stukje naar achteren. Laat dan los!');
   }
-  // Toetsenbord: Enter/spatie op de stap doet de actie, zodat het ook zonder muis kan.
-  function onKey(e: React.KeyboardEvent) {
-    if (step.action === 'drag' && !done && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); success(); }
-  }
 
   return (
     <div ref={boxRef} className="tut" role="region" aria-label="Uitleg van het spel" style={{ ['--tf' as string]: tf } as React.CSSProperties}>
@@ -97,7 +93,7 @@ export default function GameTutorial({ id, color, level = 'normaal', onDone }: {
       {last
         ? <div className="tut-scene tut-final"><Html html={blob(color, 'grin', 'tut-final-blob', true)} /></div>
         : <div ref={sceneRef} className={'tut-scene' + (done ? ' tut-done' : '') + (armed ? ' armed' : '') + (shake ? ' shake' : '')}
-            onClick={onClick} onPointerDown={onPointerDown} onPointerUp={onPointerUp} onKeyDown={onKey}
+            onClick={onClick} onPointerDown={onPointerDown} onPointerUp={onPointerUp}
             dangerouslySetInnerHTML={{ __html: step.scene }} />}
       <div className="tut-say">
         <p aria-live="polite">{msg || step.say}</p>
