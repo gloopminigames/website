@@ -60,8 +60,8 @@ export default function GameClient({ id }: { id: string }) {
     stage.innerHTML = '<p class="stapel-help">Laden…</p>';
     LOADERS[gg.id]().then((mod: any) => {
       if (cancelled) return;
-      // Op een telefoon scrollen we het speelveld in beeld.
-      const top = window.matchMedia('(max-width:760px)').matches ? (stage.parentElement as HTMLElement).getBoundingClientRect().top + window.scrollY - 12 : 0;
+      // Speelveld in beeld scrollen (telefoon én computer), zodat de hele game zichtbaar is.
+      const top = (stage.parentElement as HTMLElement).getBoundingClientRect().top + window.scrollY - 12;
       window.scrollTo(0, top);
       const r = mod.default(stage, gg, () => setRun((x) => x + 1));
       ctl.current = typeof r === 'function' ? { cleanup: r } : r;

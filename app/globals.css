@@ -933,3 +933,7 @@ details.faq p{margin:0 0 16px}
   .fm-work{min-height:96px}
   .fm-deco{grid-area:deco;margin-top:0}
 }
+
+/* Brede schermen: uitleg en ladder staan in de zijpanelen van de game */
+.stapel-wrap.is-wide .fusie-ladder,.stapel-wrap.is-wide .pp-help,.stapel-wrap.is-wide .fs-help{display:none}
+.stapel-wrap.is-wide .rm-help{display:none}
