@@ -25,7 +25,7 @@ export default async function InfoPage({ params }: { params: Promise<{ info: str
   if (!p) notFound();
   return (
     <article className="page prose">
-      <Link className="back" href="/"><Html html={ICON.back} /> Home</Link>
+      <Link className="back" href="/ouders"><Html html={ICON.back} /> Voor ouders</Link>
       <h1>{p.title}</h1>
       {p.showDate ? <span className="updated">Laatst bijgewerkt: {SITE.updated}</span> : <div style={{ height: 18 }} />}
       <div dangerouslySetInnerHTML={{ __html: p.body }} />

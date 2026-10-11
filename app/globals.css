@@ -103,15 +103,8 @@ a.card:hover .card-blob{animation:wobble .6s ease}
 
 /* footer */
 .site-footer{margin-top:72px;background:var(--surface);border-top:3px solid var(--line)}
-.foot-grid{display:grid;grid-template-columns:minmax(0,1.4fr) repeat(3,minmax(0,1fr));gap:32px;padding:44px 0 32px}
 .foot-brand .logo-word{font-size:34px;color:var(--text)}
 .foot-brand p{margin:12px 0 0;color:var(--muted);font-weight:600;max-width:34ch}
-.foot-pills{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;padding:0;list-style:none}
-.foot-pills li{display:flex;align-items:center;gap:6px;border:3px solid var(--line);border-radius:999px;padding:4px 12px;font-weight:800;font-size:14px;background:var(--bg)}
-.foot-col h2{font-size:19px;font-weight:600;margin-bottom:10px}
-.foot-col ul{list-style:none;margin:0;padding:0;display:grid;gap:2px}
-.foot-col a{display:inline-flex;align-items:center;min-height:36px;text-decoration:none;font-weight:700;color:var(--muted)}
-.foot-col a:hover{color:var(--text);text-decoration:underline;text-underline-offset:3px}
 .foot-bottom{border-top:3px dashed color-mix(in srgb,var(--line) 25%,transparent);padding:18px 0 28px;display:flex;flex-wrap:wrap;gap:8px 20px;justify-content:space-between;font-size:14px;font-weight:700;color:var(--muted)}
 .foot-bottom p{margin:0}
 .ph{background:#FFE89A;color:#221A48;border-radius:6px;padding:0 5px;font-weight:800;white-space:nowrap}
@@ -276,8 +269,6 @@ details.faq p{margin:0 0 16px}
   .crown-blob{width:110px;height:110px;margin:0 0 -60px}
   .challenge-side{width:100%;justify-content:space-between}
   .site-footer{margin-top:48px}
-  .foot-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:24px;padding-top:32px}
-  .foot-brand{grid-column:1/-1}
 }
 @media (max-width:600px){
   .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
@@ -543,7 +534,6 @@ details.faq p{margin:0 0 16px}
 .install-banner b{font:600 19px/1.2 'Fredoka',system-ui,sans-serif}
 .install-banner span{font-size:15px}
 .install-x{position:absolute;top:8px;right:10px;width:32px;height:32px;border:0;background:none;color:var(--text);font-size:18px;cursor:pointer;border-radius:50%}
-.foot-install{margin-top:16px}
 .install-dlg{max-width:420px;width:calc(100% - 32px);border:3px solid var(--line);border-radius:26px;box-shadow:0 8px 0 var(--shadow);background:var(--surface);color:var(--text);padding:22px}
 .install-dlg::backdrop{background:rgba(34,26,72,.55)}
 .install-dlg h2{margin-top:0}
@@ -679,7 +669,6 @@ details.faq p{margin:0 0 16px}
 .pause-panel .level-btn,.game-setup .level-btn{flex:0 1 auto;min-width:0;max-width:100%;padding:0 clamp(10px,3vw,18px);font-size:clamp(14px,3.8vw,17px)}
 .pause-panel,.game-setup{box-sizing:border-box;max-width:min(520px,100%)}
 .pause-panel *,.game-setup *{box-sizing:border-box}
-.foot-col{min-width:0}.foot-col a{overflow-wrap:anywhere;hyphens:auto}
 @media (max-width:520px){.levels,.levels-sm{flex-wrap:wrap}.levels-sm .level-btn{padding:0 12px;font-size:15px}}
 /* Niveaus in startscherm en pauze: één nette rij, icoon boven de naam */
 .pause-panel .levels,.game-setup .levels{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:8px;max-width:420px;margin-left:auto;margin-right:auto}
@@ -992,3 +981,36 @@ details.faq p{margin:0 0 16px}
 @media (max-width:520px){.xl-pill-long{display:none}.xl-pill{padding:0 13px;font-size:16px}}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .xl-pill{border-color:#6BE38A}}
 :root[data-theme="dark"] .xl-pill{border-color:#6BE38A}
+
+/* ---------- Footer (opgeruimd) ---------- */
+.foot-main{display:flex;align-items:center;justify-content:space-between;gap:20px 32px;flex-wrap:wrap;padding:36px 0 22px}
+.foot-main .foot-install{margin:0}
+.foot-play{display:flex;flex-wrap:wrap;gap:10px;padding-bottom:24px}
+.foot-play a{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 16px;border:3px solid var(--line);border-radius:999px;background:var(--bg);color:var(--text);text-decoration:none;font:600 16px/1 'Fredoka',system-ui,sans-serif}
+.foot-play a:hover{background:var(--chip-bg);color:var(--chip-text)}
+.foot-play a.foot-xl{background:#221A48;color:#6BE38A}
+.foot-bottom nav{display:flex;flex-wrap:wrap;gap:6px 18px}
+.foot-bottom nav a{color:var(--muted);font-weight:700}
+.foot-bottom nav a:hover{color:var(--text)}
+
+/* ---------- Voor ouders ---------- */
+.ouders-hero{display:flex;align-items:center;justify-content:space-between;gap:24px}
+.ouders-hero .lead{max-width:60ch;margin-bottom:0}
+.ouders-blob{width:140px;height:140px;flex:none}
+.ouders-sec{margin-top:40px}
+.ouders-sec h2{font-size:clamp(24px,3vw,32px);font-weight:600;margin:0 0 16px}
+.safe-grid{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+.safe-grid li{display:flex;flex-direction:column;gap:4px;background:var(--surface);border:3px solid var(--line);border-radius:24px;box-shadow:0 5px 0 var(--shadow);padding:16px 18px}
+.safe-e{font-size:28px;line-height:1}
+.safe-grid b{font:600 19px/1.2 'Fredoka',system-ui,sans-serif;margin-top:6px}
+.safe-grid span:last-child{color:var(--muted);font-weight:600;font-size:16px}
+.more-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px}
+.more-card{display:grid;grid-template-columns:1fr auto;grid-template-rows:auto auto;column-gap:10px;align-items:center;text-decoration:none;color:var(--text);background:var(--surface);border:3px solid var(--line);border-radius:22px;box-shadow:0 5px 0 var(--shadow);padding:14px 16px;transition:transform .12s}
+.more-card:hover{transform:translateY(-2px)}
+.more-card b{font:600 18px/1.2 'Fredoka',system-ui,sans-serif}
+.more-card span{grid-column:1;color:var(--muted);font-weight:600;font-size:15px}
+.more-card svg{grid-column:2;grid-row:1/3;width:22px;height:22px}
+.legal-list{list-style:none;padding:0;margin:0 0 14px;display:flex;flex-wrap:wrap;gap:10px}
+.legal-list a{display:inline-flex;align-items:center;min-height:44px;padding:0 16px;border:3px solid var(--line);border-radius:999px;background:var(--surface);color:var(--text);font-weight:800;text-decoration:none}
+.legal-list a:hover{background:var(--chip-bg);color:var(--chip-text)}
+@media (max-width:760px){.ouders-blob{width:90px;height:90px}.foot-main{padding-top:28px}}

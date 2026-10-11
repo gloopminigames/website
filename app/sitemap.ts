@@ -8,6 +8,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${u}/`, priority: 1 },
     { url: `${u}/games`, priority: 0.9 },
     ...PLAYABLE.map((g: { id: string }) => ({ url: `${u}/games/${g.id}`, priority: 0.8 })),
+    { url: `${u}/ouders`, priority: 0.4 },
     { url: `${u}/ranglijst`, priority: 0.4 },
     { url: `${u}/nieuw`, priority: 0.5 },
     { url: `${u}/winkel`, priority: 0.5 },
