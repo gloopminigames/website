@@ -9,6 +9,7 @@ import Html from './Html';
 import { avatarSvg } from '@/lib/avatar';
 import { blob } from '@/lib/blob';
 import { useAccount } from '@/lib/useAccount';
+import ThemeToggle from './ThemeToggle';
 import { SITE } from '@/lib/site';
 
 export function navKey(path: string) {
@@ -54,6 +55,7 @@ export default function Header() {
           {/* Ingelogd? Dan gaat de knop met je naam al naar je profiel; geen dubbele link. */}
           {!acc.user && link('/profiel', 'profiel', 'Profiel')}
         </nav>
+        <ThemeToggle />
         {coins !== null && <Link href="/winkel" className="coin-pill" aria-current={cur === 'winkel' ? 'page' : undefined} aria-label={`Gloop-winkel: je hebt ${coins} Gloopmunten`}><span aria-hidden="true">🪙</span> {coins}</Link>}
         <Link href={acc.user ? '/profiel' : '/inloggen'} className="btn btn-plain btn-sm login" aria-current={acc.user && cur === 'profiel' ? 'page' : undefined}>{acc.user ? <><Html html={avatarSvg(acc.user.avatar, 'login-mini')} />{acc.user.name}</> : 'Inloggen'}</Link>
         {/* Naar Gloop XL: het spiegelbeeld van de knop '← Gloop' op XL */}

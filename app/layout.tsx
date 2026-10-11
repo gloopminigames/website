@@ -38,9 +38,13 @@ const jsonLd = {
   ],
 };
 
+// Gekozen thema meteen toepassen, vóór het eerste beeld (anders flitst de pagina eerst in het andere thema).
+const THEME_SCRIPT = "try{var t=localStorage.getItem('gloop:theme');if(t==='dark'||t==='light')document.documentElement.dataset.theme=t}catch(e){}";
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="nl">
+    <html lang="nl" suppressHydrationWarning>
+      <head><script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} /></head>
       <body>
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
         <HashRedirect />
