@@ -964,3 +964,14 @@ details.faq p{margin:0 0 16px}
 .xl-pill:active{transform:translateY(3px);box-shadow:0 1px 0 var(--shadow)}
 .xl-pill+.coin-pill{margin-left:0}
 @media (max-width:520px){.xl-pill{font-size:15px;margin-right:-30px;padding-right:10px}.xl-pill img{width:26px;height:26px}}
+
+/* ---------- Kop: zelfde opbouw als Gloop XL (logo links, menu en knoppen samen rechts) ---------- */
+.topbar-in{height:80px;gap:14px}
+.topnav{margin-left:auto;margin-right:8px;gap:26px}
+.xl-pill{margin-left:0;margin-right:0}
+.coin-pill{margin-left:0;margin-right:0}
+.coin-pill+.login,.xl-pill+.login{margin-left:0}
+.login{margin-left:0}
+.login[aria-current="page"]{background:var(--chip-bg);color:var(--chip-text)}
+@media (max-width:760px){.topbar-in{height:72px;gap:10px}.xl-pill{margin-left:auto}}
+@media (max-width:520px){.xl-pill,.coin-pill{margin-right:0}}
