@@ -125,6 +125,13 @@ Alles staat in `lib/stickers.js`:
 - Nieuw gezicht of spulletje? Teken het in `lib/blob.js` (`FACES`/`MOUTH`/`ACC`/`BG`). Een id nooit meer veranderen.
 - Munten zijn nooit met echt geld te koop.
 
+## Gloop Eiland (boerderij)
+
+- Spelregels staan in `lib/farm.js`: gewassen (`CROPS`), dieren (`ANIMALS`), producten, recepten voor de werkplaats, versiering en landprijzen.
+  Iets toevoegen = een regel erbij (id nooit veranderen). `lvl` bepaalt vanaf welk level het te koop is.
+- De boerderij staat in de spelersdata als `farm` (ook bij je account). `cleanFarm` schoont op; bij twee apparaten wint de boerderij met de meeste ervaringspunten.
+- Oogstmunten (🌾) zijn eigen geld; per level omhoog krijg je 10 Gloopmunten (🪙). Het record (ranglijst) is je eilandlevel.
+
 ## Een nieuwe game toevoegen
 
 1. Maak `lib/engine/<id>.js` met:

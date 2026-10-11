@@ -7,7 +7,7 @@ export const dynamic = 'force-dynamic';
 
 export const POST = safe(async (req: NextRequest) => {
   const nr = notReady(); if (nr) return nr;
-  const body = await readJson(req);
+  const body = await readJson(req, 30000);
   if (!body) return fail('Ongeldig verzoek.');
   const err = nameError(body.name);
   if (err) return fail(err);
