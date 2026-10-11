@@ -5,7 +5,7 @@ import { PAGE_SLUGS } from '@/lib/content';
 // Wordt bij elke build opnieuw gemaakt, zodat een nieuwe versie de oude cache vervangt.
 export const dynamic = 'force-static';
 const VERSION = (process.env.VERCEL_GIT_COMMIT_SHA || String(Date.now())).slice(0, 12);
-const PAGES = ['/', '/games', '/ranglijst', '/profiel', '/inloggen', '/nieuw', '/plus', '/plus/little-farm-island', ...PLAYABLE.map((g: { id: string }) => '/games/' + g.id), ...PAGE_SLUGS.map((s: string) => '/' + s)];
+const PAGES = ['/', '/games', '/ranglijst', '/profiel', '/inloggen', '/nieuw', ...PLAYABLE.map((g: { id: string }) => '/games/' + g.id), ...PAGE_SLUGS.map((s: string) => '/' + s)];
 
 const SW = `
 const CACHE='gloop-${VERSION}';
@@ -20,8 +20,8 @@ self.addEventListener('activate',e=>{
 self.addEventListener('fetch',e=>{
   const r=e.request,u=new URL(r.url);
   if(r.method!=='GET'||u.origin!==location.origin||u.pathname.startsWith('/api/')||u.pathname==='/sw.js')return;
-  // Bestanden met een vaste naam (scripts, stijlen, lettertypen, icoontjes, Three.js): eerst uit de cache.
-  if(u.pathname.startsWith('/_next/static/')||u.pathname.startsWith('/icons/')||u.pathname.startsWith('/vendor/')||u.pathname.startsWith('/fonts/')){
+  // Bestanden met een vaste naam (scripts, stijlen, lettertypen, icoontjes): eerst uit de cache.
+  if(u.pathname.startsWith('/_next/static/')||u.pathname.startsWith('/icons/')){
     e.respondWith(caches.match(r).then(hit=>hit||fetch(r).then(res=>{if(res.ok){const cp=res.clone();caches.open(CACHE).then(c=>c.put(r,cp));}return res;})));
     return;
   }

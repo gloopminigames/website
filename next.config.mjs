@@ -1,12 +1,14 @@
 /** @type {import('next').NextConfig} */
+const XL = 'https://gloop-xl.vercel.app';  // zelfde adres als SITE.xlUrl in lib/site.js
 const nextConfig = {
   reactStrictMode: true,
-  // Little Farm Island (Gloop Plus) is een los spel in public/plus/little-farm-island/.
-  async rewrites() {
-    return [{ source: '/plus/little-farm-island', destination: '/plus/little-farm-island/index.html' }];
-  },
-  async headers() {
-    return [{ source: '/vendor/:path*', headers: [{ key: 'Cache-Control', value: 'public, max-age=31536000, immutable' }] }];
+  // Gloop Plus stond heel even op Gloop zelf; nu is het de aparte site Gloop XL.
+  async redirects() {
+    return [
+      { source: '/plus', destination: XL, permanent: false },
+      { source: '/plus/little-farm-island', destination: XL + '/little-farm-island', permanent: false },
+      { source: '/xl', destination: XL, permanent: false },
+    ];
   },
 };
 export default nextConfig;

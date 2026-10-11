@@ -9,6 +9,7 @@ import Html from './Html';
 import { avatarSvg } from '@/lib/avatar';
 import { blob } from '@/lib/blob';
 import { useAccount } from '@/lib/useAccount';
+import { SITE } from '@/lib/site';
 
 export function navKey(path: string) {
   const p = path.split('/')[1] || 'home';
@@ -50,7 +51,7 @@ export default function Header() {
         <nav className="topnav" aria-label="Hoofdmenu">
           {link('/games', 'games', 'Games')}
           {link('/ranglijst', 'ranglijst', 'Ranglijst')}
-          {link('/plus', 'plus', '12+')}
+          <a href={SITE.xlUrl} className="topnav-xl">XL</a>
           {link('/profiel', 'profiel', 'Profiel')}
         </nav>
         {coins !== null && <Link href="/winkel" className="coin-pill" aria-current={cur === 'winkel' ? 'page' : undefined} aria-label={`Gloop-winkel: je hebt ${coins} Gloopmunten`}><span aria-hidden="true">🪙</span> {coins}</Link>}
