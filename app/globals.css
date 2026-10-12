@@ -600,13 +600,16 @@ details.faq p{margin:0 0 16px}
 /* Gloopie Zegt */
 .zegt{max-width:560px;margin:0 auto}
 /* Tik Tak Gloop (klokkijken) */
-.tut-kk{position:absolute;inset:24px 16px 50px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px}
-.tut-clock{width:min(46%,170px);height:auto}.tut-clock text{font:600 9px 'Fredoka',system-ui,sans-serif;fill:#221A48}
-.tut-kk-keys{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;font:600 16px 'Fredoka',system-ui,sans-serif;color:#221A48}
-.tut-kk-keys span{display:flex;align-items:center;gap:6px;background:#fff;border:3px solid #221A48;border-radius:14px;padding:4px 10px}
+/* Uitleg: klok links, uitleg/knoppen rechts (past ook in het lage uitlegvak op een telefoon) */
+.tut-kk{position:absolute;inset:14px 12px;display:flex;align-items:center;justify-content:center;gap:14px}
+.tut-kkclock{flex:0 1 auto;width:min(175px,44%);height:auto;max-height:100%}.tut-kkclock text{font:600 9px 'Fredoka',system-ui,sans-serif;fill:#221A48}
+.tut-kk-keys{display:flex;flex-direction:column;gap:10px;align-items:flex-start;font:600 16px 'Fredoka',system-ui,sans-serif;color:#221A48}
+.tut-kk-keys span{display:flex;align-items:center;gap:6px;background:#fff;border:3px solid #221A48;border-radius:14px;padding:4px 10px;white-space:nowrap}
+@media (max-width:420px){.tut-kk{gap:10px}.tut-kk-keys{font-size:14px}.tut-kk-keys span{padding:3px 8px}}
 .tut-kk-keys i{display:inline-block;width:20px;height:7px;border-radius:4px}
-.tut-kk-opts{display:flex;gap:10px}
-.tut-kk-o{font:600 18px 'Fredoka',system-ui,sans-serif;background:#fff;color:#221A48;border:3px solid #221A48;border-radius:16px;box-shadow:0 4px 0 #221A48;padding:10px 14px;cursor:pointer}
+.tut-kk-opts{display:flex;flex-direction:column;gap:10px}
+.tut-done .tut-kk-o.tut-target{background:#6BE38A!important}
+.tut-scene .tut-kk-o{white-space:nowrap;font:600 18px 'Fredoka',system-ui,sans-serif;background:#fff;color:#221A48;border:3px solid #221A48;border-radius:16px;box-shadow:0 4px 0 #221A48;padding:10px 14px;cursor:pointer}
 .kk{max-width:620px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
 .kk-bar{display:flex;align-items:center;justify-content:space-between;gap:12px}
 .kk-dots{display:flex;gap:6px;flex-wrap:wrap}
