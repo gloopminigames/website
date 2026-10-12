@@ -599,6 +599,58 @@ details.faq p{margin:0 0 16px}
 @media (max-width:520px){.news-hero{flex-direction:column;text-align:center}.news-item{grid-template-columns:44px 1fr}.news-item .btn{grid-column:1/-1;justify-self:start}.ni-emoji{width:44px;height:44px;font-size:24px}}
 /* Gloopie Zegt */
 .zegt{max-width:560px;margin:0 auto}
+/* Tik Tak Gloop (klokkijken) */
+.tut-kk{position:absolute;inset:24px 16px 50px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px}
+.tut-clock{width:min(46%,170px);height:auto}.tut-clock text{font:600 9px 'Fredoka',system-ui,sans-serif;fill:#221A48}
+.tut-kk-keys{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;font:600 16px 'Fredoka',system-ui,sans-serif;color:#221A48}
+.tut-kk-keys span{display:flex;align-items:center;gap:6px;background:#fff;border:3px solid #221A48;border-radius:14px;padding:4px 10px}
+.tut-kk-keys i{display:inline-block;width:20px;height:7px;border-radius:4px}
+.tut-kk-opts{display:flex;gap:10px}
+.tut-kk-o{font:600 18px 'Fredoka',system-ui,sans-serif;background:#fff;color:#221A48;border:3px solid #221A48;border-radius:16px;box-shadow:0 4px 0 #221A48;padding:10px 14px;cursor:pointer}
+.kk{max-width:620px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+.kk-bar{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.kk-dots{display:flex;gap:6px;flex-wrap:wrap}
+.kk-dots span{width:16px;height:16px;border-radius:50%;border:3px solid var(--line);background:var(--surface)}
+.kk-dots span.on{background:#FFD84A;transform:scale(1.15)}
+.kk-dots span.ok{background:#6BE38A}.kk-dots span.no{background:#FF7AC6}
+.kk-q{display:flex;align-items:center;gap:12px;background:var(--surface);border:3px solid var(--line);border-radius:24px;box-shadow:0 6px 0 var(--shadow);padding:10px 14px}
+.kk-q p{margin:0;flex:1;font:600 clamp(20px,5vw,28px)/1.2 'Fredoka',system-ui,sans-serif}
+.kk-gloop{flex:none;width:54px;height:54px}.kk-blob{width:100%;height:100%;display:block}
+.kk-blob.hop{animation:kkHop .5s}
+@keyframes kkHop{40%{transform:translateY(-14px) scale(1.08)}}
+.kk-say{flex:none;width:48px;height:48px;border-radius:50%;border:3px solid var(--line);background:#FFD84A;font-size:22px;cursor:pointer;box-shadow:0 3px 0 var(--shadow)}
+.kk-say:active{transform:translateY(2px);box-shadow:none}
+.kk-digi{font-variant-numeric:tabular-nums;background:#221A48;color:#6BE38A;border-radius:10px;padding:0 .3em;letter-spacing:.04em}
+.kk-clock{display:block;width:min(100%,340px,46vh);height:auto;margin:0 auto;filter:drop-shadow(0 6px 0 var(--shadow))}
+.kk-clock.sm{width:100%;filter:none}
+.kk-clock .kk-num{font:600 17px 'Fredoka',system-ui,sans-serif;fill:#221A48}
+.kk-clock .kk-h,.kk-clock .kk-m,.kk-clock .kk-hknob{transform-origin:100px 100px;transition:transform .18s ease-out}
+.kk-clock.drag{touch-action:none;cursor:grab}
+.kk-clock.drag:active{cursor:grabbing}
+.kk-clock.show .kk-h,.kk-clock.show .kk-m,.kk-clock.show .kk-hknob{transition:transform .8s cubic-bezier(.3,1.4,.5,1)}
+.kk-read{display:grid;gap:16px}
+.kk-opts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.kk-opt{font:600 clamp(17px,4.4vw,21px)/1.15 'Fredoka',system-ui,sans-serif;color:var(--text);background:var(--surface);border:3px solid var(--line);border-radius:18px;box-shadow:0 5px 0 var(--shadow);padding:14px 10px;cursor:pointer;min-height:60px}
+.kk-opt:active{transform:translateY(3px);box-shadow:0 2px 0 var(--shadow)}
+.kk-opt.right,.kk-pick.right{background:#6BE38A;color:#221A48}
+.kk-opt.wrong,.kk-pick.wrong{background:#FF7AC6;color:#221A48;animation:tutShake .4s}
+.kk-set{display:grid;gap:12px;justify-items:center}
+.kk-help{margin:0;color:var(--muted);font-weight:700;text-align:center;display:flex;flex-wrap:wrap;gap:6px 16px;justify-content:center;align-items:center}
+.kk-help>span{display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.kk-key{display:inline-block;width:26px;height:8px;border-radius:4px;border:2px solid var(--line)}
+.kk-key.m{background:#FF7AC6}.kk-key.h{background:#6A4BEB}
+.kk-setbtns{display:flex;gap:10px;align-items:center}
+.kk-three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.kk-pick{background:var(--surface);border:3px solid var(--line);border-radius:22px;box-shadow:0 5px 0 var(--shadow);padding:8px;cursor:pointer}
+.kk-pick:active{transform:translateY(3px);box-shadow:0 2px 0 var(--shadow)}
+.kk-tip{margin:0;text-align:center;color:var(--muted);font-weight:700}
+.kk-fb{min-height:40px;text-align:center;font:600 20px/1.3 'Fredoka',system-ui,sans-serif}
+.kk-fb.ok{color:#2f9a4c}
+.kk-fb.no{background:var(--surface);border:3px solid var(--line);border-radius:22px;box-shadow:0 6px 0 var(--shadow);padding:12px 16px}
+.kk-fb.no p{margin:0 0 6px}.kk-fb .kk-why{font:600 16px/1.4 'Nunito',system-ui,sans-serif;color:var(--muted);margin-bottom:12px}
+.kk-stars{font-size:30px;letter-spacing:2px}
+:root[data-theme="dark"] .kk-fb.ok{color:#6BE38A}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .kk-fb.ok{color:#6BE38A}}
 .zegt-bar{display:flex;align-items:center;gap:14px;margin-bottom:14px}
 .zegt-msg{margin:0;font:600 22px/1.2 'Fredoka',system-ui,sans-serif;min-height:1.2em}
 .zegt-pads{display:grid;gap:14px;grid-template-columns:repeat(2,minmax(0,1fr));margin:0 auto 24px;width:min(100%,56vh,480px)}
