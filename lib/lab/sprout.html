@@ -10,8 +10,8 @@ html,body{margin:0;height:100%;overflow:hidden;background:#120c08;-webkit-user-s
 canvas#c{position:fixed;inset:0;width:100%;height:100%;image-rendering:pixelated;image-rendering:crisp-edges;touch-action:none}
 /* Houten pixel-panelen voor teksten en menu's */
 .wood{background:#f8d8a0;color:#4a240c;border:4px solid #7c4820;box-shadow:0 0 0 3px #3a1e0c,inset 0 0 0 3px #e8c088,0 6px 0 3px rgba(0,0,0,.35);border-radius:4px;font:700 16px/1.35 ui-rounded,"Trebuchet MS",system-ui,sans-serif}
-#toasts{position:fixed;left:50%;top:max(14px,env(safe-area-inset-top));transform:translateX(-50%);display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none;z-index:5}
-.toast{padding:7px 14px;animation:tin .2s ease-out,tout .4s ease-in 2.4s forwards;white-space:nowrap}
+#toasts{position:fixed;left:50%;top:calc(max(8px,env(safe-area-inset-top)) + 40px);width:min(92vw,560px);transform:translateX(-50%);display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none;z-index:5}
+.toast{padding:7px 14px;animation:tin .2s ease-out,tout .4s ease-in 2.4s forwards;max-width:100%;text-align:center;line-height:1.3}
 @keyframes tin{from{opacity:0;transform:translateY(-6px)}}@keyframes tout{to{opacity:0;transform:translateY(-6px)}}
 #dlg{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(10,6,2,.45);z-index:8}
 #dlg.on{display:flex}
@@ -306,11 +306,11 @@ function buildRoom(){return sprite(ROOM.w,ROOM.h,()=>{
 let GROUND=null,ROOMSPR=null,SOIL=null;
 const STATIC=[];     // {s,x,y,base,sh:[rx,ry]} vaste dingen op de boerderij
 const COLL=[];       // botsrechthoeken {x,y,w,h}
-function addStatic(s,x,y,sh,coll){STATIC.push({s,x,y,base:y+s.height,sh});if(coll)COLL.push(coll);}
+// sorteren op de onderkant van wat massief is, zodat je er altijd vóór staat als je ertegenaan loopt
+function addStatic(s,x,y,sh,coll,base){STATIC.push({s,x,y,base:base!=null?base:coll?coll.y+coll.h:y+s.height,sh});if(coll)COLL.push(coll);}
 function buildWorld(){
-  addStatic(house(),HOUSE.x,HOUSE.y,null,null);
-  COLL.push({x:HOUSE.x+2,y:HOUSE.y+14,w:124,h:DOOR.y-HOUSE.y-16});   // heel het huis, ook het dak (de deur handelen we apart af)
-  addStatic(steps(),HOUSE.x+50,HOUSE.y+111,null,null);
+  addStatic(house(),HOUSE.x,HOUSE.y,null,{x:HOUSE.x+2,y:HOUSE.y+14,w:124,h:DOOR.y-HOUSE.y-16});   // heel het huis, ook het dak (de deur handelen we apart af)
+  addStatic(steps(),HOUSE.x+50,HOUSE.y+111,null,null,0);   // trapje hoort bij de grond
   addStatic(shippingBin(),BIN.x,BIN.y,[13,3],{x:BIN.x,y:BIN.y+12,w:28,h:10});
   addStatic(mailbox(),HOUSE.x+86,HOUSE.y+102,[4,1],{x:HOUSE.x+86,y:HOUSE.y+116,w:12,h:6});
   addStatic(barrel(),HOUSE.x-14,HOUSE.y+96,[7,2],{x:HOUSE.x-14,y:HOUSE.y+106,w:16,h:8});
@@ -397,6 +397,7 @@ for(const ev of['pointerup','pointercancel','pointerleave'])$('#act').addEventLi
 // tikken/klikken: op de gereedschapsbalk of op een tegel naast je
 cv.addEventListener('pointerdown',e=>{if(dlgOpen)return;const x=e.clientX/SCALE,y=e.clientY/SCALE;
   for(const sl of slotRects)if(x>=sl.x&&x<sl.x+sl.w&&y>=sl.y&&y<sl.y+sl.h){if(S.tool===sl.i&&sl.i===3)cycleSeed();S.tool=sl.i;return;}
+  if(S.scene==='house'){if(nearBed())useTool();else toast('Loop naar je bed om te slapen');return;}
   if(S.scene!=='farm')return;const wx=x+camX,wy=y+camY,tx=Math.floor(wx/16),ty=Math.floor(wy/16);
   const [ptx,pty]=tileOf(S.px,S.py);
   if(tx===ptx&&ty===pty)return useTool();
@@ -450,11 +451,13 @@ function move(dt){player.moving=false;
     step=null;wasMoving=true;lastV=[Math.sign(Math.round(dx*100)),Math.sign(Math.round(dy*100))];
     const l=Math.max(1,Math.hypot(dx,dy)),sp=SPEED*dt;
     if(moveBy(dx/l*sp,dy/l*sp)==='door'){wasMoving=false;return;}
-    if(!lastV[1])laneAssist(1,dt);if(!lastV[0])laneAssist(0,dt);
+    if(S.scene==='farm'){if(!lastV[1])laneAssist(1,dt);if(!lastV[0])laneAssist(0,dt);}
     player.moving=true;player.anim+=dt*8;return;}
   turnUntil=0;
+  if(tapBuf&&S.scene==='house')tapBuf=null;
   if(tapBuf&&!step&&!auto){const b=tapBuf;tapBuf=null;
     if(performance.now()-b.t<600){if(b.dir!==S.dir)S.dir=b.dir;else{const v=DIRV[b.dir];step={x:snapC(S.px,TC[0],0)+v[0]*16,y:snapC(S.py,TC[1],0)+v[1]*16,t:0};}}}
+  if(wasMoving&&S.scene==='house'){wasMoving=false;arrive();return;}   // binnen geen tegelrooster
   if(wasMoving){wasMoving=false;step={x:snapC(S.px,TC[0],lastV[0]),y:snapC(S.py,TC[1],lastV[1]),t:0};
     // een tik is altijd minstens één hele tegel
     if(startC&&step.x===startC.x&&step.y===startC.y){step.x+=lastV[0]*16;step.y+=lastV[1]*16;}}
@@ -467,11 +470,17 @@ function move(dt){player.moving=false;
     if(!auto.path.length){const a=auto;auto=null;player.anim=0;if(a.face!=null)S.dir=a.face;if(!a.noUse)useToolAt(a.tx,a.ty);}
     return;}
   if(auto)S.dir=dirOf(ex,ey);
+  const o=step||auto;o.age=(o.age||0)+dt;
   const k=Math.min(1,SPEED*dt/d);const r=moveBy(ex*k,ey*k);
   if(r==='door'){step=null;auto=null;return;}
-  if(!r){const o=step||auto;o.t=(o.t||0)+dt;
-    if(o.t>.2){if(auto&&!auto.noUse)toast('Daar kun je niet bij');auto=null;   // vast: terug naar het midden van je eigen tegel, en anders gewoon stoppen
-      if(step&&!step.back){const [bx,by]=tileOf(S.px,S.py);step={x:bx*16+TC[0],y:by*16+TC[1],t:0,back:1};}else{step=null;queuedUse=false;}}}
+  // vast? Kijk naar echte voortgang (niet alleen 'een heel klein beetje bewogen'), anders blijf je eeuwig 'bezig'
+  const nd=Math.hypot(tgt.x-S.px,tgt.y-S.py);
+  if(d-nd<Math.min(d,SPEED*dt)*.3)o.t=(o.t||0)+dt;else o.t=0;
+  if(o.t>.15||(step&&o.age>1)){if(auto&&!auto.noUse)toast('Daar kun je niet bij');auto=null;
+    // eerst terug naar het midden van je eigen tegel; lukt ook dat niet, dan gewoon stoppen waar je bent
+    const [bx,by]=tileOf(S.px,S.py),back={x:bx*16+TC[0],y:by*16+TC[1],t:0,back:1};
+    if(step&&!step.back&&Math.hypot(back.x-S.px,back.y-S.py)>.5){step=back;return;}
+    step=null;arrive();return;}   // een wachtende Doe/Spatie gaat wel door
   player.moving=true;player.anim+=dt*8;}
 // Tik/klik op een tegel verderop: loop er (om obstakels heen) naartoe en gebruik dan je gereedschap
 function walkable(tx,ty){const x=tx*16+TC[0],y=ty*16+TC[1];return tx>=0&&ty>=0&&tx<MW&&ty<MH&&!blocked(x,y)&&!blocked(x,y-5)&&!blocked(x,y+3);}
@@ -504,8 +513,8 @@ const COST={hoe:2,can:1,axe:2};
 let pending=null;
 function cycleSeed(){const have=CROP_IDS.filter(id=>S.seeds[id]>0);if(!have.length){toast('Je hebt geen zaadjes meer');return;}const i=have.indexOf(S.seedSel);S.seedSel=have[(i+1)%have.length];toast(`Zaadjes: ${CROPS[S.seedSel].name} (${S.seeds[S.seedSel]})`);}
 function useTool(){if(dlgOpen||player.swing>0)return;
+  if(S.scene==='house'){step=null;if(nearBed())return askSleep();toast('Loop naar je bed om te slapen, of naar de deur om naar buiten te gaan');return;}
   if(step||auto){queuedUse=true;return;}   // eerst netjes op de tegel uitlopen
-  if(S.scene==='house'){const [tx,ty]=[S.px,S.py];if(nearBed())return askSleep();toast('Loop naar je bed om te slapen, of naar de deur om naar buiten te gaan');return;}
   const [tx,ty]=facingTile();useToolAt(tx,ty);}
 function tire(n){if(!n)return true;if(S.energy<n){toast('Je bent te moe. Ga slapen in je huisje 🛏️');return false;}S.energy=Math.max(0,S.energy-n);return true;}
 function useToolAt(tx,ty){if(player.swing>0||S.scene!=='farm')return;const tool=TOOLS[S.tool],k=tx+','+ty;
@@ -568,7 +577,7 @@ function sfx(k){if(k==='dig')tone(140,.12,'square',.05,90);if(k==='hit')tone(220
 const parts=[];function pop(tx,ty,col){for(let i=0;i<8;i++)parts.push({x:tx*16+8,y:ty*16+10,vx:(Math.random()-.5)*50,vy:-30-Math.random()*40,l:.5,c:col});}
 
 /* ---------------- HUD (ook pixel art) ---------------- */
-const FONT={'0':['01110','10001','10011','10101','11001','10001','01110'],'1':['00100','01100','00100','00100','00100','00100','01110'],'2':['01110','10001','00001','00010','00100','01000','11111'],
+const FONT={'O':['01110','10001','10001','10001','10001','10001','01110'],'0':['01110','10001','10011','10101','11001','10001','01110'],'1':['00100','01100','00100','00100','00100','00100','01110'],'2':['01110','10001','00001','00010','00100','01000','11111'],
 '3':['11110','00001','00001','01110','00001','00001','11110'],'4':['00010','00110','01010','10010','11111','00010','00010'],'5':['11111','10000','11110','00001','00001','10001','01110'],
 '6':['00110','01000','10000','11110','10001','10001','01110'],'7':['11111','00001','00010','00100','01000','01000','01000'],'8':['01110','10001','10001','01110','10001','10001','01110'],
 '9':['01110','10001','10001','01111','00001','00010','01100'],':':['00000','00100','00100','00000','00100','00100','00000'],'D':['11110','10001','10001','10001','10001','10001','11110'],
@@ -656,7 +665,8 @@ function drawHouse(dt){
   ctx.drawImage(HERO[S.dir][fr],Math.round(S.px-9-camX),Math.round(S.py-33-camY));
   // vuurgloed van de kachel
   const fl=.5+.15*Math.sin(performance.now()/120);ctx.globalCompositeOperation='lighter';const gx=21-camX,gy=40-camY;const g=ctx.createRadialGradient(gx,gy,0,gx,gy,40);g.addColorStop(0,`rgba(255,150,60,${.35*fl})`);g.addColorStop(1,'rgba(0,0,0,0)');ctx.fillStyle=g;ctx.fillRect(gx-40,gy-40,80,80);ctx.globalCompositeOperation='source-over';
-  if(nearBed()){CX=ctx;text('E',S.px-3-camX,S.py-44-camY,'#ffffff','#3a1e0c');}
+  if(nearBed()){CX=ctx;const t=TOUCH?'DOE':'E',w=t.length*6-1,x=Math.round(S.px-w/2-camX),y=Math.round(S.py-46-camY);   // knop-hint in een donker labeltje
+    R(x-3,y-3,w+6,13,'#3a1e0c');R(x-2,y-2,w+4,11,'#7c4820');text(t,x,y,'#ffe39a',null);}
   drawParticles(dt);}
 function drawToolInHand(){if(player.swing<=0||!pending)return;const ic=ICONS[pending.tool==='seed'?'seed':pending.tool];const v=DIRV[S.dir];const ph=1-player.swing/.28;
   const x=Math.round(S.px-camX+v[0]*10-7),y=Math.round(S.py-camY-22+v[1]*6-Math.sin(ph*Math.PI)*6);ctx.drawImage(ic,x,y);
