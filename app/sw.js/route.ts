@@ -19,7 +19,7 @@ self.addEventListener('activate',e=>{
 });
 self.addEventListener('fetch',e=>{
   const r=e.request,u=new URL(r.url);
-  if(r.method!=='GET'||u.origin!==location.origin||u.pathname.startsWith('/api/')||u.pathname==='/sw.js')return;
+  if(r.method!=='GET'||u.origin!==location.origin||u.pathname.startsWith('/api/')||u.pathname.startsWith('/beheer/lab/')||u.pathname==='/sw.js')return;
   // Bestanden met een vaste naam (scripts, stijlen, lettertypen, icoontjes): eerst uit de cache.
   if(u.pathname.startsWith('/_next/static/')||u.pathname.startsWith('/icons/')){
     e.respondWith(caches.match(r).then(hit=>hit||fetch(r).then(res=>{if(res.ok){const cp=res.clone();caches.open(CACHE).then(c=>c.put(r,cp));}return res;})));

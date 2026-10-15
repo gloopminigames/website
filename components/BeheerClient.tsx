@@ -26,7 +26,7 @@ const fmt = (game: string, score: number, extra: number | null) => fmtScore(base
 // Beheer: alleen voor beheerders (is_admin in Supabase + beheerwachtwoord).
 export default function BeheerClient() {
   const [state, setState] = useState<string | null>(null);
-  const [tab, setTab] = useState<'spelers' | 'ranglijst'>('spelers');
+  const [tab, setTab] = useState<'spelers' | 'ranglijst' | 'lab'>('spelers');
   const load = useCallback(() => { api('').then((j) => setState(j.state)).catch(() => setState('error')); }, []);
   useEffect(load, [load]);
   const leave = async () => { try { await api('', {}, 'DELETE'); } catch (e) {} load(); };
@@ -46,13 +46,26 @@ export default function BeheerClient() {
             <div className="chips" role="tablist" aria-label="Onderdeel">
               <button type="button" role="tab" className="chip" aria-selected={tab === 'spelers'} onClick={() => setTab('spelers')}>👥 Spelers</button>
               <button type="button" role="tab" className="chip" aria-selected={tab === 'ranglijst'} onClick={() => setTab('ranglijst')}>🏆 Ranglijst</button>
+              <button type="button" role="tab" className="chip" aria-selected={tab === 'lab'} onClick={() => setTab('lab')}>🧪 Testlab</button>
             </div>
             <button type="button" className="btn btn-plain btn-sm" onClick={leave}>🔒 Beheer sluiten</button>
           </div>
-          {tab === 'spelers' ? <Players /> : <Scores />}
+          {tab === 'spelers' ? <Players /> : tab === 'ranglijst' ? <Scores /> : <Lab />}
         </>
       )}
     </section>
+  );
+}
+
+// Testlab: nieuwe spellen die nog in ontwikkeling zijn (alleen zichtbaar voor beheerders).
+function Lab() {
+  return (
+    <div className="bh-lab">
+      <h2>🌱 Sprout &amp; Sword <small>testversie v0.1</small></h2>
+      <p>Boerderij-avontuur in pixel-art (boerenleven + Zelda). Nu te testen: rondlopen, het huisje in en uit, de akker vrijmaken, spitten, zaaien, water geven, slapen, oogsten en verkopen via de verzendkist.</p>
+      <p className="muted">Alleen jij als beheerder kunt dit openen. De voortgang blijft op dit apparaat; met de knop 🛠 Test in het spel kun je dingen versnellen of opnieuw beginnen.</p>
+      <a className="btn" href="/beheer/lab/sprout" target="_blank" rel="noopener">Spel openen ↗</a>
+    </div>
   );
 }
 

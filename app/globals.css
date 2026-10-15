@@ -750,6 +750,9 @@ details.faq p{margin:0 0 16px}
 
 /* Beheer */
 .beheer .chip[aria-selected="true"]{background:var(--chip-bg);color:var(--chip-text)}
+.bh-lab{margin-top:18px;padding:20px 22px;background:var(--surface);border:3px solid var(--line);border-radius:24px;box-shadow:0 6px 0 var(--shadow);max-width:640px}
+.bh-lab h2{margin:0 0 8px}.bh-lab h2 small{font-size:.6em;opacity:.7;font-weight:600}
+.bh-lab .btn{margin-top:6px}
 .bh-top{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px}
 .bh-top .chips{margin:0;padding-bottom:4px}
 .bh-login{max-width:560px}

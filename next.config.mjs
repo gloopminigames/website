@@ -7,6 +7,8 @@ const nextConfig = {
   reactStrictMode: true,
   // Nodig voor /xl/: de XL-pagina's gebruiken paden ten opzichte van /xl/.
   skipTrailingSlashRedirect: true,
+  // Testlab-spel wordt door een route ingelezen (staat bewust niet in /public).
+  outputFileTracingIncludes: { '/beheer/lab/sprout': ['./lib/lab/sprout.html'] },
   async redirects() {
     return [
       { source: '/plus', destination: '/xl/', permanent: false },
