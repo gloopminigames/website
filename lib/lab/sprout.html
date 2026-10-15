@@ -22,6 +22,15 @@ canvas#c{position:fixed;inset:0;width:100%;height:100%;image-rendering:pixelated
 .btn{font:700 16px ui-rounded,"Trebuchet MS",system-ui,sans-serif;color:#4a240c;background:#ffe39a;border:3px solid #7c4820;border-radius:4px;box-shadow:0 3px 0 #3a1e0c;padding:8px 16px;cursor:pointer}
 .btn:active{transform:translateY(2px);box-shadow:0 1px 0 #3a1e0c}
 .btn.plain{background:#f8d8a0}
+.btn:disabled{opacity:.45;cursor:default;transform:none}
+.shop{display:flex;flex-direction:column;gap:8px;margin:10px 0 4px;text-align:left}
+.srow{display:grid;grid-template-columns:32px 1fr auto;grid-template-areas:"ic info qty" "ic info price";align-items:center;gap:2px 10px;background:#fbe6b8;border:2px solid #c49a5a;border-radius:4px;padding:6px 8px}
+.srow img{grid-area:ic;width:30px;height:30px;image-rendering:pixelated}
+.srow .sinfo{grid-area:info;line-height:1.2}.srow small{display:block;font-weight:600;font-size:12.5px;opacity:.8}
+.srow .sprice{grid-area:price;justify-self:end;font-size:14px}
+.srow .qty{grid-area:qty;display:flex;align-items:center;gap:6px}
+.srow .qty span{min-width:22px;text-align:center}
+.qb{padding:0 10px;font-size:20px;line-height:26px;box-shadow:0 2px 0 #3a1e0c}
 #fade{position:fixed;inset:0;background:#000;opacity:0;pointer-events:none;transition:opacity .35s;z-index:7}
 #fade.on{opacity:1}
 /* Aanraakbediening (alleen op telefoon/tablet) */
@@ -48,6 +57,8 @@ body.touch #act,body.touch.joy #joy{display:block}
 <button id="optBtn" aria-label="Instellingen">⚙️</button>
 <div id="dbg" class="wood">
   <b>Testlab</b>
+  <button class="btn" data-d="town">Naar Mossbrook</button>
+  <button class="btn" data-d="morning">Naar 09:00</button>
   <button class="btn" data-d="night">Naar 22:00</button>
   <button class="btn" data-d="grow">Alles 1 dag laten groeien</button>
   <button class="btn" data-d="ripe">Alles meteen rijp</button>
@@ -67,7 +78,7 @@ body.touch #act,body.touch.joy #joy{display:block}
    Secties: kunst · wereld · invoer · speler · gereedschap · gewassen · tijd · HUD · opslag · test
    ===================================================================== */
 const $=s=>document.querySelector(s);
-const TILE=16,MW=40,MH=30,WPX=MW*TILE,WPY=MH*TILE;
+const TILE=16;let MW=40,MH=30,WPX=MW*TILE,WPY=MH*TILE;   // maten van de wereld waar je nu bent (boerderij of dorp)
 const SAVE='sproutsword.dev.v1';
 const TOUCH=matchMedia('(pointer:coarse)').matches;if(TOUCH)document.body.classList.add('touch');
 
@@ -125,7 +136,7 @@ function cls(x,y){
   if(fbm(x/22+40,y/22)>.8)return 'dirt';
   return 'grass';}
 let MAP=null;   // klasse per pixel (voor water-tegels)
-function buildGround(){
+function buildGround(cls,wshade){
   const c=document.createElement('canvas');c.width=WPX;c.height=WPY;const g=c.getContext('2d');const img=g.createImageData(WPX,WPY);const px=img.data;
   const C=new Array(WPY);for(let y=0;y<WPY;y++){C[y]=new Array(WPX);for(let x=0;x<WPX;x++)C[y][x]=cls(x,y);}
   const set=(x,y,h)=>{if(x<0||y<0||x>=WPX||y>=WPY)return;const v=hex(h),i=(y*WPX+x)*4;px[i]=v[0];px[i+1]=v[1];px[i+2]=v[2];px[i+3]=255;};
@@ -133,25 +144,43 @@ function buildGround(){
   for(let y=0;y<WPY;y++)for(let x=0;x<WPX;x++){const k=C[y][x];const r=rnd();
     if(k==='grass'){const N=fbm(x/34,y/34),m=fbm(x/9+11,y/9+5);let i=N>.62?4:N<.36?2:3;if(m>.68)i++;if(m<.3)i--;if(r<.06)i++;else if(r<.12)i--;i=Math.max(1,Math.min(5,i));gIdx[y*WPX+x]=i;set(x,y,G[i]);}
     else if(k==='dirt'){let i=3;const m=fbm(x/7,y/7);if(m<.4)i=2;if(m>.66)i=4;if(r<.08)i--;else if(r<.13)i++;set(x,y,D[i]);}
-    else if(k==='path'){let i=3;const m=fbm(x/6+3,y/6);if(m<.38)i=2;if(m>.66)i=4;if(r<.07)i--;else if(r<.12)i++;set(x,y,SA[i]);}
+    else if(k==='path'||k==='bridge'){let i=3;const m=fbm(x/6+3,y/6);if(m<.38)i=2;if(m>.66)i=4;if(r<.07)i--;else if(r<.12)i++;set(x,y,SA[i]);}
     else if(k==='shore'){set(x,y,r<.3?SA[2]:SA[1]);}
-    else{const d=Math.hypot(x-POND.x,(y-POND.y)*1.15);set(x,y,d<POND.r*.5?WA[1]:d<POND.r*.75?WA[2]:WA[3]);}}
+    else if(k==='cobble'){const off=(Math.floor(y/5)%2)*3,bx=Math.floor((x+off)/6),by=Math.floor(y/5),edge=(x+off)%6===0||y%5===0,v=hsh(bx,by);set(x,y,edge?ST[1]:v<.3?ST[2]:v<.75?ST[3]:'#9a9aa6');if(!edge&&(x+off)%6===1&&y%5===1)set(x,y,ST[4]);}
+    else set(x,y,WA[wshade(x,y)]);}
   for(let n=0;n<26000;n++){const x=Math.floor(rnd()*WPX),y=Math.floor(rnd()*WPY);if(C[y][x]!=='grass')continue;const i=gIdx[y*WPX+x];
     const h=1+Math.floor(rnd()*3);for(let k=0;k<h;k++)if(y-k>=0&&C[y-k][x]==='grass')set(x,y-k,G[Math.max(0,i-1)]);if(y-h>=0&&C[y-h][x]==='grass')set(x,y-h,G[Math.min(6,i+1)]);
     if(rnd()<.25&&x+1<WPX&&y>2&&C[y][x+1]==='grass'){set(x+1,y-1,G[Math.max(0,i-1)]);set(x+1,y-2,G[Math.min(6,i+2)]);}}
   for(let y=1;y<WPY-1;y++)for(let x=1;x<WPX-1;x++){const k=C[y][x];
-    if(k!=='grass'&&k!=='water'){const sand=k==='path'||k==='shore';if(C[y-1][x]==='grass')set(x,y,sand?SA[0]:D[0]);else if(y>1&&C[y-2][x]==='grass')set(x,y,sand?SA[1]:D[1]);
-      if(C[y][x-1]==='grass'||C[y][x+1]==='grass')set(x,y,sand?SA[1]:D[1]);}
+    if(k!=='grass'&&k!=='water'){const sand=k==='path'||k==='shore'||k==='bridge',e0=sand?SA[0]:k==='cobble'?ST[0]:D[0],e1=sand?SA[1]:k==='cobble'?ST[1]:D[1];if(C[y-1][x]==='grass')set(x,y,e0);else if(y>1&&C[y-2][x]==='grass')set(x,y,e1);
+      if(C[y][x-1]==='grass'||C[y][x+1]==='grass')set(x,y,e1);}
     if(k==='grass'&&C[y+1][x]!=='grass'&&C[y+1][x]!=='water'){set(x,y,G[5]);if(rnd()<.4)set(x,y+1,G[4]);}
     if(k==='grass'&&(C[y][x-1]!=='grass'||C[y][x+1]!=='grass')&&C[y][x-1]!=='water'&&C[y][x+1]!=='water')set(x,y,G[1]);
-    if(k==='water'){const nb=[C[y-1][x],C[y+1][x],C[y][x-1],C[y][x+1]];if(nb.some(v=>v!=='water'))set(x,y,rnd()<.5?WA[5]:WA[4]);else if(C[y-2][x]!=='water')set(x,y,WA[1]);}
+    if(k==='water'){const nb=[C[y-1][x],C[y+1][x],C[y][x-1],C[y][x+1]];if(nb.some(v=>v!=='water'))set(x,y,rnd()<.5?WA[5]:WA[4]);else if(y>1&&C[y-2][x]!=='water')set(x,y,WA[1]);}
     if(k==='shore'&&[C[y-1][x],C[y+1][x],C[y][x-1],C[y][x+1]].includes('water'))set(x,y,'#8a6a3a');}
   for(let n=0;n<1600;n++){const x=Math.floor(rnd()*(WPX-3)),y=Math.floor(rnd()*(WPY-3));const k=C[y][x];
     if((k==='path'||k==='dirt')&&C[y+1][x+2]===k){const gg=rnd()<.5;set(x,y,ST[gg?3:2]);set(x+1,y,ST[2]);set(x,y+1,ST[1]);set(x+1,y+1,ST[1]);set(x,y,ST[4]);}
     if(k==='water'&&C[y][x+5]==='water'&&rnd()<.6){const l=2+Math.floor(rnd()*5);for(let i=0;i<l;i++)set(x+i,y,i===0||i===l-1?WA[4]:WA[5]);}}
-  g.putImageData(img,0,0);MAP=C;return c;}
+  g.putImageData(img,0,0);return {c,C};}
 const isWaterTile=(tx,ty)=>{if(!MAP||tx<0||ty<0||tx>=MW||ty>=MH)return false;return MAP[ty*16+8][tx*16+8]==='water';};
 const inField=(tx,ty)=>tx>=FIELD.tx0&&tx<=FIELD.tx1&&ty>=FIELD.ty0&&ty<=FIELD.ty1;
+
+/* ---------------- wereld: indeling van het dorp Mossbrook ---------------- */
+const TOWN={mw:32,mh:22};
+const SHOP={x:200,y:36};                       // Pip's Zaden (sprite 120 × 110)
+const SDOOR={x0:256,x1:272,y:146};             // winkeldeur
+const COTS=[{x:36,y:46,roof:'blue'},{x:344,y:50,roof:'green'}];   // huisjes (88 × 92), nog dicht
+const TPATHS=[[[-10,220],[120,222],[200,208]],[[330,212],[440,222],[530,222]],[[80,138],[104,190],[196,206]],[[388,142],[374,192],[334,210]]];
+const STREAM_X=y=>470+Math.sin(y/37)*6;
+const BRIDGE={y0:206,y1:236};
+function tcls(x,y){const n=fbm(x/18+60,y/18);
+  const sd=Math.abs(x-STREAM_X(y))+(n-.5)*5;
+  if(y>=BRIDGE.y0&&y<=BRIDGE.y1&&sd<18)return 'bridge';
+  if(sd<9)return 'water';if(sd<13)return 'shore';
+  if(Math.hypot((x-264)/82,(y-198)/52)<1+(fbm(x/8,y/8)-.5)*.1)return 'cobble';
+  let dp=1e9;for(const L of TPATHS)for(let i=0;i<L.length-1;i++)dp=Math.min(dp,distSeg(x,y,L[i],L[i+1]));if(dp<9+(fbm(x/9+5,y/9)-.5)*7)return 'path';
+  if(fbm(x/22+80,y/22)>.84)return 'dirt';
+  return 'grass';}
 
 /* ---------------- kunst: objecten ---------------- */
 function canopy(cx,cy,rx,ry,n,pal,blossom){const cl=[];for(let i=0;i<n;i++){const a=rnd()*Math.PI*2,d=Math.sqrt(rnd());cl.push([cx+Math.cos(a)*rx*d,cy+Math.sin(a)*ry*d,3+Math.floor(rnd()*3)]);}
@@ -207,6 +236,79 @@ function flowers(c){return sprite(10,8,()=>{for(let i=0;i<4;i++){const x=1+i*2.4
 function reeds(){return sprite(10,14,()=>{for(let i=0;i<4;i++){const x=1+i*2.5;R(x,2+i%2*2,1,12-i%2*2,LF[3+(i%2)]);R(x,1+i%2*2,1,3,'#8a5a2a');P(x,1+i%2*2,'#b07a40');}},OL);}
 function sign(){return sprite(22,22,()=>{R(9,10,4,12,WD[2]);R(9,10,1,12,WD[4]);R(0,0,22,11,WD[3]);R(0,0,22,1,WD[5]);R(0,10,22,1,WD[1]);R(4,4,10,1,WD[1]);R(4,6,7,1,WD[1]);R(15,3,4,5,WD[1]);P(19,5,WD[1]);},'#2a1208');}
 function can(){return sprite(14,11,()=>{ell(5,6,5,4,'#7c9cb8');ell(4,5,3,2,'#a8c4dc');P(3,4,'#e0f0ff');R(1,9,9,1,'#5a7a96');R(3,0,5,2,'#5a7a96');R(9,4,2,2,'#7c9cb8');R(11,3,2,2,'#7c9cb8');R(12,2,2,2,'#a8c4dc');},'#24303c');}
+
+/* ---------------- kunst: Mossbrook ---------------- */
+const SL=['#232a3c','#2f3a52','#3e4e6c','#526a8c','#6e88aa','#9ab0cc'];   // leien dak
+const MOS=['#1e3a24','#2a4e30','#3a6a3e','#4e8450','#6aa062','#8cbc78'];  // groen dak
+const PL=['#c8a878','#dcc094','#ecd6ac','#f6e6c4'];                      // pleisterwerk
+function slateRoof(w,top,bot,pal){for(let r=top;r<bot;r++){const ins=Math.max(0,Math.round((bot-r)*.22)-3);R(ins,r,w-ins*2,1,pal[2]);}
+  for(let r=top+2;r<bot-2;r+=5){const ins=Math.max(0,Math.round((bot-r)*.22)-3),off=((r-top)/5)%2?0:4;
+    for(let x=ins+off-8;x<w-ins;x+=8){R(x,r,8,4,pal[2]);R(x,r,8,1,pal[4]);P(x+1,r+1,pal[5]);R(x,r+3,8,1,pal[1]);R(x+7,r,1,4,pal[0]);}}
+  R(0,bot-2,w,3,pal[1]);R(0,bot,w,1,pal[0]);}
+function plaster(x,y,w,h){R(x,y,w,h,PL[2]);for(let i=0;i<w*h/26;i++)P(x+Math.floor(rnd()*w),y+Math.floor(rnd()*h),rnd()<.5?PL[1]:PL[3]);R(x,y,w,3,'rgba(40,20,0,.22)');}
+function winBox(x,y,w,h){R(x-2,y-2,w+4,h+4,WD[5]);R(x-2,y-2,w+4,1,'#fff0c0');R(x,y,w,h,WA[2]);for(let i=0;i<Math.min(w,h)-4;i++){P(x+2+i,y+2+i,WA[5]);}R(x+Math.floor(w/2)-1,y,2,h,WD[4]);R(x,y+Math.floor(h/2)-1,w,2,WD[4]);
+  R(x-3,y+h+2,w+6,4,WD[2]);R(x-3,y+h+2,w+6,1,WD[4]);for(let i=0;i<w/3;i++)R(x-1+i*3,y+h,2,2,pick(['#ff7aa8','#ffd84a','#ffffff','#b07aff']));}
+function shopBuilding(){const w=120,h=110,wy=50;return sprite(w,h,()=>{
+  plaster(4,wy,w-8,h-wy-4);
+  for(const x of[4,w-10]){R(x,wy,6,h-wy-4,WD[2]);R(x,wy,1,h-wy-4,WD[3]);}
+  R(2,h-5,w-4,5,ST[2]);for(let x=3;x<w-3;x+=6)R(x,h-5,5,3,ST[3]);R(2,h-5,w-4,1,ST[4]);
+  slateRoof(w,0,wy-4,SL);R(12,0,w-24,3,SL[1]);R(12,0,w-24,1,SL[4]);
+  // naambord op het dak: zaadzakje, wortel en pompoen
+  R(36,wy-30,48,18,WD[1]);R(37,wy-29,46,16,WD[3]);R(37,wy-29,46,1,WD[5]);R(38,wy-27,44,12,'#f8e2b0');
+  ell(48,wy-20,5,4,'#c8a060');R(46,wy-26,5,2,'#a07a40');P(48,wy-27,LF[4]);
+  for(let y=0;y<8;y++){const ww=Math.max(1,Math.round((8-y)*.5));R(60-ww/2,wy-24+y,ww,1,'#e8761c');}R(59,wy-27,1,3,LF[4]);R(61,wy-27,1,3,LF[5]);
+  ell(73,wy-20,6,4,'#e07624');ell(72,wy-21,3,2,'#f8984a');R(72,wy-26,2,2,'#6a4a1a');
+  for(const x of[40,80]){R(x,wy-12,2,8,WD[1]);}
+  // schoorsteen
+  const cx=w-30;R(cx,-10,12,20,ST[2]);for(let y=-10;y<10;y+=4)for(let x=cx+((y/4)%2?0:3);x<cx+12;x+=6)R(x,y,5,3,pick([ST[3],ST[2],ST[4]]));R(cx-1,-12,14,3,ST[1]);R(cx-1,-12,14,1,ST[3]);
+  // groen-witte luifel
+  const ay=wy+8;for(let x=6;x<w-6;x++){const c=Math.floor((x-6)/6)%2?'#f4f0e0':'#3f9a4a';R(x,ay,1,9,c);if(x%6===0)P(x,ay+1,'rgba(255,255,255,.4)');}
+  R(6,ay,w-12,1,'#2a6a32');for(let x=6;x<w-6;x+=6)ell(x+3,ay+9,3,2,Math.floor((x-6)/6)%2?'#f4f0e0':'#3f9a4a');R(6,ay+12,w-12,2,'rgba(30,10,0,.22)');
+  // etalage met zaadzakjes
+  const ex=12,ey=ay+17;R(ex-2,ey-2,40,26,WD[2]);R(ex,ey,36,22,WA[2]);for(let i=0;i<7;i++)P(ex+2+i,ey+2+i,WA[5]);
+  for(let i=0;i<5;i++){const c=['#e8761c','#f2e6c0','#e07624','#7ac04a','#d84a6a'][i];R(ex+2+i*7,ey+12,6,9,c);R(ex+2+i*7,ey+12,6,1,'#ffffff');R(ex+4+i*7,ey+15,2,2,'#5a3a1a');}
+  ell(ex+29,ey+7,4,3,'#e07624');ell(ex+28,ey+6,2,1,'#f8984a');P(ex+29,ey+3,LF[3]);
+  R(ex-3,ey+22,42,4,WD[3]);R(ex-3,ey+22,42,1,WD[5]);
+  // deur
+  const dx=56,dw=16;R(dx-2,h-40,dw+4,36,WD[1]);R(dx,h-38,dw,34,'#3f7a46');R(dx,h-38,dw,1,'#7ab87a');for(let x=dx+3;x<dx+dw;x+=4)R(x,h-26,1,22,'#2e5e36');
+  R(dx+3,h-35,dw-6,9,'#ffe7a0');R(dx+3,h-35,dw-6,1,WD[2]);R(dx+7,h-35,1,9,WD[2]);P(dx+dw-3,h-20,'#f8d050');P(dx+dw-3,h-19,'#a07020');
+  // uithangbord aan een arm
+  R(dx+dw+2,ay+16,10,1,WD[1]);R(dx+dw+4,ay+17,1,2,WD[1]);R(dx+dw+10,ay+17,1,2,WD[1]);R(dx+dw+2,ay+19,11,9,WD[3]);R(dx+dw+3,ay+20,9,7,'#f8e2b0');ell(dx+dw+7,ay+24,3,2,'#c8a060');P(dx+dw+7,ay+21,LF[4]);
+  // raam rechts met bloembak
+  winBox(88,ay+18,22,16);
+  // lampje naast de deur
+  R(dx-9,h-34,5,7,'#2a1a10');R(dx-8,h-33,3,5,'#ffd27a');P(dx-8,h-33,'#fff4c0');
+},'#1e1a24');}
+function cottage(roof){const w=88,h=92,wy=44,pal=roof==='green'?MOS:SL;return sprite(w,h,()=>{
+  for(let y=wy;y<h-4;y+=6){R(5,y,w-10,6,WD[3]);R(5,y,w-10,1,WD[4]);R(5,y+4,w-10,1,WD[2]);R(5,y+5,w-10,1,WD[1]);for(let x=9;x<w-9;x+=7+Math.floor(rnd()*6))P(x,y+2,WD[2]);
+    for(const ex of[2,w-8]){R(ex,y,6,6,WD[4]);R(ex+1,y+1,4,4,WD[5]);P(ex+2,y+2,WD[3]);R(ex,y+5,6,1,WD[1]);}}
+  R(5,wy,w-10,4,'rgba(30,10,0,.3)');R(4,h-4,w-8,4,ST[2]);for(let x=4;x<w-4;x+=5)R(x,h-4,4,3,ST[3]);
+  slateRoof(w,0,wy-2,pal);R(10,0,w-20,3,pal[1]);R(10,0,w-20,1,pal[4]);
+  const cx=14;R(cx,-8,10,16,ST[2]);for(let y=-8;y<8;y+=4)for(let x=cx+((y/4)%2?0:3);x<cx+10;x+=5)R(x,y,4,3,pick([ST[3],ST[4]]));R(cx-1,-10,12,3,ST[1]);
+  const dx=36,dw=16;R(dx-2,h-30,dw+4,26,WD[1]);R(dx,h-28,dw,24,roof==='green'?'#8a3a2a':'#3a5a8a');R(dx,h-28,dw,1,'#ffffff40');R(dx+3,h-25,dw-6,6,'#ffe7a0');P(dx+dw-3,h-15,'#f8d050');
+  winBox(10,wy+12,18,14);winBox(w-28,wy+12,18,14);
+},'#2a1208');}
+function well(){return sprite(32,36,()=>{
+  ell(16,27,15,7,ST[1]);ell(16,26,13,5,'#1a2430');ell(16,27,10,3,WA[1]);P(12,26,WA[4]);
+  for(let x=1;x<31;x+=5){const yy=27+Math.round(Math.sqrt(Math.max(0,1-((x+2-16)/15)**2))*6);R(x,yy-3,5,4,pick([ST[3],ST[2]]));P(x,yy-3,ST[5]);}
+  R(3,8,3,20,WD[2]);R(3,8,1,20,WD[4]);R(26,8,3,20,WD[2]);R(26,8,1,20,WD[4]);
+  for(let r=0;r<9;r++)R(8-r,r,16+r*2,1,r%3===2?RF[2]:RF[3]);R(0,8,32,2,RF[1]);for(let x=2;x<30;x+=4)P(x,9,RF[2]);
+  R(6,12,20,2,WD[1]);R(15,14,1,6,'#d8c090');R(12,19,7,6,WD[3]);R(12,19,7,1,WD[5]);R(12,21,7,1,ST[3]);
+},'#24242c');}
+function noticeBoard(){return sprite(28,30,()=>{R(3,12,3,18,WD[2]);R(22,12,3,18,WD[2]);R(0,4,28,16,WD[3]);R(0,4,28,1,WD[5]);R(1,5,26,14,WD[2]);
+  R(3,7,8,9,'#fff8e4');R(13,6,6,7,'#ffe08a');R(20,8,6,8,'#d8f0ff');R(13,14,7,4,'#ffd0e0');for(const[x,y]of[[4,9],[4,11],[4,13],[21,10],[21,12]])R(x,y,5,1,'#8a8a96');
+  for(const[x,y]of[[6,7],[15,6],[22,8],[16,14]])P(x,y,'#d84a3a');R(-1,0,30,4,RF[2]);R(-1,0,30,1,RF[4]);},'#2a1208');}
+function lamp(){return sprite(10,32,()=>{R(4,10,2,22,ST[1]);R(4,10,1,22,ST[3]);R(2,29,6,3,ST[1]);R(1,2,8,9,'#2a2a30');R(2,3,6,7,'#ffe08a');R(3,4,2,4,'#fff6d0');R(0,0,10,3,'#2a2a30');R(4,-2,2,2,'#2a2a30');},'#16161c');}
+function bench(){return sprite(28,16,()=>{R(1,2,26,3,WD[3]);R(1,2,26,1,WD[5]);R(1,7,26,4,WD[4]);R(1,7,26,1,WD[5]);R(3,11,2,5,WD[1]);R(23,11,2,5,WD[1]);R(3,4,2,4,WD[1]);R(23,4,2,4,WD[1]);},'#2a1208');}
+function bridge(){return sprite(44,34,()=>{for(let x=0;x<44;x+=4){R(x,4,4,26,WD[3]);R(x,4,1,26,WD[4]);R(x+3,4,1,26,WD[1]);P(x+2,10+(x%8),WD[2]);}
+  for(const y of[0,28]){R(0,y,44,3,WD[2]);R(0,y,44,1,WD[5]);for(let x=0;x<44;x+=10){R(x,y-2,3,8,WD[1]);R(x,y-2,1,8,WD[4]);}}},'#2a1208');}
+function pipFrame(blink){return sprite(16,32,()=>{const hr='#d8582a',hd='#a0381a',sk='#f8c8a0',sd='#d89a78';
+  R(4,22,3,6,'#4a5a8a');R(9,22,3,6,'#3a4a7a');R(4,28,3,2,'#5a3018');R(9,28,3,2,'#5a3018');
+  R(3,15,10,8,'#5a8ad0');R(10,15,3,8,'#4070b0');R(4,16,8,8,'#f0d070');R(4,16,8,1,'#fff0a0');R(6,19,4,3,'#e0b850');R(5,15,1,2,'#f0d070');R(10,15,1,2,'#f0d070');
+  R(1,15,2,6,'#5a8ad0');R(13,15,2,6,'#4070b0');R(1,21,2,2,sk);R(13,21,2,2,sd);
+  R(3,5,10,10,sk);R(11,5,2,10,sd);R(2,3,12,5,hr);R(2,5,2,8,hr);R(12,5,2,7,hd);R(4,4,4,1,'#f08850');R(5,0,6,4,hr);R(6,0,4,1,'#f08850');R(10,1,1,3,hd);
+  if(blink){R(5,10,2,1,'#2a160c');R(9,10,2,1,'#2a160c');}else{R(5,9,2,2,'#2a160c');R(9,9,2,2,'#2a160c');P(5,9,'#ffffff');P(9,9,'#ffffff');}
+  P(4,12,'#f0a0a0');P(11,12,'#f0a0a0');R(7,12,2,1,'#c86a5a');for(const[x,y]of[[5,11],[10,11],[7,8]])P(x,y,'#e0905a');},'#2a160c');}
 
 /* ---------------- kunst: akkertegels en gewassen ---------------- */
 function soilTile(wet,v){return sprite(16,16,()=>{const p=wet?TW:T;let s2=v*977+(wet?5:1);const r2=()=>{s2=(s2*16807)%2147483647;return s2/2147483647;};
@@ -305,10 +407,40 @@ function buildRoom(){return sprite(ROOM.w,ROOM.h,()=>{
   R(66,120,28,8,'#b8904a');R(68,122,24,4,'#d8b06a');
 },'#1a0e06');}
 
+/* ---------------- kunst: binnen in de winkel ---------------- */
+const SHOPROOM={w:176,h:128};
+function buildShopRoom(){return sprite(SHOPROOM.w,SHOPROOM.h,()=>{const W=SHOPROOM.w,H=SHOPROOM.h;
+  for(let y=40;y<H;y+=6){R(0,y,W,6,WD[3]);R(0,y,W,1,WD[4]);R(0,y+5,W,1,WD[1]);for(let x=(y/6%2)*22;x<W;x+=44)R(x,y,1,6,WD[1]);}
+  // behang met streepjes en lambrisering
+  R(0,0,W,40,'#a8c49a');for(let x=0;x<W;x+=8){R(x,0,3,34,'#98b48a');P(x+5,6+(x%16),'#c8dcb8');}R(0,32,W,8,WD[2]);R(0,32,W,1,WD[4]);R(0,38,W,3,WD[0]);
+  // planken met zaadzakjes
+  for(const[x0,x1]of[[10,66],[110,166]])for(const y of[8,22]){R(x0,y+8,x1-x0,3,WD[4]);R(x0,y+8,x1-x0,1,WD[5]);R(x0,y+11,x1-x0,1,WD[1]);
+    for(let x=x0+2;x<x1-6;x+=7){const c=pick(['#e8761c','#f2e6c0','#e07624','#7ac04a','#d84a6a','#6aa8e0']);R(x,y,6,8,c);R(x,y,6,1,'#ffffff');R(x+2,y+3,2,2,'#5a3a1a');}}
+  // schilderij met een pompoen tussen de planken
+  R(76,6,24,18,WD[1]);R(78,8,20,14,'#f8e2b0');ell(88,16,6,4,'#e07624');ell(87,15,3,2,'#f8984a');R(87,10,2,3,'#6a4a1a');
+  // tonnen met zaad links en rechts
+  for(const bx of[8,150]){ell(bx+9,58,10,13,WD[3]);for(let x=bx+1;x<bx+19;x+=4)R(x,47,1,22,WD[2]);for(const y of[49,66])R(bx,y,19,2,ST[2]);ell(bx+9,46,8,3,'#d8b070');for(let i=0;i<14;i++)P(bx+3+rnd()*12,44+rnd()*4,pick(['#a07a40','#e8d090','#7a5a2a']));}
+  // planten in potten bij de deur
+  for(const px of[30,138]){R(px,104,10,9,'#b05a3a');R(px,104,10,1,'#d07a5a');canopy(px+5,98,7,6,9,LFT);}
+  // kleed en deurmat
+  R(44,94,88,16,'#c8584a');R(46,96,84,12,'#e07a5a');for(let x=50;x<128;x+=8)R(x,101,4,2,'#f8d070');
+  R(72,120,32,8,'#b8904a');R(74,122,28,4,'#d8b06a');
+},'#1a0e06');}
+function buildCounter(){return sprite(104,26,()=>{R(0,4,104,22,WD[3]);for(let x=4;x<104;x+=8)R(x,8,1,18,WD[2]);R(0,4,104,1,WD[5]);R(0,0,104,6,WD[4]);R(0,0,104,1,WD[5]);R(0,5,104,1,WD[1]);
+  // kassa en een mandje zakjes
+  R(70,-8,16,9,ST[2]);R(70,-8,16,1,ST[4]);R(72,-6,8,3,'#a8e0a0');R(81,-6,3,2,'#f0c850');R(74,-1,10,2,ST[1]);
+  R(14,-5,22,6,'#c8a060');R(14,-5,22,1,'#e0bc78');for(let i=0;i<4;i++){R(16+i*5,-9,4,5,pick(['#e8761c','#f2e6c0','#e07624','#7ac04a']));}},'#2a1208');}
+
 /* ---------------- wereld: objecten ---------------- */
-let GROUND=null,ROOMSPR=null,SOIL=null;
-const STATIC=[];     // {s,x,y,base,sh:[rx,ry]} vaste dingen op de boerderij
-const COLL=[];       // botsrechthoeken {x,y,w,h}
+let GROUND=null,ROOMSPR=null,SOIL=null,SHOPSPR=null,COUNTER=null,PIP=null;
+let STATIC=[];       // {s,x,y,base,sh:[rx,ry]} vaste dingen in de wereld waar je nu bent
+let COLL=[];         // botsrechthoeken {x,y,w,h}
+// Twee buitenwerelden: de boerderij en het dorp. setWorld() zet de 'huidige wereld' klaar.
+const WORLDS={farm:{mw:40,mh:30,stat:[],coll:[],lights:[]},town:{mw:TOWN.mw,mh:TOWN.mh,stat:[],coll:[],lights:[]}};
+let CUR='farm';
+function setWorld(n){const w=WORLDS[n];CUR=n;MW=w.mw;MH=w.mh;WPX=MW*TILE;WPY=MH*TILE;GROUND=w.ground;MAP=w.map;STATIC=w.stat;COLL=w.coll;}
+const isOutdoor=()=>S.scene==='farm'||S.scene==='town';
+const isRoom=()=>S.scene==='house'||S.scene==='shop';
 // sorteren op de onderkant van wat massief is, zodat je er altijd vóór staat als je ertegenaan loopt
 function addStatic(s,x,y,sh,coll,base){STATIC.push({s,x,y,base:base!=null?base:coll?coll.y+coll.h:y+s.height,sh});if(coll)COLL.push(coll);}
 function buildWorld(){
@@ -336,11 +468,41 @@ function buildWorld(){
   for(const[x,y,s]of[[170,250,4],[40,210,5],[520,420,3],[600,150,4],[350,420,6]]){const sp=stone(s);addStatic(sp,x,y,[s+2,2],{x,y:y+sp.height-6,w:sp.width,h:5});}
   addStatic(sign(),WPX-64,302,[6,2],{x:WPX-56,y:318,w:8,h:5});
   STATIC.sort((a,b)=>a.base-b.base);
+  WORLDS.farm.lights=[[HOUSE.x+28,HOUSE.y+76,22],[HOUSE.x+102,HOUSE.y+76,22],[HOUSE.x+64,HOUSE.y+90,16],[HOUSE.x+52,HOUSE.y+88,14]];
   SOIL={dry:[0,1,2].map(v=>soilTile(false,v)),wet:[0,1,2].map(v=>soilTile(true,v))};}
+function buildTown(){
+  addStatic(shopBuilding(),SHOP.x,SHOP.y,null,{x:SHOP.x+2,y:SHOP.y+14,w:116,h:SDOOR.y-2-(SHOP.y+14)});
+  addStatic(steps(),SHOP.x+50,SDOOR.y-3,null,null,0);
+  for(const c of COTS){const s=cottage(c.roof);addStatic(s,c.x,c.y,null,{x:c.x+2,y:c.y+12,w:84,h:76});addStatic(steps(),c.x+30,c.y+90,null,null,0);}
+  addStatic(well(),249,180,[15,3],{x:251,y:198,w:30,h:16});
+  addStatic(noticeBoard(),334,150,[12,2],{x:336,y:172,w:24,h:6});
+  const lamps=[[186,150],[336,186],[150,232],[380,236],[100,150]];for(const[x,y]of lamps)addStatic(lamp(),x,y,[4,1],{x:x+1,y:y+26,w:8,h:6});
+  addStatic(bench(),300,238,[12,2],{x:300,y:244,w:28,h:10});
+  addStatic(bridge(),Math.round(STREAM_X(221))-22,BRIDGE.y0-2,null,null,0);
+  // rand met bomen (met openingen voor de weg naar de boerderij en naar het oosten)
+  const trees=[];
+  for(let x=-20;x<WPX+20;x+=34+Math.floor(rnd()*14))trees.push([x,-50+Math.floor(rnd()*8),rnd()<.5]);
+  for(let x=-20;x<WPX+20;x+=34+Math.floor(rnd()*14))trees.push([x,WPY-58+Math.floor(rnd()*6),rnd()<.5]);
+  for(let y=10;y<WPY-40;y+=30+Math.floor(rnd()*12))if(y<150||y>240)trees.push([-30,y,rnd()<.4]);
+  for(let y=10;y<WPY-40;y+=30+Math.floor(rnd()*12))if(y<150||y>240)trees.push([WPX-28,y,rnd()<.4]);
+  for(const[x,y]of[[150,250],[380,262],[20,250],[440,10]])trees.push([x,y,false]);
+  for(const[x,y,isPine]of trees){const s=isPine?pine():oak();const tx=x+s.width/2-6;addStatic(s,x,y,[16,4],{x:tx,y:y+s.height-12,w:12,h:8});}
+  for(const[x,y,b]of[[140,120,10],[320,130,0],[440,150,8],[30,170,0],[210,290,10]]){const s=bush(b);addStatic(s,x,y,[13,3],{x:x+4,y:y+s.height-10,w:s.width-8,h:8});}
+  for(const[x,y,c]of[[60,150,'#ff7aa8'],[150,160,'#ffd84a'],[200,150,'#ffffff'],[318,152,'#ff7aa8'],[350,150,'#b07aff'],[110,250,'#ffd84a'],[250,270,'#ff7aa8'],[300,270,'#ffffff'],[420,250,'#b07aff'],[40,290,'#ff7aa8']])addStatic(flowers(c),x,y,null,null);
+  for(const y of[60,100,140,260,300])addStatic(reeds(),Math.round(STREAM_X(y))+(y%80?10:-18),y,null,null);
+  const fs=fenceSeg(),fe=fenceSeg(true);for(let x=36;x<=116;x+=16){const end=x===116;addStatic(end?fe:fs,x,300,null,{x,y:312,w:end?6:18,h:6});}
+  addStatic(sign(),418,176,[6,2],{x:426,y:192,w:8,h:5});
+  STATIC.sort((a,b)=>a.base-b.base);
+  WORLDS.town.lights=[[SHOP.x+30,SHOP.y+86,24],[SHOP.x+99,SHOP.y+84,20],[SHOP.x+49,SHOP.y+92,12],...COTS.flatMap(c=>[[c.x+19,c.y+63,18],[c.x+69,c.y+63,18]]),...lamps.map(([x,y])=>[x+5,y+6,30])];}
 const DEB={weed:null,twig:null,stone:null,stump:null};
 function buildDebris(){DEB.weed=[weeds(),weeds(),weeds()];DEB.twig=[twig()];DEB.stone=[stone(5),stone(4)];DEB.stump=[stump()];}
 const CROPSPR={};function cspr(id,st){const k=id+st;return CROPSPR[k]||(CROPSPR[k]=cropSprite(id,st));}
 const ICONS={};
+
+// Binnenruimtes: maat, uitgang (deurmat) en wat er massief is
+const ROOMS={
+  house:{w:160,h:128,ex0:64,ex1:96,solids:[{x:114,y:34,w:40,h:48},{x:52,y:68,w:38,h:30},{x:6,y:22,w:30,h:26},{x:42,y:80,w:12,h:16}]},
+  shop:{w:176,h:128,ex0:72,ex1:104,solids:[{x:28,y:40,w:120,h:42},{x:4,y:40,w:26,h:36},{x:146,y:40,w:28,h:36},{x:28,y:96,w:14,h:18},{x:136,y:96,w:14,h:18}]}};
 
 /* ---------------- spelstatus ---------------- */
 function freshState(){
@@ -370,7 +532,8 @@ function dialog(html,buttons){resetInput();$('#dlgBox').innerHTML=html+'<div cla
   $('#dlg').classList.add('on');dlgOpen=true;
   $('#dlgBox').querySelectorAll('button[data-i]').forEach(el=>el.onclick=()=>{$('#dlg').classList.remove('on');dlgOpen=false;const b=buttons[+el.dataset.i];if(b.fn)b.fn();});
   setTimeout(()=>$('#dlgBox').querySelector('button[data-i]')?.focus(),30);}
-function fade(fn){resetInput(true);$('#fade').classList.add('on');setTimeout(()=>{fn();setTimeout(()=>$('#fade').classList.remove('on'),60);},380);}
+let fading=false;
+function fade(fn){resetInput(true);fading=true;$('#fade').classList.add('on');setTimeout(()=>{fn();setTimeout(()=>{$('#fade').classList.remove('on');fading=false;},60);},380);}
 
 /* ---------------- invoer ---------------- */
 const keys=new Set();let joy={x:0,y:0},joyReset=()=>{};
@@ -408,7 +571,22 @@ function isWorkTarget(tx,ty){const k=tx+','+ty,tool=TOOLS[S.tool];
 function inHouseRect(wx,wy){return wx>HOUSE.x&&wx<HOUSE.x+128&&wy>HOUSE.y&&wy<DOOR.y+2;}
 function goHouseDoor(){const a=pathTo(new Map([['7,8',3]]));if(!a)return toast('Daar kun je niet bij');
   a.path.push({x:120,y:DOOR.y-8});step=null;auto={...a,tx:7,ty:7,t:0,noUse:1};}
+function inShopRect(wx,wy){return wx>SHOP.x&&wx<SHOP.x+120&&wy>SHOP.y&&wy<SDOOR.y+2;}
+function goShopDoor(){const a=pathTo(new Map([['16,9',3]]));if(!a)return toast('Daar kun je niet bij');
+  a.path.push({x:264,y:SDOOR.y-8});step=null;auto={...a,tx:16,ty:8,t:0,noUse:1};}
+// tik op de rand bij de weg: loop erheen en ga door naar de volgende wereld
+function goEdge(tx,ty,outX){if(!walkTo(tx,ty))return toast('Daar kun je niet bij');auto.path.push({x:outX,y:ty*16+12});}
 function tapAt(cx,cy){const [wx,wy]=toWorld(cx,cy);
+  if(S.scene==='shop'){const RM=ROOMS.shop;
+    if(wx>28&&wx<148&&wy>14&&wy<86){if(nearCounter())return openShop();step=null;auto={path:[{x:Math.max(44,Math.min(132,wx)),y:92}],face:3,t:0,noUse:1,then:openShop};return;}
+    if(wy>RM.h-14&&wx>RM.ex0-4&&wx<RM.ex1+4){step=null;auto={path:[{x:88,y:RM.h-6},{x:88,y:RM.h+4}],t:0,noUse:1};return;}
+    tapMark={x:wx,y:wy,t:0};step=null;auto={path:[{x:Math.max(12,Math.min(RM.w-12,wx)),y:Math.max(90,Math.min(RM.h-6,wy+6))}],t:0,noUse:1};return;}
+  if(S.scene==='town'){const tx=Math.floor(wx/16),ty=Math.floor(wy/16);
+    if(inShopRect(wx,wy))return shopOpen()?goShopDoor():toast("Pip's Zaden is open van 08:00 tot 18:00");
+    for(const c of COTS)if(wx>c.x&&wx<c.x+88&&wy>c.y&&wy<c.y+92)return toast('Hier wonen dorpsgenoten. Die leer je later kennen!');
+    if(tx<=2&&ty>=12&&ty<=14)return goEdge(2,ty,14);
+    if(walkable(tx,ty)){tapMark={x:tx*16+8,y:ty*16+12,t:0};if(!walkTo(tx,ty))toast('Daar kun je niet bij');return;}
+    return toast('Daar kun je niet bij');}
   if(S.scene==='house'){   // binnen: open kamer, gewoon rechtstreeks lopen
     if(wx>110&&wx<158&&wy>20&&wy<86){if(nearBed())return askSleep();step=null;auto={path:[{x:134,y:92}],face:3,t:0,noUse:1,then:askSleep};return;}
     if(wy>ROOM.h-14&&wx>60&&wx<100){step=null;auto={path:[{x:80,y:ROOM.h-6},{x:80,y:ROOM.h+4}],t:0,noUse:1};return;}
@@ -416,6 +594,7 @@ function tapAt(cx,cy){const [wx,wy]=toWorld(cx,cy);
   const tx=Math.floor(wx/16),ty=Math.floor(wy/16),[ptx,pty]=tileOf(S.px,S.py);
   if(tx===ptx&&ty===pty){if(step||auto||player.swing>0)return;S.dir=0;return useToolAt(tx,ty);}   // de tegel waar je op staat
   if(isWorkTarget(tx,ty))return goUse(tx,ty);
+  if(tx>=37&&ty>=17&&ty<=20)return goEdge(37,ty,WPX-14);
   if(inHouseRect(wx,wy)||(tx===7&&ty===8))return goHouseDoor();
   if(walkable(tx,ty)){tapMark={x:tx*16+8,y:ty*16+12,t:0};if(!walkTo(tx,ty))toast('Daar kun je niet bij');return;}
   toast('Daar kun je niet bij');}
@@ -453,12 +632,12 @@ applyOpt();
 const player={get x(){return S.px;},get y(){return S.py;},anim:0,moving:false,swing:0};
 const DIRV=[[0,1],[-1,0],[1,0],[0,-1]];
 function solidAt(x,y){ // voeten op wereldpositie (x,y)?
-  if(S.scene==='house'){if(x<6||x>ROOM.w-6||y<46||y>ROOM.h-2)return !(y>ROOM.h-2&&x>64&&x<96);
-    for(const r of[{x:114,y:34,w:40,h:48},{x:52,y:68,w:38,h:30},{x:6,y:22,w:30,h:26},{x:42,y:80,w:12,h:16}])if(x>r.x&&x<r.x+r.w&&y>r.y&&y<r.y+r.h)return true;return false;}
+  if(isRoom()){const RM=ROOMS[S.scene];if(x<6||x>RM.w-6||y<46||y>RM.h-2)return !(y>RM.h-2&&x>RM.ex0&&x<RM.ex1);
+    for(const r of RM.solids)if(x>r.x&&x<r.x+r.w&&y>r.y&&y<r.y+r.h)return true;return false;}
   if(x<8||x>WPX-8||y<30||y>WPY-6)return true;
   for(const r of COLL)if(x>r.x&&x<r.x+r.w&&y>r.y&&y<r.y+r.h)return true;
   const tx=Math.floor(x/16),ty=Math.floor(y/16);if(isWaterTile(tx,ty))return true;
-  const d=S.debris[tx+','+ty];if(d&&d.k!=='weed'&&d.k!=='twig'){const cx=tx*16+8,cy=ty*16+10;if(Math.abs(x-cx)<7&&Math.abs(y-cy)<5)return true;}
+  const d=S.scene==='farm'&&S.debris[tx+','+ty];if(d&&d.k!=='weed'&&d.k!=='twig'){const cx=tx*16+8,cy=ty*16+10;if(Math.abs(x-cx)<7&&Math.abs(y-cy)<5)return true;}
   return false;}
 const blocked=(x,y)=>solidAt(x-5,y)||solidAt(x+5,y)||solidAt(x-5,y-3)||solidAt(x+5,y-3);
 // Besturing: vrij lopen, maar altijd netjes eindigen midden op een tegel (net als in Zelda/Stardew).
@@ -479,11 +658,14 @@ function readInput(){let dx=0,dy=0;
 // één stukje bewegen met botsingen
 function moveBy(mx,my){const nx=S.px+mx,ny=S.py+my;
   if(S.scene==='farm'&&my<0&&nx>DOOR.x0&&nx<DOOR.x1&&ny<DOOR.y+4&&S.py>=DOOR.y){enterHouse();return 'door';}
-  if(S.scene==='house'&&ny>ROOM.h-2&&nx>64&&nx<96){leaveHouse();return 'door';}
+  if(S.scene==='town'&&my<0&&nx>SDOOR.x0&&nx<SDOOR.x1&&ny<SDOOR.y+4&&S.py>=SDOOR.y&&enterShop())return 'door';
+  if(isRoom()){const RM=ROOMS[S.scene];if(ny>RM.h-2&&nx>RM.ex0&&nx<RM.ex1){if(S.scene==='house')leaveHouse();else leaveShop();return 'door';}}
   const ox=S.px,oy=S.py;
   if(mx&&!blocked(nx,S.py))S.px=nx;
   if(my&&!blocked(S.px,ny))S.py=ny;
-  if(S.scene==='farm'&&S.px>WPX-24){S.px=WPX-26;toast('Naar Mossbrook… dat dorpje komt in een volgende versie!');}
+  if(S.scene==='farm'&&S.px>WPX-24){goTown();return 'door';}
+  if(S.scene==='town'&&S.px<24){goFarm();return 'door';}
+  if(S.scene==='town'&&S.px>WPX-24){S.px=WPX-26;toast('Het Doornwoud is nog dicht… dat komt in een volgende versie!');}
   return S.px!==ox||S.py!==oy;}
 // houd je in de rij/kolom als je recht loopt
 function laneAssist(axis,dt){const c=axis?snapC(S.py,TC[1],0):snapC(S.px,TC[0],0);const cur=axis?S.py:S.px,d=c-cur;if(Math.abs(d)<.01)return;
@@ -491,7 +673,7 @@ function laneAssist(axis,dt){const c=axis?snapC(S.py,TC[1],0):snapC(S.px,TC[0],0
 function dirOf(dx,dy){return Math.abs(dx)>Math.abs(dy)?(dx<0?1:2):(dy<0?3:0);}
 function arrive(){player.anim=0;if(actHeld)repT=0;if(queuedUse){queuedUse=false;useTool();}}
 function move(dt){player.moving=false;
-  if(player.swing>0){player.anim=0;return;}
+  if(fading||player.swing>0){player.anim=0;return;}
   const {dx,dy,aim}=readInput();
   if(dx||dy){auto=null;tapBuf=null;if(!(gest&&gest.mode==='follow'))swipeQ.length=0;
     const nd=dirOf(dx,dy);
@@ -503,13 +685,13 @@ function move(dt){player.moving=false;
     step=null;wasMoving=true;lastV=[Math.sign(Math.round(dx*100)),Math.sign(Math.round(dy*100))];
     const l=Math.max(1,Math.hypot(dx,dy)),sp=SPEED*dt;
     if(moveBy(dx/l*sp,dy/l*sp)==='door'){wasMoving=false;return;}
-    if(S.scene==='farm'){if(!lastV[1])laneAssist(1,dt);if(!lastV[0])laneAssist(0,dt);}
+    if(isOutdoor()){if(!lastV[1])laneAssist(1,dt);if(!lastV[0])laneAssist(0,dt);}
     player.moving=true;player.anim+=dt*8;return;}
   turnUntil=0;
-  if(tapBuf&&S.scene==='house')tapBuf=null;
+  if(tapBuf&&isRoom())tapBuf=null;
   if(tapBuf&&!step&&!auto){const b=tapBuf;tapBuf=null;
     if(performance.now()-b.t<600){if(b.dir!==S.dir)S.dir=b.dir;else{const v=DIRV[b.dir];step={x:snapC(S.px,TC[0],0)+v[0]*16,y:snapC(S.py,TC[1],0)+v[1]*16,t:0};}}}
-  if(wasMoving&&S.scene==='house'){wasMoving=false;arrive();return;}   // binnen geen tegelrooster
+  if(wasMoving&&isRoom()){wasMoving=false;arrive();return;}   // binnen geen tegelrooster
   if(wasMoving){wasMoving=false;step={x:snapC(S.px,TC[0],lastV[0]),y:snapC(S.py,TC[1],lastV[1]),t:0};
     // een tik is altijd minstens één hele tegel
     if(startC&&step.x===startC.x&&step.y===startC.y){step.x+=lastV[0]*16;step.y+=lastV[1]*16;}}
@@ -548,14 +730,24 @@ function pathTo(goals){const [ptx,pty]=tileOf(S.px,S.py);
   if(!hit)return null;
   const path=[];for(let k=hit;k;k=prev.get(k)){const [x,y]=k.split(',').map(Number);path.unshift({x:x*16+TC[0],y:y*16+TC[1]});}
   return {path,face:goals.get(hit)};}
-function walkTo(tx,ty){if(dlgOpen||S.scene!=='farm')return false;const a=pathTo(new Map([[tx+','+ty,null]]));if(!a)return false;step=null;auto={...a,tx,ty,t:0,noUse:1};return true;}
+function walkTo(tx,ty){if(dlgOpen||!isOutdoor())return false;const a=pathTo(new Map([[tx+','+ty,null]]));if(!a)return false;step=null;auto={...a,tx,ty,t:0,noUse:1};return true;}
 // alle invoer loslaten (bij dialogen, overgangen en slapen), zodat je niet vanzelf doorloopt
 // soft (bij een deur): ingedrukte toetsen en de joystick blijven gelden, alleen half afgemaakte stappen vervallen
 function resetInput(soft){if(!soft){keys.clear();joyReset();actHeld=false;gest=null;swipeQ.length=0;}step=null;auto=null;wasMoving=false;tapBuf=null;queuedUse=false;turnUntil=0;player.moving=false;player.anim=0;}
 // naast het bed (onder of links ervan) mag je gaan slapen
 const nearBed=()=>S.scene==="house"&&S.px>100&&S.py<104;
 function enterHouse(){fade(()=>{S.scene='house';S.px=80;S.py=ROOM.h-8;S.dir=3;});}
-function leaveHouse(){fade(()=>{S.scene="farm";S.px=120;S.py=140;S.dir=0;});}
+function leaveHouse(){fade(()=>{S.scene="farm";setWorld('farm');S.px=120;S.py=140;S.dir=0;});}
+// Naar het dorp en terug (over het pad aan de oostkant van de boerderij)
+function goTown(){fade(()=>{S.scene='town';setWorld('town');S.px=40;S.py=220;S.dir=2;camX=0;camY=Math.max(0,220-12-VH/2);});setTimeout(()=>toast('🏡 Mossbrook'),450);}
+function goFarm(){fade(()=>{S.scene='farm';setWorld('farm');S.px=WPX-40;S.py=316;S.dir=1;});}
+const shopOpen=()=>S.time>=480&&S.time<1080;
+function enterShop(){if(!shopOpen()){toast("Pip's Zaden is open van 08:00 tot 18:00");return false;}
+  fade(()=>{S.scene='shop';S.px=88;S.py=SHOPROOM.h-8;S.dir=3;});
+  if(S.pipHi!==S.day){S.pipHi=S.day;setTimeout(()=>toast(TOUCH?"Pip: Hoi! Welkom bij Pip's Zaden. Tik op mij om zaadjes te kopen.":"Pip: Hoi! Welkom bij Pip's Zaden. Druk op E bij de toonbank."),500);}
+  return true;}
+function leaveShop(){fade(()=>{S.scene='town';setWorld('town');S.px=264;S.py=156;S.dir=0;});}
+const nearCounter=()=>S.scene==='shop'&&S.py<100&&S.px>30&&S.px<146;
 function facingTile(){if(auto&&!auto.noUse)return [auto.tx,auto.ty];const [tx,ty]=step?tileOf(step.x,step.y):tileOf(S.px,S.py);const v=DIRV[S.dir];return [tx+v[0],ty+v[1]];}
 
 /* ---------------- gereedschap ---------------- */
@@ -566,6 +758,7 @@ let pending=null;
 function cycleSeed(){const have=CROP_IDS.filter(id=>S.seeds[id]>0);if(!have.length){toast('Je hebt geen zaadjes meer');return;}const i=have.indexOf(S.seedSel);S.seedSel=have[(i+1)%have.length];toast(`Zaadjes: ${CROPS[S.seedSel].name} (${S.seeds[S.seedSel]})`);}
 function useTool(){if(dlgOpen||player.swing>0)return;
   if(S.scene==='house'){step=null;if(nearBed())return askSleep();toast('Loop naar je bed om te slapen, of naar de deur om naar buiten te gaan');return;}
+  if(S.scene==='shop'){step=null;if(nearCounter())return openShop();toast('Loop naar de toonbank om zaadjes te kopen');return;}
   if(step||auto){queuedUse=true;return;}   // eerst netjes op de tegel uitlopen
   const [tx,ty]=facingTile();useToolAt(tx,ty);}
 function tire(n){if(!n)return true;if(S.energy<n){toast('Je bent te moe. Ga slapen in je huisje 🛏️');return false;}S.energy=Math.max(0,S.energy-n);return true;}
@@ -599,6 +792,21 @@ function applyTool(){const {tool,tx,ty}=pending;pending=null;const k=tx+','+ty;c
 function shipAll(){const items=CROP_IDS.filter(id=>S.inv[id]>0);if(!items.length)return toast('Leg je oogst in de verzendkist (kies eerst de hand)');
   let n=0;for(const id of items){S.ship.push([id,S.inv[id]]);n+=S.inv[id];S.inv[id]=0;}toast(`📦 ${n} in de verzendkist. Vannacht wordt het opgehaald`);sfx('ship');save();}
 
+/* ---------------- Pip's Zaden: kopen ---------------- */
+const ICON_URL={};
+function buy(id,n){n=Math.floor(n);const cost=CROPS[id].price*n;if(!(n>0)||S.coins<cost)return false;
+  S.coins-=cost;S.seeds[id]+=n;if(!(S.seeds[S.seedSel]>0)||S.seeds[S.seedSel]===n)S.seedSel=id;sfx('buy');save();return true;}
+function openShop(){if(S.scene!=='shop'||dlgOpen)return;const q={};for(const id of CROP_IDS)q[id]=0;
+  dialog(`<h2>🌱 Pip's Zaden</h2><p>Je hebt <b id="shCoins">${S.coins}</b> 🪙</p><div class="shop">${CROP_IDS.map(id=>`<div class="srow" data-id="${id}"><img src="${ICON_URL[id]}" alt=""><div class="sinfo"><b>${CROPS[id].name}</b><small>${CROPS[id].days}&nbsp;nachten · opbrengst&nbsp;${CROPS[id].sell}&nbsp;🪙</small><small>je hebt er <span data-have>${S.seeds[id]}</span></small></div><div class="sprice">${CROPS[id].price}&nbsp;🪙 per stuk</div><div class="qty"><button class="btn plain qb" data-d="-1" aria-label="minder">−</button><span data-q>0</span><button class="btn plain qb" data-d="1" aria-label="meer">+</button></div></div>`).join('')}</div><div class="row"><button class="btn" id="shBuy" disabled>Kies wat je wilt kopen</button></div>`,[{t:'Klaar',plain:1}]);
+  const box=$('#dlgBox'),btn=$('#shBuy');
+  const total=()=>CROP_IDS.reduce((a,id)=>a+q[id]*CROPS[id].price,0);
+  const upd=()=>{const t=total();for(const id of CROP_IDS){const r=box.querySelector(`[data-id="${id}"]`);r.querySelector('[data-q]').textContent=q[id];r.querySelector('[data-have]').textContent=S.seeds[id];}
+    $('#shCoins').textContent=S.coins;btn.disabled=!t||t>S.coins;btn.textContent=!t?'Kies wat je wilt kopen':t>S.coins?`Te weinig munten (${t} 🪙)`:`Kopen voor ${t} 🪙`;};
+  box.querySelectorAll('.qb').forEach(b=>b.onclick=()=>{const id=b.closest('[data-id]').dataset.id;q[id]=Math.max(0,Math.min(99,q[id]+ +b.dataset.d));upd();});
+  btn.onclick=()=>{const t=total();if(!t||t>S.coins)return;const got=[];for(const id of CROP_IDS)if(q[id]&&buy(id,q[id]))got.push(`${q[id]}× ${CROPS[id].name}`);
+    for(const id of CROP_IDS)q[id]=0;upd();toast('Gekocht: '+got.join(', '));};
+  upd();}
+
 /* ---------------- tijd, slapen en groeien ---------------- */
 const MIN_PER_SEC=1/0.7;
 const fmtTime=m=>{const h=Math.floor(m/60)%24,mm=Math.floor(m%60/10)*10;return String(h).padStart(2,'0')+':'+String(mm).padStart(2,'0');};
@@ -612,7 +820,7 @@ function sleep(passOut){resetInput();
   for(const id in sum){const v=sum[id]*CROPS[id].sell;earned+=v;lines.push(`${sum[id]}× ${sum[id]>1?CROPS[id].mv:CROPS[id].name}: ${v} 🪙`);}
   S.coins+=earned;S.shippedTotal+=earned;S.ship=[];
   S.day++;S.time=360;S.energy=passOut?50:100;S.water=Math.max(S.water,0);
-  S.scene='house';S.px=134;S.py=86;S.dir=0;save();
+  S.scene='house';setWorld('farm');S.px=134;S.py=86;S.dir=0;save();
   fade(()=>{});
   setTimeout(()=>dialog(`<h2>☀️ Dag ${S.day}</h2>${passOut?'<p>Je viel om 02:00 in slaap van moeheid… (minder energie)</p>':''}
     <p>${grown?`🌱 ${grown} ${grown===1?'gewas groeide':'gewassen groeiden'} een dagje.`:'Vannacht groeide er niets.'}${dry?` ${dry} ${dry===1?'kreeg':'kregen'} geen water.`:''}</p>
@@ -623,6 +831,7 @@ let AC=null;function ac(){if(!AC){try{AC=new (window.AudioContext||window.webkit
 function tone(f,d,type='triangle',v=.08,to){const c=ac();if(!c)return;const o=c.createOscillator(),g=c.createGain(),t=c.currentTime;o.type=type;o.frequency.setValueAtTime(f,t);if(to)o.frequency.exponentialRampToValueAtTime(to,t+d);
   g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(v,t+.01);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g).connect(c.destination);o.start(t);o.stop(t+d+.02);}
 function sfx(k){if(k==='dig')tone(140,.12,'square',.05,90);if(k==='hit')tone(220,.08,'square',.05,140);if(k==='splash')tone(900,.18,'sine',.04,500);if(k==='plant')tone(520,.08,'triangle',.06,700);
+  if(k==='buy'){tone(1047,.06,'square',.04);setTimeout(()=>tone(1319,.12,'square',.04),60);}
   if(k==='pick'){tone(660,.08);setTimeout(()=>tone(990,.12),70);}if(k==='ship'){tone(523,.1);setTimeout(()=>tone(659,.1),90);setTimeout(()=>tone(784,.16),180);}}
 
 /* ---------------- effecten ---------------- */
@@ -673,7 +882,7 @@ function hud(){
 /* ---------------- tekenen ---------------- */
 let showGrid=false;
 function nightAmount(){const t=S.time;if(t<1080)return 0;if(t<1260)return (t-1080)/180*.55;return Math.min(.75,.55+(t-1260)/240*.2);}
-function drawFarm(dt){
+function drawOutdoor(dt){const farm=S.scene==='farm';
   // camera volgt de speler, maar staat stil zolang je over de akker veegt (anders schuiven de tegels onder je vinger weg)
   let tX=Math.round(Math.max(0,Math.min(WPX-VW,S.px-VW/2))),tY=Math.round(Math.max(0,Math.min(WPY-VH,S.py-12-VH/2)));
   if(VW>WPX)tX=Math.round((WPX-VW)/2);if(VH>WPY)tY=Math.round((WPY-VH)/2);
@@ -681,12 +890,12 @@ function drawFarm(dt){
   ctx.fillStyle='#1a3a14';ctx.fillRect(0,0,VW,VH);
   ctx.drawImage(GROUND,camX,camY,VW,VH,0,0,VW,VH);
   // omgespitte grond
-  for(const k in S.tiles){const [tx,ty]=k.split(',').map(Number);const t=S.tiles[k];const x=tx*16-camX,y=ty*16-camY;if(x<-16||y<-16||x>VW||y>VH)continue;ctx.drawImage((t.w?SOIL.wet:SOIL.dry)[t.v||0],x-1,y-1);}
+  if(farm)for(const k in S.tiles){const [tx,ty]=k.split(',').map(Number);const t=S.tiles[k];const x=tx*16-camX,y=ty*16-camY;if(x<-16||y<-16||x>VW||y>VH)continue;ctx.drawImage((t.w?SOIL.wet:SOIL.dry)[t.v||0],x-1,y-1);}
   // alles wat op y gesorteerd moet: vaste dingen, rommel, gewassen en de speler
   const list=[];
   for(const o of STATIC)if(o.x-camX<VW+10&&o.x+o.s.width-camX>-10&&o.y-camY<VH+10&&o.base-camY>-10)list.push(o);
-  for(const k in S.debris){const [tx,ty]=k.split(',').map(Number);const d=S.debris[k];const s=DEB[d.k][d.v%DEB[d.k].length];list.push({s,x:tx*16+8-s.width/2,y:ty*16+14-s.height,base:ty*16+14,sh:d.k==='stone'||d.k==='stump'?[7,2]:null});}
-  for(const k in S.tiles){const t=S.tiles[k];if(!t.c)continue;const [tx,ty]=k.split(',').map(Number);const cd=CROPS[t.c.id];const st=t.c.age>=cd.days?4:t.c.age===0?0:Math.min(3,1+Math.floor((t.c.age/cd.days)*3));
+  if(farm)for(const k in S.debris){const [tx,ty]=k.split(',').map(Number);const d=S.debris[k];const s=DEB[d.k][d.v%DEB[d.k].length];list.push({s,x:tx*16+8-s.width/2,y:ty*16+14-s.height,base:ty*16+14,sh:d.k==='stone'||d.k==='stump'?[7,2]:null});}
+  if(farm)for(const k in S.tiles){const t=S.tiles[k];if(!t.c)continue;const [tx,ty]=k.split(',').map(Number);const cd=CROPS[t.c.id];const st=t.c.age>=cd.days?4:t.c.age===0?0:Math.min(3,1+Math.floor((t.c.age/cd.days)*3));
     const s=cspr(t.c.id,st);list.push({s,x:tx*16+8-Math.floor(s.width/2),y:ty*16+14-s.height,base:ty*16+13,ripe:st===4});}
   const fr=player.moving?(Math.floor(player.anim)%4===1?1:Math.floor(player.anim)%4===3?2:0):0;
   const hs=HERO[S.dir][fr];list.push({s:hs,x:Math.round(S.px)-9,y:Math.round(S.py)-33,base:S.py,sh:[6,2],hero:1});
@@ -712,18 +921,20 @@ function drawFarm(dt){
   ctx.globalCompositeOperation='soft-light';ctx.fillStyle=`rgba(255,214,150,${.32*(1-n)})`;ctx.fillRect(0,0,VW,VH);ctx.globalCompositeOperation='source-over';
   if(n>0){ctx.globalCompositeOperation='multiply';const t=S.time<1200?(S.time-1080)/120:1;ctx.fillStyle=`rgba(${Math.round(255-150*n)},${Math.round(225-160*n)},${Math.round(210-60*n)},1)`;ctx.fillRect(0,0,VW,VH);ctx.globalCompositeOperation='source-over';
     // ramen en lantaarn geven licht
-    ctx.globalCompositeOperation='lighter';for(const[x,y,r]of[[HOUSE.x+28,HOUSE.y+76,22],[HOUSE.x+102,HOUSE.y+76,22],[HOUSE.x+64,HOUSE.y+90,16],[HOUSE.x+52,HOUSE.y+88,14]]){const gx=x-camX,gy=y-camY;const g=ctx.createRadialGradient(gx,gy,0,gx,gy,r);g.addColorStop(0,`rgba(255,200,110,${.55*n})`);g.addColorStop(1,'rgba(0,0,0,0)');ctx.fillStyle=g;ctx.fillRect(gx-r,gy-r,r*2,r*2);}ctx.globalCompositeOperation='source-over';}
+    ctx.globalCompositeOperation='lighter';for(const[x,y,r]of WORLDS[CUR].lights){const gx=x-camX,gy=y-camY;const g=ctx.createRadialGradient(gx,gy,0,gx,gy,r);g.addColorStop(0,`rgba(255,200,110,${.55*n})`);g.addColorStop(1,'rgba(0,0,0,0)');ctx.fillStyle=g;ctx.fillRect(gx-r,gy-r,r*2,r*2);}ctx.globalCompositeOperation='source-over';}
   if(showGrid){ctx.globalAlpha=.35;ctx.fillStyle='#ff0040';for(let y=0;y<VH;y+=2)for(let x=0;x<VW;x+=2)if(solidAt(x+camX,y+camY))ctx.fillRect(x,y,2,2);ctx.globalAlpha=1;}}
-function drawHouse(dt){
-  ctx.fillStyle='#120c08';ctx.fillRect(0,0,VW,VH);camX=Math.round(-(VW-ROOM.w)/2+Math.max(0,Math.min(ROOM.w-VW,0)));camY=Math.round(-(VH-ROOM.h)/2);
-  if(VW<ROOM.w)camX=Math.round(Math.max(0,Math.min(ROOM.w-VW,S.px-VW/2)));if(VH<ROOM.h)camY=Math.round(Math.max(0,Math.min(ROOM.h-VH,S.py-VH/2)));
-  ctx.drawImage(ROOMSPR,-1-camX,-1-camY);
+function drawRoom(dt){const RM=ROOMS[S.scene],shop=S.scene==='shop';
+  ctx.fillStyle='#120c08';ctx.fillRect(0,0,VW,VH);camX=Math.round(-(VW-RM.w)/2);camY=Math.round(-(VH-RM.h)/2);
+  if(VW<RM.w)camX=Math.round(Math.max(0,Math.min(RM.w-VW,S.px-VW/2)));if(VH<RM.h)camY=Math.round(Math.max(0,Math.min(RM.h-VH,S.py-VH/2)));
+  ctx.drawImage(shop?SHOPSPR:ROOMSPR,-1-camX,-1-camY);
+  if(shop){const blink=(performance.now()%3200)<140,bob=Math.round(Math.sin(performance.now()/500));   // Pip achter de toonbank
+    ctx.drawImage(PIP[blink?1:0],88-9-camX,33-camY+bob);ctx.drawImage(COUNTER,36-1-camX,58-1-camY);}
   const fr=player.moving?(Math.floor(player.anim)%4===1?1:Math.floor(player.anim)%4===3?2:0):0;
   const s=shadowSpr(6,2);ctx.globalAlpha=.3;ctx.drawImage(s,Math.round(S.px-4-camX),Math.round(S.py-4-camY));ctx.globalAlpha=1;
   ctx.drawImage(HERO[S.dir][fr],Math.round(S.px-9-camX),Math.round(S.py-33-camY));
-  // vuurgloed van de kachel
-  const fl=.5+.15*Math.sin(performance.now()/120);ctx.globalCompositeOperation='lighter';const gx=21-camX,gy=40-camY;const g=ctx.createRadialGradient(gx,gy,0,gx,gy,40);g.addColorStop(0,`rgba(255,150,60,${.35*fl})`);g.addColorStop(1,'rgba(0,0,0,0)');ctx.fillStyle=g;ctx.fillRect(gx-40,gy-40,80,80);ctx.globalCompositeOperation='source-over';
-  if(nearBed()){CX=ctx;const t=TOUCH?'DOE':'E',w=t.length*6-1,x=Math.round(S.px-w/2-camX),y=Math.round(S.py-46-camY);   // knop-hint in een donker labeltje
+  if(!shop){// vuurgloed van de kachel
+    const fl=.5+.15*Math.sin(performance.now()/120);ctx.globalCompositeOperation='lighter';const gx=21-camX,gy=40-camY;const g=ctx.createRadialGradient(gx,gy,0,gx,gy,40);g.addColorStop(0,`rgba(255,150,60,${.35*fl})`);g.addColorStop(1,'rgba(0,0,0,0)');ctx.fillStyle=g;ctx.fillRect(gx-40,gy-40,80,80);ctx.globalCompositeOperation='source-over';}
+  if(shop?nearCounter():nearBed()){CX=ctx;const t=TOUCH?'DOE':'E',w=t.length*6-1,x=Math.round(S.px-w/2-camX),y=Math.round(S.py-46-camY);   // knop-hint in een donker labeltje
     R(x-3,y-3,w+6,13,'#3a1e0c');R(x-2,y-2,w+4,11,'#7c4820');text(t,x,y,'#ffe39a',null);}
   drawParticles(dt);}
 function drawToolInHand(){if(player.swing<=0||!pending)return;const ic=ICONS[pending.tool==='seed'?'seed':pending.tool];const v=DIRV[S.dir];const ph=1-player.swing/.28;
@@ -739,7 +950,9 @@ function frame(now){const dt=Math.min(.05,(now-last)/1000);last=now;
     else if(actHeld&&S.scene==='farm'&&!player.moving&&!step&&!auto){repT-=dt;if(repT<=0){repT=.12;useTool();}}
     S.time+=dt*MIN_PER_SEC;if(S.time>=1560){S.time=1560;sleep(true);}
     saveT+=dt;if(saveT>20){saveT=0;save();}}
-  if(S.scene==='farm')drawFarm(dt);else drawHouse(dt);
+  // Pip sluit om 18:00
+  if(S.scene==='shop'&&!shopOpen()&&!fading&&!dlgOpen){toast('Pip: We gaan sluiten! Kom morgen gerust terug.');leaveShop();}
+  if(isOutdoor())drawOutdoor(dt);else drawRoom(dt);
   hud();requestAnimationFrame(frame);}
 addEventListener('pagehide',save);document.addEventListener('visibilitychange',()=>{if(document.hidden)save();});
 
@@ -747,6 +960,8 @@ addEventListener('pagehide',save);document.addEventListener('visibilitychange',(
 $('#dbgBtn').onclick=()=>$('#dbg').classList.toggle('on');
 $('#dbg').addEventListener('click',e=>{const b=e.target.closest('[data-d]');if(!b)return;const d=b.dataset.d;
   if(d==='night'){S.time=1320;toast('Het is 22:00');}
+  if(d==='morning'){S.time=540;toast('Het is 09:00');}
+  if(d==='town'&&S.scene!=='town'&&S.scene!=='shop'){$('#dbg').classList.remove('on');goTown();}
   if(d==='grow'){for(const t of Object.values(S.tiles))if(t.c)t.c.age=Math.min(CROPS[t.c.id].days,t.c.age+1);toast('Alles groeide een dag');}
   if(d==='ripe'){for(const t of Object.values(S.tiles))if(t.c)t.c.age=CROPS[t.c.id].days;toast('Alles is rijp');}
   if(d==='coins'){S.coins+=100;}
@@ -759,14 +974,18 @@ $('#dbg').addEventListener('click',e=>{const b=e.target.closest('[data-d]');if(!
 
 /* ---------------- start ---------------- */
 setTimeout(()=>{
-  GROUND=buildGround();buildWorld();buildDebris();buildHero();buildIcons();ROOMSPR=buildRoom();
+  setWorld('farm');{const g=buildGround(cls,(x,y)=>{const d=Math.hypot(x-POND.x,(y-POND.y)*1.15);return d<POND.r*.5?1:d<POND.r*.75?2:3;});WORLDS.farm.ground=g.c;WORLDS.farm.map=g.C;setWorld('farm');}buildWorld();
+  setWorld('town');{const g=buildGround(tcls,(x,y)=>{const d=Math.abs(x-STREAM_X(y));return d<3?1:d<6?2:3;});WORLDS.town.ground=g.c;WORLDS.town.map=g.C;setWorld('town');}buildTown();
+  setWorld(S.scene==='town'||S.scene==='shop'?'town':'farm');
+  buildDebris();buildHero();buildIcons();ROOMSPR=buildRoom();SHOPSPR=buildShopRoom();COUNTER=buildCounter();PIP=[pipFrame(false),pipFrame(true)];
+  for(const id of CROP_IDS){const c=document.createElement('canvas'),ic=ICONS[id];c.width=ic.width*3;c.height=ic.height*3;const g=c.getContext('2d');g.imageSmoothingEnabled=false;g.drawImage(ic,0,0,c.width,c.height);ICON_URL[id]=c.toDataURL();}
   $('#load').remove();
   if(!localStorage.getItem(SAVE))setTimeout(()=>dialog(`<h2>🌱 Sprout &amp; Sword</h2><p><b>Testlab v0.1</b>, alleen voor beheer.</p>
     <p>${TOUCH?'<b>Tik</b> om te lopen, tik op een tegel om hem te bewerken. <b>Houd je vinger vast</b> om mee te lopen, <b>veeg over de akker</b> om een hele rij te doen. Liever een joystick? Zet hem aan bij ⚙️.':'Loop met <b>WASD</b> of de pijltjes: kort tikken = één tegel, heel kort tikken = alleen omdraaien. <b>Spatie/E</b> gebruikt je gereedschap (ingedrukt houden = blijven werken), <b>1–5</b> kiest gereedschap. Je kunt ook op een tegel klikken.'}</p>
-    <p>Maak de akker vrij, spit, zaai en geef water. Slaap in je huisje: dan groeien je gewassen. Leg je oogst in de verzendkist.</p>`,[{t:'Aan de slag!'}]),300);
+    <p>Maak de akker vrij, spit, zaai en geef water. Slaap in je huisje: dan groeien je gewassen. Leg je oogst in de verzendkist. Nieuwe zaadjes koop je bij Pip in het dorp Mossbrook (het pad naar het oosten).</p>`,[{t:'Aan de slag!'}]),300);
   save();requestAnimationFrame(frame);},30);
 // Voor de automatische tests
-window.__sprout={get S(){return S;},tp(x,y,dir=0){S.px=x;S.py=y;S.dir=dir;},use:useTool,useAt:useToolAt,tool(i){S.tool=i;},sleep:()=>sleep(false),facing:facingTile,solidAt,blocked,goUse,walkTo,COLL,get opt(){return S.opt;},get queue(){return swipeQ.length;},get follow(){return !!(gest&&gest.mode==='follow');},isWaterTile,CROPS,get actHeld(){return actHeld;},get joy(){return joy;},get moving(){return player.moving;},get cam(){return [camX,camY,SCALE];},tileOf,get busy(){return !!(step||auto||wasMoving||player.swing>0);},
+window.__sprout={get S(){return S;},tp(x,y,dir=0){S.px=x;S.py=y;S.dir=dir;},use:useTool,useAt:useToolAt,tool(i){S.tool=i;},sleep:()=>sleep(false),facing:facingTile,solidAt,blocked,goUse,walkTo,get COLL(){return COLL;},buy,openShop,goTown,goFarm,get scene(){return S.scene;},get world(){return CUR;},get opt(){return S.opt;},get queue(){return swipeQ.length;},get follow(){return !!(gest&&gest.mode==='follow');},isWaterTile,CROPS,get actHeld(){return actHeld;},get joy(){return joy;},get moving(){return player.moving;},get cam(){return [camX,camY,SCALE];},tileOf,get busy(){return !!(step||auto||wasMoving||player.swing>0);},
   wait:ms=>new Promise(r=>setTimeout(r,ms)),closeDlg(){$('#dlg').classList.remove('on');dlgOpen=false;},get dlg(){return dlgOpen?$('#dlgBox').innerText:'';},FIELD,BIN};
 </script>
 </body>
