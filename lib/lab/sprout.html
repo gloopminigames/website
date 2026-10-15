@@ -30,6 +30,11 @@ canvas#c{position:fixed;inset:0;width:100%;height:100%;image-rendering:pixelated
 .srow .sprice{grid-area:price;justify-self:end;font-size:14px}
 .srow .qty{grid-area:qty;display:flex;align-items:center;gap:6px}
 .srow .qty span{min-width:22px;text-align:center}
+.talk{display:flex;gap:12px;align-items:flex-start;text-align:left;margin-top:4px}
+.talk img{width:64px;height:64px;image-rendering:pixelated;border:3px solid #7c4820;border-radius:4px;background:#cfe6f6;flex:none}
+.talk .who{font-weight:800}.talk .hearts{font-size:13px;letter-spacing:1px}
+.talk p{margin:4px 0 0}
+.quest{background:#fbe6b8;border:2px solid #c49a5a;border-radius:4px;padding:6px 10px;margin-top:8px;text-align:left;font-size:14px}
 .qb{padding:0 10px;font-size:20px;line-height:26px;box-shadow:0 2px 0 #3a1e0c}
 #fade{position:fixed;inset:0;background:#000;opacity:0;pointer-events:none;transition:opacity .35s;z-index:7}
 #fade.on{opacity:1}
@@ -67,6 +72,8 @@ body.touch #act,body.touch.joy #joy{display:block}
   <button class="btn" data-d="energy">Energie vol</button>
   <button class="btn" data-d="grid">Botsingen tonen</button>
   <button class="btn" data-d="joy">Joystick aan/uit</button>
+  <button class="btn" data-d="jq">Juno: volgende opdracht</button>
+  <button class="btn" data-d="jh">Juno: +1 hartje</button>
   <button class="btn plain" data-d="reset">Test-save wissen</button>
 </div>
 <div id="load">Boerderij wordt getekend…</div>
@@ -310,6 +317,32 @@ function pipFrame(blink){return sprite(16,32,()=>{const hr='#d8582a',hd='#a0381a
   if(blink){R(5,10,2,1,'#2a160c');R(9,10,2,1,'#2a160c');}else{R(5,9,2,2,'#2a160c');R(9,9,2,2,'#2a160c');P(5,9,'#ffffff');P(9,9,'#ffffff');}
   P(4,12,'#f0a0a0');P(11,12,'#f0a0a0');R(7,12,2,1,'#c86a5a');for(const[x,y]of[[5,11],[10,11],[7,8]])P(x,y,'#e0905a');},'#2a160c');}
 
+// Juno: kind uit het dorp (16 × 28), 4 richtingen × 3 stapjes
+const JC={h:'#3a2414',H:'#24160c',hl:'#6a4428',s:'#e0a878',S:'#b8805a',hd:'#8a5ac8',HD:'#6a3aa8',hl2:'#b48ae8',p:'#3a4a7a',P:'#2a3660',f:'#f0c840',F:'#c09a20',e:'#1a0e06'};
+function junoFrame(dir,fr){if(dir===2)return flip(junoFrame(1,fr));
+  return sprite(16,28,()=>{const step=fr===1?1:fr===2?-1:0;
+    if(dir===1){const a=step*2;R(6+a,19,3,5,JC.p);R(8-a,19,3,5,JC.P);R(6+a,24,4,2,JC.f);R(8-a,24,4,2,JC.F);}
+    else{const l=fr===1?1:0,r=fr===2?1:0;R(4,19,3,5-l,JC.p);R(9,19,3,5-r,JC.P);R(4,24-l,3,2,JC.f);R(9,24-r,3,2,JC.f);R(4,25-l,3,1,JC.F);R(9,25-r,3,1,JC.F);}
+    if(dir===1){R(5,12,7,8,JC.hd);R(10,12,2,8,JC.HD);R(6,12,3,1,JC.hl2);const a=step;R(7+a,13,3,5,JC.HD);R(7+a,18,3,2,JC.s);}
+    else{R(3,12,10,8,JC.hd);R(10,12,3,8,JC.HD);R(4,12,4,1,JC.hl2);if(dir===0){R(6,15,4,3,JC.HD);R(7,12,2,2,JC.hl2);}const a=step;R(1,12+(a>0?1:0),2,6,JC.hd);R(13,12+(a<0?1:0),2,6,JC.HD);R(1,18+(a>0?1:0),2,2,JC.s);R(13,18+(a<0?1:0),2,2,JC.S);}
+    // hoofd met krullen en twee haarbollen
+    if(dir===3){R(3,3,10,9,JC.h);R(4,4,3,2,JC.hl);}
+    else if(dir===1){R(4,3,8,9,JC.s);R(10,3,2,9,JC.S);R(7,2,6,8,JC.h);R(4,2,6,3,JC.h);P(5,7,JC.e);P(5,8,JC.e);P(4,9,'#c88a60');P(6,10,'#b8604a');P(6,6,'#a86a40');}
+    else{R(3,3,10,9,JC.s);R(11,3,2,9,JC.S);R(3,2,10,3,JC.h);R(3,3,2,5,JC.h);R(11,3,2,4,JC.H);R(5,3,3,1,JC.hl);
+      R(5,7,1,2,JC.e);R(10,7,1,2,JC.e);P(5,7,'#ffffff');P(10,7,'#ffffff');for(const[x,y]of[[4,9],[6,10],[9,10],[11,9]])P(x,y,'#a86a40');R(7,10,2,1,'#b8604a');}
+    for(const[x,y]of[[1,1],[13,1]]){disc(x+1,y+1,2,JC.h);P(x,y,JC.hl);}
+    for(let i=0;i<5;i++)P(3+i*2,2-(i%2),JC.hl);
+  },'#1a0e06');}
+function junoPortrait(){return sprite(32,32,()=>{R(0,0,32,32,'#cfe6f6');R(0,24,32,8,'#b8d8ee');
+  disc(6,9,5,JC.h);disc(26,9,5,JC.h);P(4,7,JC.hl);P(24,7,JC.hl);
+  R(8,8,16,18,JC.s);R(21,8,3,18,JC.S);R(7,5,18,6,JC.h);R(7,8,3,8,JC.h);R(22,8,3,7,JC.H);for(let i=0;i<8;i++)P(8+i*2,5-(i%2),JC.hl);
+  R(11,15,3,3,JC.e);R(19,15,3,3,JC.e);P(11,15,'#ffffff');P(19,15,'#ffffff');R(10,13,4,1,JC.H);R(19,13,4,1,JC.H);
+  for(const[x,y]of[[10,19],[12,20],[19,20],[21,19]])P(x,y,'#a86a40');R(14,21,4,1,'#b8604a');R(15,22,2,1,'#e88070');P(9,19,'#f0a090');P(23,19,'#f0a090');
+  R(4,26,24,6,JC.hd);R(4,26,24,1,JC.hl2);R(13,26,6,3,JC.HD);R(15,27,2,5,JC.hl2);},null);}
+function marble(){return sprite(6,6,()=>{disc(3,3,2,'#5ab8e8');P(2,2,'#e6f6ff');P(4,4,'#2a68a6');P(3,4,'#7ad0f0');},'#163e6a');}
+function flowerBed(wilted){return sprite(18,12,()=>{R(0,6,18,6,WD[2]);R(0,6,18,1,WD[4]);R(1,7,16,4,D[2]);
+  for(let i=0;i<5;i++){const x=2+i*3.3;if(wilted){R(x,3,1,4,'#8a8a4a');P(x+1,3,'#a87a5a');P(x+1,4,'#8a5a3a');}else{R(x,2,1,5,LF[4]);R(x-1,0,3,2,['#ff7aa8','#ffd84a','#ffffff','#b07aff','#ff9a4a'][i]);P(x,0,'#ffffff');}}},'#2a1208');}
+
 /* ---------------- kunst: akkertegels en gewassen ---------------- */
 function soilTile(wet,v){return sprite(16,16,()=>{const p=wet?TW:T;let s2=v*977+(wet?5:1);const r2=()=>{s2=(s2*16807)%2147483647;return s2/2147483647;};
   for(let j=0;j<16;j++)for(let i=0;i<16;i++){if((i===0||i===15)&&(j===0||j===15))continue;let k=2;const r=r2();if(r<.18)k=1;else if(r<.28)k=3;if(j===0||i===0)k=3;if(j===15||i===15)k=0;if(j===14&&i>0&&i<15)k=1;P(i,j,p[k]);}
@@ -432,7 +465,7 @@ function buildCounter(){return sprite(104,26,()=>{R(0,4,104,22,WD[3]);for(let x=
   R(14,-5,22,6,'#c8a060');R(14,-5,22,1,'#e0bc78');for(let i=0;i<4;i++){R(16+i*5,-9,4,5,pick(['#e8761c','#f2e6c0','#e07624','#7ac04a']));}},'#2a1208');}
 
 /* ---------------- wereld: objecten ---------------- */
-let GROUND=null,ROOMSPR=null,SOIL=null,SHOPSPR=null,COUNTER=null,PIP=null;
+let GROUND=null,ROOMSPR=null,SOIL=null,SHOPSPR=null,COUNTER=null,PIP=null,JUNO=null,MARBLESPR=null,FBED=null,JFACE=null;
 let STATIC=[];       // {s,x,y,base,sh:[rx,ry]} vaste dingen in de wereld waar je nu bent
 let COLL=[];         // botsrechthoeken {x,y,w,h}
 // Twee buitenwerelden: de boerderij en het dorp. setWorld() zet de 'huidige wereld' klaar.
@@ -512,10 +545,13 @@ function freshState(){
   for(let ty=FIELD.ty0;ty<FIELD.ty0+3;ty++)for(let tx=FIELD.tx0;tx<FIELD.tx0+4;tx++)delete debris[tx+','+ty];
   return {v:1,day:1,time:360,coins:500,energy:100,water:12,tool:1,seedSel:'parsnip',
     seeds:{parsnip:15,carrot:0,pumpkin:0},inv:{parsnip:0,carrot:0,pumpkin:0},wood:0,ship:[],
-    opt:{joy:false},tiles:{},debris,scene:"farm",px:120,py:140,dir:0,shippedTotal:0};}
+    opt:{joy:false},juno:{met:false,q:0,state:'new',next:1,pts:0,talkDay:0,secret:false,daily:null},items:{marble:0},beds:[0,0,0],tiles:{},debris,scene:"farm",px:120,py:140,dir:0,shippedTotal:0};}
 let S;try{S=JSON.parse(localStorage.getItem(SAVE)||'null');}catch(e){S=null;}
 if(!S||S.v!==1)S=freshState();
 if(!S.opt)S.opt={joy:false};
+if(!S.juno)S.juno={met:false,q:0,state:'new',next:1,pts:0,talkDay:0,secret:false,daily:null};
+if(!S.items)S.items={marble:0};
+if(!S.beds)S.beds=[0,0,0];
 function save(){try{localStorage.setItem(SAVE,JSON.stringify(S));}catch(e){}}
 
 /* ---------------- scherm en camera ---------------- */
@@ -582,6 +618,9 @@ function tapAt(cx,cy){const [wx,wy]=toWorld(cx,cy);
     if(wy>RM.h-14&&wx>RM.ex0-4&&wx<RM.ex1+4){step=null;auto={path:[{x:88,y:RM.h-6},{x:88,y:RM.h+4}],t:0,noUse:1};return;}
     tapMark={x:wx,y:wy,t:0};step=null;auto={path:[{x:Math.max(12,Math.min(RM.w-12,wx)),y:Math.max(90,Math.min(RM.h-6,wy+6))}],t:0,noUse:1};return;}
   if(S.scene==='town'){const tx=Math.floor(wx/16),ty=Math.floor(wy/16);
+    if(J.on&&wx>J.x-10&&wx<J.x+10&&wy>J.y-30&&wy<J.y+4)return goJuno();   // tik op Juno
+    if((marbleVisible()&&tx===MARBLE[0]&&ty===MARBLE[1])||(bedsActive()&&BEDS.some(b=>b[0]===tx&&b[1]===ty))||(TOOLS[S.tool]==='can'&&isWaterTile(tx,ty)))return goUse(tx,ty);
+    if(wx>332&&wx<364&&wy>148&&wy<182)return questText();   // prikbord
     if(inShopRect(wx,wy))return shopOpen()?goShopDoor():toast("Pip's Zaden is open van 08:00 tot 18:00");
     for(const c of COTS)if(wx>c.x&&wx<c.x+88&&wy>c.y&&wy<c.y+92)return toast('Hier wonen dorpsgenoten. Die leer je later kennen!');
     if(tx<=2&&ty>=12&&ty<=14)return goEdge(2,ty,14);
@@ -604,6 +643,7 @@ function swipeLine(a,b){const [x0,y0]=toWorld(...a),[x1,y1]=toWorld(...b),n=Math
   for(let i=0;i<=n;i++)addSwipeTile(x0+(x1-x0)*i/n,y0+(y1-y0)*i/n);}
 cv.addEventListener('pointerdown',e=>{if(dlgOpen)return;const x=e.clientX/SCALE,y=e.clientY/SCALE;
   for(const sl of slotRects)if(x>=sl.x&&x<sl.x+sl.w&&y>=sl.y&&y<sl.y+sl.h){if(S.tool===sl.i&&sl.i===3)cycleSeed();S.tool=sl.i;return;}
+  if(questRect&&x>=questRect.x&&x<questRect.x+questRect.w&&y>=questRect.y&&y<questRect.y+questRect.h)return questText();
   try{cv.setPointerCapture(e.pointerId);}catch(_){}
   swipeQ.length=0;swipeSeen.clear();
   const [wx,wy]=toWorld(e.clientX,e.clientY),tx=Math.floor(wx/16),ty=Math.floor(wy/16);
@@ -637,6 +677,7 @@ function solidAt(x,y){ // voeten op wereldpositie (x,y)?
   if(x<8||x>WPX-8||y<30||y>WPY-6)return true;
   for(const r of COLL)if(x>r.x&&x<r.x+r.w&&y>r.y&&y<r.y+r.h)return true;
   const tx=Math.floor(x/16),ty=Math.floor(y/16);if(isWaterTile(tx,ty))return true;
+  if(S.scene==='town'&&J.on&&!npcIgnore&&((x-J.x)/7)**2+((y-J.y-1)/6)**2<1)return true;   // Juno zelf
   const d=S.scene==='farm'&&S.debris[tx+','+ty];if(d&&d.k!=='weed'&&d.k!=='twig'){const cx=tx*16+8,cy=ty*16+10;if(Math.abs(x-cx)<7&&Math.abs(y-cy)<5)return true;}
   return false;}
 const blocked=(x,y)=>solidAt(x-5,y)||solidAt(x+5,y)||solidAt(x-5,y-3)||solidAt(x+5,y-3);
@@ -718,12 +759,12 @@ function move(dt){player.moving=false;
   player.moving=true;player.anim+=dt*8;}
 // Tik/klik op een tegel verderop: loop er (om obstakels heen) naartoe en gebruik dan je gereedschap
 function walkable(tx,ty){const x=tx*16+TC[0],y=ty*16+TC[1];return tx>=0&&ty>=0&&tx<MW&&ty<MH&&!blocked(x,y)&&!blocked(x,y-5)&&!blocked(x,y+3);}
-function goUse(tx,ty){if(dlgOpen||S.scene!=='farm')return;const [ptx,pty]=tileOf(S.px,S.py);
+function goUse(tx,ty){if(dlgOpen||!isOutdoor())return;const [ptx,pty]=tileOf(S.px,S.py);
   if(Math.abs(tx-ptx)<=1&&Math.abs(ty-pty)<=1){S.dir=dirOf(tx-ptx,ty-pty);return useToolAt(tx,ty);}
   const goals=new Map([[tx+','+(ty+1),3],[(tx-1)+','+ty,2],[(tx+1)+','+ty,1],[tx+','+(ty-1),0]]);
   const a=pathTo(goals);if(!a)return toast('Daar kun je niet bij');step=null;auto={...a,tx,ty,t:0};}
 // zoek een pad (over tegels) naar een van de doeltegels; geeft {path, face} terug
-function pathTo(goals){const [ptx,pty]=tileOf(S.px,S.py);
+function pathTo(goals,start){const [ptx,pty]=start||tileOf(S.px,S.py);
   const prev=new Map([[ptx+','+pty,null]]);const q=[[ptx,pty]];let hit=null;
   while(q.length&&prev.size<900){const [x,y]=q.shift();const k=x+','+y;if(goals.has(k)&&walkable(x,y)){hit=k;break;}
     for(const[ax,ay]of DIRV){const nx=x+ax,ny=y+ay,nk=nx+','+ny;if(!prev.has(nk)&&walkable(nx,ny)){prev.set(nk,k);q.push([nx,ny]);}}}
@@ -759,12 +800,20 @@ function cycleSeed(){const have=CROP_IDS.filter(id=>S.seeds[id]>0);if(!have.leng
 function useTool(){if(dlgOpen||player.swing>0)return;
   if(S.scene==='house'){step=null;if(nearBed())return askSleep();toast('Loop naar je bed om te slapen, of naar de deur om naar buiten te gaan');return;}
   if(S.scene==='shop'){step=null;if(nearCounter())return openShop();toast('Loop naar de toonbank om zaadjes te kopen');return;}
+  if(junoNear()&&!step&&!auto){const [fx,fy]=facingTile();if(Math.hypot(fx*16+8-J.x,fy*16+12-J.y)<20||Math.hypot(S.px-J.x,S.py-J.y)<20)return talkJuno();}
   if(step||auto){queuedUse=true;return;}   // eerst netjes op de tegel uitlopen
   const [tx,ty]=facingTile();useToolAt(tx,ty);}
 function tire(n){if(!n)return true;if(S.energy<n){toast('Je bent te moe. Ga slapen in je huisje 🛏️');return false;}S.energy=Math.max(0,S.energy-n);return true;}
-function useToolAt(tx,ty){if(player.swing>0||S.scene!=='farm')return;const tool=TOOLS[S.tool],k=tx+','+ty;
+function useToolAt(tx,ty){if(player.swing>0||!isOutdoor())return;const tool=TOOLS[S.tool],k=tx+','+ty;
   player.swing=.28;pending={tool,tx,ty};}
 function applyTool(){const {tool,tx,ty}=pending;pending=null;const k=tx+','+ty;const tile=S.tiles[k],deb=S.debris[k];
+  if(S.scene==='town'){   // in het dorp: knikker oprapen, bloembakken water geven, gieter vullen in de beek
+    if(tool==='hand'&&marbleVisible()&&tx===MARBLE[0]&&ty===MARBLE[1]){S.items.marble=1;pop(tx,ty,'#7ad0f0');sfx('pick');toast('🔮 Je vond Juno\'s geluksknikker!');save();return;}
+    const bi=BEDS.findIndex(b=>b[0]===tx&&b[1]===ty);
+    if(bi>=0&&bedsActive()){if(tool!=='can')return toast('Geef de bloembak water met je gieter');if(S.beds[bi])return toast('Deze bloembak heeft al water');if(S.water<=0)return toast('De gieter is leeg. Vul hem in de beek');
+      if(!tire(COST.can))return;S.water--;S.beds[bi]=1;pop(tx,ty,WA[4]);sfx('splash');toast(`🌸 Bloembak ${S.beds.filter(Boolean).length}/3`);save();return;}
+    if(tool==='can'&&isWaterTile(tx,ty)){S.water=12;toast('Gieter vol! 💧');sfx('splash');return;}
+    return;}
   // verzendkist
   if(ty===BIN.ty&&BIN.tx.includes(tx)||(ty===BIN.ty+1&&BIN.tx.includes(tx))){if(S.scene==='farm'&&tool==='hand')return shipAll();}
   if(tool==='hand'){
@@ -791,6 +840,93 @@ function applyTool(){const {tool,tx,ty}=pending;pending=null;const k=tx+','+ty;c
     if(!tire(COST.axe))return;deb.hp--;pop(tx,ty,WD[4]);sfx('hit');if(deb.hp<=0){delete S.debris[k];if(deb.k!=='weed'){S.wood+=deb.k==='stump'?4:1;toast(`+${deb.k==='stump'?4:1} hout`);}}return;}}
 function shipAll(){const items=CROP_IDS.filter(id=>S.inv[id]>0);if(!items.length)return toast('Leg je oogst in de verzendkist (kies eerst de hand)');
   let n=0;for(const id of items){S.ship.push([id,S.inv[id]]);n+=S.inv[id];S.inv[id]=0;}toast(`📦 ${n} in de verzendkist. Vannacht wordt het opgehaald`);sfx('ship');save();}
+
+/* ---------------- Juno: dorpskind met opdrachtjes ---------------- */
+const MARBLE=[27,11];                          // knikker in het gras bij de beek
+const BEDS=[[12,9],[20,9],[19,15]];            // bloembakken rond het plein
+const JHOME=[5,9];                             // voor haar huisje
+const JSPOTS=[[16,15],[18,15],[22,10],[27,13],[13,14],[9,13],[24,15],[11,11],[20,12]];
+const QUESTS=[
+  {id:'soup',title:'Pastinaak-soep',need:{parsnip:3},reward:{coins:100,seeds:{carrot:3}},
+   offer:['Hoi! Ik ben Juno. Jij woont op de oude boerderij, toch? Wat leuk!','Mijn opa wil pastinaaksoep maken, maar onze moestuin is helemaal leeg…','Kun jij <b>3 pastinaken</b> voor me meenemen?'],
+   done:['Jaaa, pastinaken! Opa wordt hier zo blij van.','Hier, wat wortelzaadjes uit onze schuur. Dank je wel!']},
+  {id:'marble',title:'Mijn geluksknikker',need:{marble:1},reward:{seeds:{pumpkin:2}},
+   offer:['Oh nee… ik ben mijn geluksknikker kwijt!','Ik was aan het spelen bij de beek, vlak bij het bruggetje.','Wil jij hem zoeken? Hij <b>glinstert in het gras</b>. Pak hem op met je hand.'],
+   done:['MIJN KNIKKER! Je bent een held.','Neem deze pompoenzaadjes maar. Pompoenen worden héél groot!']},
+  {id:'wood',title:'Hout voor de boomhut',need:{wood:10},reward:{coins:150},
+   offer:['Ik ga een boomhut bouwen achter ons huis!','Maar ik heb nog <b>10 stukken hout</b> nodig.','Op jouw akker liggen vast takjes en boomstronken. Hak ze met je bijl!'],
+   done:['10 stukken hout! Nu kan de boomhut echt af.','Hier, dit had ik gespaard. Kom je later een keer kijken?']},
+  {id:'beds',title:'Dorstige bloemen',need:{beds:3},reward:{coins:120},
+   offer:['Het is zo warm vandaag… de bloemen op het plein hangen helemaal slap.','Wil jij de <b>3 bloembakken water geven</b> met je gieter?','Je kunt je gieter ook bij de beek vullen.'],
+   done:['Kijk eens hoe vrolijk ze weer staan!','Dank je wel. Hier, voor de moeite.']},
+  {id:'pumpkin',title:'Een pompoen voor het feest',need:{pumpkin:1},reward:{coins:300},
+   offer:['Binnenkort is het oogstfeest in Mossbrook!','Wie de mooiste pompoen meebrengt, mag de lampionnen aansteken.','Kun jij <b>1 pompoen</b> voor me kweken?'],
+   done:['WAUW, wat een pompoen!','Jij bent echt de beste boer van Mossbrook. Dit is voor jou!','Kom vanaf nu gerust elke dag langs. Misschien heb ik vaker iets nodig.']}];
+const NEEDNAME={parsnip:['pastinaak','pastinaken'],carrot:['wortel','wortels'],pumpkin:['pompoen','pompoenen'],wood:['stuk hout','stukken hout'],marble:['knikker','knikkers'],beds:['bloembak','bloembakken']};
+const J={x:0,y:0,dir:0,anim:0,path:[],wait:0,on:false,mode:'',moving:false,stuck:0};
+let npcIgnore=false;
+const hearts=()=>Math.min(5,Math.floor(S.juno.pts/2));
+function questNow(){const j=S.juno;if(j.q<QUESTS.length)return j.state==='active'?QUESTS[j.q]:null;return j.daily&&j.daily.day===S.day&&!j.daily.done&&j.daily.seen?j.daily:null;}
+function haveCount(id){return id==='wood'?S.wood:id==='marble'?(S.items.marble||0):id==='beds'?S.beds.filter(Boolean).length:(S.inv[id]||0);}
+function questProgress(q){const [id,n]=Object.entries(q.need)[0];return [Math.min(n,haveCount(id)),n,id];}
+const marbleVisible=()=>S.juno.q===1&&S.juno.state==='active'&&!S.items.marble;
+const bedsActive=()=>S.juno.q===3&&S.juno.state==='active';
+function hasNews(){const j=S.juno;if(j.q<QUESTS.length)return j.state==='new'&&S.day>=j.next;return !(j.daily&&j.daily.day===S.day&&j.daily.seen);}
+function makeDaily(){const r=x=>{const v=Math.sin(S.day*91.7+x*13.1)*43758.5;return v-Math.floor(v);};const ids=['parsnip','carrot','pumpkin'];const id=ids[Math.floor(r(1)*(r(2)<.25?3:2))];
+  const n=id==='pumpkin'?1:2+Math.floor(r(3)*4);return {day:S.day,need:{[id]:n},reward:{coins:Math.round(CROPS[id].sell*n*1.5)},done:false,seen:false,title:'Dagelijks verzoekje'};}
+// waar Juno nu hoort te zijn
+function junoMode(){const t=S.time;if(t<420||t>=1200)return 'in';if(t<540||t>=1020)return 'home';return 'walk';}
+function placeJuno(tx,ty){J.x=tx*16+8;J.y=ty*16+12;J.path=[];}
+function junoPathTo(tx,ty){npcIgnore=true;const a=pathTo(new Map([[tx+','+ty,null]]),[Math.floor(J.x/16),Math.floor((J.y-2)/16)]);npcIgnore=false;J.path=a?a.path.slice(1):[];}
+function npcTick(dt){if(S.scene!=='town'){J.on=false;return;}
+  const m=junoMode();J.moving=false;
+  if(m==='in'){J.on=false;return;}
+  if(!J.on||J.mode!==m){if(!J.on){if(m==='walk'){const sp=JSPOTS[Math.floor(Math.random()*JSPOTS.length)];placeJuno(...sp);}else placeJuno(...JHOME);J.dir=0;}
+    J.on=true;J.mode=m;if(m==='home')junoPathTo(...JHOME);J.wait=1+Math.random()*2;}
+  // even wachten als je vlakbij staat of met haar praat
+  const near=Math.hypot(S.px-J.x,S.py-J.y)<26||(auto&&auto.toJuno);
+  if(near){J.dir=dirOf(S.px-J.x,S.py-J.y);J.anim=0;return;}
+  if(!J.path.length){J.wait-=dt;if(J.wait>0||m!=='walk')return;let sp;do{sp=JSPOTS[Math.floor(Math.random()*JSPOTS.length)];}while(sp[0]*16+8===J.x&&sp[1]*16+12===J.y);junoPathTo(...sp);J.wait=4+Math.random()*4;return;}
+  const tg=J.path[0],ex=tg.x-J.x,ey=tg.y-J.y,d=Math.hypot(ex,ey);
+  if(d<.6){J.x=tg.x;J.y=tg.y;J.path.shift();return;}
+  const k=Math.min(1,40*dt/d),nx=J.x+ex*k,ny=J.y+ey*k;
+  if(Math.hypot(S.px-nx,S.py-ny)<14){J.stuck+=dt;if(J.stuck>3){J.path=[];J.stuck=0;}return;}   // niet tegen de speler aan lopen
+  J.stuck=0;J.x=nx;J.y=ny;J.dir=dirOf(ex,ey);J.anim+=dt*7;J.moving=true;}
+// naar Juno toe lopen en dan praten; Juno wacht zolang je naar haar toe loopt
+function goJuno(tries=0){if(!J.on)return;if(junoNear())return talkJuno();
+  const jt=[Math.floor(J.x/16),Math.floor((J.y-2)/16)];const a=pathTo(new Map([[jt[0]+','+(jt[1]+1),3],[(jt[0]-1)+','+jt[1],2],[(jt[0]+1)+','+jt[1],1],[jt[0]+','+(jt[1]-1),0]]));
+  if(!a)return toast('Daar kun je niet bij');step=null;auto={...a,tx:jt[0],ty:jt[1],t:0,noUse:1,toJuno:1,then:()=>{if(junoNear())talkJuno();else if(tries<2)goJuno(tries+1);}};}
+const junoNear=()=>J.on&&S.scene==='town'&&Math.hypot(S.px-J.x,S.py-J.y)<28;
+// gesprek met pagina's (portret + hartjes)
+let PORTRAIT='';
+function talkPages(pages,final){let i=0;const show=()=>{const last=i===pages.length-1;const h=hearts();
+  dialog(`<div class="talk"><img src="${PORTRAIT}" alt=""><div><div class="who">Juno <span class="hearts">${'❤️'.repeat(h)}${'🤍'.repeat(5-h)}</span></div><p>${pages[i]}</p></div></div>${last&&final.extra?final.extra:''}`,
+    last?final.buttons:[{t:'Verder ▸',fn:()=>{i++;show();}}]);};show();}
+function giveReward(r){const parts=[];if(r.coins){S.coins+=r.coins;parts.push(r.coins+' 🪙');}
+  if(r.seeds)for(const id in r.seeds){S.seeds[id]+=r.seeds[id];parts.push(r.seeds[id]+'× '+CROPS[id].name.toLowerCase()+'zaadjes');}return parts.join(' en ');}
+function takeNeed(need){for(const id in need){const n=need[id];if(id==='wood')S.wood-=n;else if(id==='marble')S.items.marble=0;else if(id==='beds'){}else S.inv[id]-=n;}}
+function missingText(q){const [have,n,id]=questProgress(q);const left=n-have;return `Ik heb nog <b>${left} ${NEEDNAME[id][left===1?0:1]}</b> nodig. (${have}/${n})`;}
+function talkJuno(){if(dlgOpen||!J.on)return;resetInput();
+  J.dir=dirOf(S.px-J.x,S.py-J.y);S.dir=dirOf(J.x-S.px,J.y-S.py);
+  const j=S.juno;let pages=[],final={buttons:[{t:'Doei!',plain:1}]};
+  if(j.talkDay!==S.day){j.talkDay=S.day;j.pts+=1;}
+  const calm={done:false};
+  const fanfare=()=>{calm.done=true;sfx('ship');pop(Math.floor(J.x/16),Math.floor((J.y-14)/16),'#ff7aa8');};
+  if(j.q<QUESTS.length){const q=QUESTS[j.q];
+    if(j.state==='new'&&S.day>=j.next){pages=[...q.offer];final={extra:`<div class="quest">📜 <b>${q.title}</b></div>`,buttons:[{t:'Ja, ik help je!',fn:()=>{j.state='active';if(q.id==='beds')S.beds=[0,0,0];save();toast('📜 Nieuwe opdracht: '+q.title);}},{t:'Nu even niet',plain:1}]};j.met=true;}
+    else if(j.state==='active'){const [have,n]=questProgress(q);
+      if(have>=n){takeNeed(q.need);const got=giveReward(q.reward);pages=[...q.done];j.q++;j.state='new';j.next=S.day+1;j.pts+=3;fanfare();toast('✅ '+q.title+': '+got);
+        if(j.q>=QUESTS.length)pages.push('Psst… vanaf morgen heb ik soms een klein verzoekje. Kom maar eens langs!');}
+      else pages=[pick(['Hoi!','Hé, jij weer!','Daar ben je!'])+' '+missingText(q)];}
+    else pages=[pick(['Opa zegt dat de soep heerlijk was!','Morgen heb ik misschien weer iets voor je.','Wist je dat Pip elke ochtend om 8 uur opengaat?','Ik ga zo bij de beek spelen!'])];}
+  else{if(!j.daily||j.daily.day!==S.day)j.daily=makeDaily();const d=j.daily;
+    if(!d.seen){d.seen=true;const [id,n]=Object.entries(d.need)[0];pages=[`Goeiemorgen! Heb jij vandaag <b>${n} ${NEEDNAME[id][n===1?0:1]}</b> voor me? Ik geef er ${d.reward.coins} 🪙 voor.`];}
+    else if(!d.done){const [have,n]=questProgress(d);if(have>=n){takeNeed(d.need);const got=giveReward(d.reward);d.done=true;j.pts+=1;fanfare();pages=['Super, dank je wel! Hier is je beloning.'];toast('✅ Verzoekje: '+got);}else pages=[missingText(d)];}
+    else pages=[pick(['Tot morgen, boer!','De boomhut is bijna klaar!','Mijn knikker ligt nu veilig in mijn zak.'])];}
+  if(hearts()>=2&&!j.secret&&pages.length===1&&!final.extra&&!/Super|✅/.test(pages[0])&&!calm.done){j.secret=true;pages.push('Mag ik je een geheim vertellen? 🤫','In het Doornwoud achter de beek groeien rare paarse doornen. Soms hoor ik er ’s nachts iets kreunen…','Opa zegt dat ik daar nooit alleen mag komen. Misschien… samen met jou, later?');}
+  save();talkPages(pages,final);}
+function questText(){const q=questNow();if(!q)return dialog(`<h2>📜 Opdrachten</h2><p>${S.juno.q<QUESTS.length&&hasNews()?'Juno heeft iets voor je! Zoek haar in Mossbrook.':'Op dit moment geen opdracht.'}</p>`,[{t:'Oké',plain:1}]);
+  const [have,n]=questProgress(q);dialog(`<h2>📜 ${q.title}</h2><p>Voor Juno: ${missingText(q).replace('Ik heb nog','nog')}</p><p>Breng het naar Juno in Mossbrook.</p>`,[{t:'Oké',plain:1}]);}
 
 /* ---------------- Pip's Zaden: kopen ---------------- */
 const ICON_URL={};
@@ -843,7 +979,7 @@ const FONT={'O':['01110','10001','10001','10001','10001','10001','01110'],'0':['
 '6':['00110','01000','10000','11110','10001','10001','01110'],'7':['11111','00001','00010','00100','01000','01000','01000'],'8':['01110','10001','10001','01110','10001','10001','01110'],
 '9':['01110','10001','10001','01111','00001','00010','01100'],':':['00000','00100','00100','00000','00100','00100','00000'],'D':['11110','10001','10001','10001','10001','10001','11110'],
 'A':['01110','10001','10001','11111','10001','10001','10001'],'G':['01110','10001','10000','10111','10001','10001','01111'],'E':['11111','10000','10000','11110','10000','10000','11111'],' ':['0','0','0','0','0','0','0'],
-'x':['00000','00000','10001','01010','00100','01010','10001']};
+'x':['00000','00000','10001','01010','00100','01010','10001'],'/':['00001','00010','00010','00100','01000','01000','10000']};
 function text(t,x,y,c,shadow='#e8b870'){CX=ctx;for(const ch of String(t)){const g=FONT[ch];if(!g){x+=4;continue;}g.forEach((row,j)=>{for(let i=0;i<row.length;i++)if(row[i]==='1'){if(shadow)P(x+i+1,y+j+1,shadow);P(x+i,y+j,c);}});x+=g[0].length+1;}}
 const tw=t=>String(t).length*6;
 function panel(x,y,w,h){CX=ctx;R(x,y,w,h,WD[0]);R(x+1,y+1,w-2,h-2,WD[3]);R(x+1,y+1,w-2,1,WD[5]);R(x+1,y+h-2,w-2,1,WD[1]);R(x+3,y+3,w-6,h-6,WD[1]);R(x+4,y+4,w-8,h-8,'#f8d8a0');R(x+4,y+h-6,w-8,2,'#e8c088');
@@ -858,10 +994,14 @@ function buildIcons(){
   for(const id of CROP_IDS)ICONS[id]=cropIcon(id);
   ICONS.wood=sprite(10,8,()=>{R(0,2,10,5,WD[3]);R(0,2,10,1,WD[4]);disc(1,4,2,WD[5]);P(1,4,WD[3]);},'#2a160c');}
 let slotRects=[];
+let questRect=null;
 function hud(){
   // dag en tijd
   panel(3,3,52,30);text('DAG '+S.day,9,8,'#5a2a0e');text(fmtTime(S.time),9,19,'#5a2a0e');CX=ctx;
   const night=S.time>=1200;if(night){disc(48,12,3,'#e8e8ff');P(49,11,'#a0a0d0');}else{disc(48,12,3,'#ffd84a');P(47,11,'#fff4a0');}
+  // opdracht van Juno (tik erop voor de uitleg)
+  questRect=null;{const q=questNow();if(q){const [have,n,id]=questProgress(q);const t=have+'/'+n,ic=id==='wood'?ICONS.wood:id==='marble'?MARBLESPR:id==='beds'?FBED[0]:ICONS[id];const w=tw(t)+40;
+    panel(3,35,w,22);ctx.drawImage(JFACE,8,39);ctx.drawImage(ic,24,46-Math.round(ic.height/2));text(t,24+ic.width+3,43,have>=n?'#2a7a2a':'#5a2a0e');questRect={x:3,y:35,w,h:22};}}
   // munten
   const ct=String(S.coins),cw=tw(ct)+24;panel(VW-cw-3,3,cw,18);ctx.drawImage(ICONS.coin,VW-cw+3,8);text(ct,VW-cw+14,9,'#5a2a0e');
   // energie
@@ -899,6 +1039,10 @@ function drawOutdoor(dt){const farm=S.scene==='farm';
     const s=cspr(t.c.id,st);list.push({s,x:tx*16+8-Math.floor(s.width/2),y:ty*16+14-s.height,base:ty*16+13,ripe:st===4});}
   const fr=player.moving?(Math.floor(player.anim)%4===1?1:Math.floor(player.anim)%4===3?2:0):0;
   const hs=HERO[S.dir][fr];list.push({s:hs,x:Math.round(S.px)-9,y:Math.round(S.py)-33,base:S.py,sh:[6,2],hero:1});
+  if(!farm){   // dorp: Juno, knikker en bloembakken
+    if(J.on){const jf=J.moving?(Math.floor(J.anim)%4===1?1:Math.floor(J.anim)%4===3?2:0):0;list.push({s:JUNO[J.dir][jf],x:Math.round(J.x)-9,y:Math.round(J.y)-28,base:J.y,sh:[5,2],juno:1});}
+    for(let i=0;i<BEDS.length;i++){const [bx,by]=BEDS[i];const sp=FBED[bedsActive()&&!S.beds[i]?1:0];list.push({s:sp,x:bx*16-1,y:by*16+3,base:by*16+14});}
+    if(marbleVisible())list.push({s:MARBLESPR,x:MARBLE[0]*16+5,y:MARBLE[1]*16+8,base:MARBLE[1]*16+12,sparkle:1});}
   list.sort((a,b)=>a.base-b.base);
   // cursor op de tegel voor je
   const [ftx,fty]=facingTile();
@@ -910,7 +1054,12 @@ function drawOutdoor(dt){const farm=S.scene==='farm';
     if(o.sh){const s=shadowSpr(o.sh[0],o.sh[1]);ctx.globalAlpha=.3;ctx.drawImage(s,Math.round(o.x+o.s.width/2-o.sh[0]+2-camX),Math.round(o.base-o.sh[1]-2-camY));ctx.globalAlpha=1;}
     const bob=o.ripe?Math.round(Math.sin(performance.now()/300+o.x)*.6):0;
     ctx.drawImage(o.s,Math.round(o.x-camX),Math.round(o.y-camY)+bob);
-    if(o.hero)drawToolInHand();}
+    if(o.hero)drawToolInHand();
+    if(o.sparkle&&Math.floor(performance.now()/250)%3===0){CX=ctx;const x=Math.round(o.x-camX)+5,y=Math.round(o.y-camY)-2;P(x,y,'#ffffff');P(x-1,y+1,'#fff6c0');P(x+1,y+1,'#fff6c0');P(x,y+2,'#ffffff');}
+    if(o.juno){CX=ctx;const bx=Math.round(o.x-camX)+9,by=Math.round(o.y-camY)-9+Math.round(Math.sin(performance.now()/250));   // ! of … boven Juno
+      const q=questNow(),ready=q&&questProgress(q)[0]>=questProgress(q)[1];
+      if(hasNews()){R(bx-3,by-1,7,11,'#3a1e0c');R(bx-2,by,5,9,'#ffd84a');R(bx-1,by+1,3,4,'#3a1e0c');R(bx-1,by+6,3,2,'#3a1e0c');}
+      else if(ready){R(bx-6,by,13,7,'#3a1e0c');R(bx-5,by+1,11,5,'#ffffff');for(const dx of[-3,0,3])R(bx+dx-1,by+3,2,2,'#3a1e0c');}}}
   // veeg-rij en tik-doel
   CX=ctx;for(const[qx,qy]of swipeQ){const x=qx*16-camX,y=qy*16-camY;ctx.globalAlpha=.28;R(x+1,y+1,14,14,'#fff6c0');ctx.globalAlpha=.8;R(x,y,4,1,'#fff6c0');R(x,y,1,4,'#fff6c0');R(x+12,y+15,4,1,'#fff6c0');R(x+15,y+12,1,4,'#fff6c0');ctx.globalAlpha=1;}
   if(tapMark){tapMark.t+=dt;const b=Math.round(Math.abs(Math.sin(tapMark.t*9))*3),x=Math.round(tapMark.x-camX),y=Math.round(tapMark.y-camY)-6-b;
@@ -945,6 +1094,7 @@ function drawParticles(dt){CX=ctx;for(let i=parts.length-1;i>=0;i--){const p=par
 /* ---------------- spellus ---------------- */
 let last=performance.now(),saveT=0;
 function frame(now){const dt=Math.min(.05,(now-last)/1000);last=now;
+  if(!dlgOpen&&!fading)npcTick(dt);
   if(!dlgOpen){gestureTick();move(dt);
     if(player.swing>0){player.swing-=dt;if(player.swing<=0&&pending)applyTool();}
     else if(actHeld&&S.scene==='farm'&&!player.moving&&!step&&!auto){repT-=dt;if(repT<=0){repT=.12;useTool();}}
@@ -969,6 +1119,8 @@ $('#dbg').addEventListener('click',e=>{const b=e.target.closest('[data-d]');if(!
   if(d==='energy'){S.energy=100;S.water=12;}
   if(d==='grid'){showGrid=!showGrid;}
   if(d==='joy')setJoy(!S.opt.joy);
+  if(d==='jq'){const j=S.juno;if(j.q<QUESTS.length){j.q++;j.state='new';j.next=S.day;toast('Juno heeft een nieuwe opdracht');}else{j.daily=null;toast('Nieuw verzoekje van Juno');}}
+  if(d==='jh'){S.juno.pts+=2;toast('Hartjes: '+hearts()+'/5');}
   if(d==='reset'){if(confirm('Test-save wissen en opnieuw beginnen?')){localStorage.removeItem(SAVE);S=freshState();save();applyOpt();toast('Nieuwe test-boerderij');}}
   save();});
 
@@ -978,6 +1130,9 @@ setTimeout(()=>{
   setWorld('town');{const g=buildGround(tcls,(x,y)=>{const d=Math.abs(x-STREAM_X(y));return d<3?1:d<6?2:3;});WORLDS.town.ground=g.c;WORLDS.town.map=g.C;setWorld('town');}buildTown();
   setWorld(S.scene==='town'||S.scene==='shop'?'town':'farm');
   buildDebris();buildHero();buildIcons();ROOMSPR=buildRoom();SHOPSPR=buildShopRoom();COUNTER=buildCounter();PIP=[pipFrame(false),pipFrame(true)];
+  JUNO=[0,1,2,3].map(d=>[0,1,2].map(f=>junoFrame(d,f)));MARBLESPR=marble();FBED=[flowerBed(false),flowerBed(true)];
+  {const pc=junoPortrait();const c=document.createElement('canvas');c.width=c.height=64;const g=c.getContext('2d');g.imageSmoothingEnabled=false;g.drawImage(pc,0,0,64,64);PORTRAIT=c.toDataURL();
+   JFACE=document.createElement('canvas');JFACE.width=JFACE.height=14;const g2=JFACE.getContext('2d');g2.imageSmoothingEnabled=false;g2.drawImage(pc,3,1,28,28,0,0,14,14);}
   for(const id of CROP_IDS){const c=document.createElement('canvas'),ic=ICONS[id];c.width=ic.width*3;c.height=ic.height*3;const g=c.getContext('2d');g.imageSmoothingEnabled=false;g.drawImage(ic,0,0,c.width,c.height);ICON_URL[id]=c.toDataURL();}
   $('#load').remove();
   if(!localStorage.getItem(SAVE))setTimeout(()=>dialog(`<h2>🌱 Sprout &amp; Sword</h2><p><b>Testlab v0.1</b>, alleen voor beheer.</p>
@@ -985,7 +1140,7 @@ setTimeout(()=>{
     <p>Maak de akker vrij, spit, zaai en geef water. Slaap in je huisje: dan groeien je gewassen. Leg je oogst in de verzendkist. Nieuwe zaadjes koop je bij Pip in het dorp Mossbrook (het pad naar het oosten).</p>`,[{t:'Aan de slag!'}]),300);
   save();requestAnimationFrame(frame);},30);
 // Voor de automatische tests
-window.__sprout={get S(){return S;},tp(x,y,dir=0){S.px=x;S.py=y;S.dir=dir;},use:useTool,useAt:useToolAt,tool(i){S.tool=i;},sleep:()=>sleep(false),facing:facingTile,solidAt,blocked,goUse,walkTo,get COLL(){return COLL;},buy,openShop,goTown,goFarm,get scene(){return S.scene;},get world(){return CUR;},get opt(){return S.opt;},get queue(){return swipeQ.length;},get follow(){return !!(gest&&gest.mode==='follow');},isWaterTile,CROPS,get actHeld(){return actHeld;},get joy(){return joy;},get moving(){return player.moving;},get cam(){return [camX,camY,SCALE];},tileOf,get busy(){return !!(step||auto||wasMoving||player.swing>0);},
+window.__sprout={get S(){return S;},tp(x,y,dir=0){S.px=x;S.py=y;S.dir=dir;},use:useTool,useAt:useToolAt,tool(i){S.tool=i;},sleep:()=>sleep(false),facing:facingTile,solidAt,blocked,goUse,walkTo,get COLL(){return COLL;},buy,openShop,goTown,goFarm,talk:talkJuno,goJuno,questText,get J(){return J;},junoNear,MARBLE,BEDS,QUESTS,get scene(){return S.scene;},get world(){return CUR;},get opt(){return S.opt;},get queue(){return swipeQ.length;},get follow(){return !!(gest&&gest.mode==='follow');},isWaterTile,CROPS,get actHeld(){return actHeld;},get joy(){return joy;},get moving(){return player.moving;},get cam(){return [camX,camY,SCALE];},tileOf,get busy(){return !!(step||auto||wasMoving||player.swing>0);},
   wait:ms=>new Promise(r=>setTimeout(r,ms)),closeDlg(){$('#dlg').classList.remove('on');dlgOpen=false;},get dlg(){return dlgOpen?$('#dlgBox').innerText:'';},FIELD,BIN};
 </script>
 </body>

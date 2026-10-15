@@ -62,7 +62,7 @@ function Lab() {
   return (
     <div className="bh-lab">
       <h2>🌱 Sprout &amp; Sword <small>testversie v0.1</small></h2>
-      <p>Boerderij-avontuur in pixel-art (boerenleven + Zelda). Nu te testen: rondlopen (tikken, vegen of toetsen), het huisje in en uit, de akker vrijmaken, spitten, zaaien, water geven, slapen, oogsten en verkopen via de verzendkist, en zaadjes kopen bij Pip in het dorp Mossbrook.</p>
+      <p>Boerderij-avontuur in pixel-art (boerenleven + Zelda). Nu te testen: rondlopen (tikken, vegen of toetsen), het huisje in en uit, de akker vrijmaken, spitten, zaaien, water geven, slapen, oogsten en verkopen via de verzendkist, zaadjes kopen bij Pip in het dorp Mossbrook, en opdrachtjes doen voor Juno (5 opdrachten en daarna dagelijkse verzoekjes).</p>
       <p className="muted">Alleen jij als beheerder kunt dit openen. De voortgang blijft op dit apparaat; met de knop 🛠 Test in het spel kun je dingen versnellen of opnieuw beginnen.</p>
       <a className="btn" href="/beheer/lab/sprout" target="_blank" rel="noopener">Spel openen ↗</a>
     </div>
