@@ -29,10 +29,8 @@ canvas#c{position:fixed;inset:0;width:100%;height:100%;image-rendering:pixelated
 #joy i{position:absolute;left:30px;top:30px;width:48px;height:48px;border-radius:50%;background:#f8d8a0;border:4px solid #7c4820;box-shadow:0 3px 0 #3a1e0c}
 #act{position:fixed;right:18px;bottom:calc(env(safe-area-inset-bottom,0px) + 104px);width:84px;height:84px;border-radius:50%;background:#ffe39a;border:4px solid #7c4820;box-shadow:0 4px 0 #3a1e0c;display:none;z-index:4;font:800 15px ui-rounded,system-ui,sans-serif;color:#4a240c;touch-action:none}
 body.touch #joy,body.touch #act{display:block}
-#dbgBtn{position:fixed;left:8px;bottom:8px;z-index:6;font:700 12px system-ui;background:rgba(40,20,8,.75);color:#ffe39a;border:2px solid #7c4820;border-radius:4px;padding:4px 8px;cursor:pointer}
-body.touch #dbgBtn{bottom:auto;top:max(8px,env(safe-area-inset-top));left:50%;transform:translateX(-50%)}
-#dbg{position:fixed;left:8px;bottom:40px;z-index:6;display:none;flex-direction:column;gap:6px;padding:10px}
-body.touch #dbg{bottom:auto;top:44px;left:auto;right:8px}
+#dbgBtn{position:fixed;left:50%;transform:translateX(-50%);top:max(8px,env(safe-area-inset-top));z-index:6;font:700 12px system-ui;background:rgba(40,20,8,.75);color:#ffe39a;border:2px solid #7c4820;border-radius:4px;padding:4px 8px;cursor:pointer}
+#dbg{position:fixed;left:50%;transform:translateX(-50%);top:44px;z-index:6;display:none;flex-direction:column;gap:6px;padding:10px}
 #dbg.on{display:flex}
 #dbg .btn{font-size:13px;padding:5px 10px}
 #load{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;color:#ffe39a;font:700 18px system-ui;z-index:9;background:#120c08}
@@ -311,12 +309,12 @@ const COLL=[];       // botsrechthoeken {x,y,w,h}
 function addStatic(s,x,y,sh,coll){STATIC.push({s,x,y,base:y+s.height,sh});if(coll)COLL.push(coll);}
 function buildWorld(){
   addStatic(house(),HOUSE.x,HOUSE.y,null,null);
-  COLL.push({x:HOUSE.x+2,y:HOUSE.y+40,w:126,h:DOOR.y-HOUSE.y-42});   // huis (de deur zelf handelen we apart af)
+  COLL.push({x:HOUSE.x+2,y:HOUSE.y+14,w:124,h:DOOR.y-HOUSE.y-16});   // heel het huis, ook het dak (de deur handelen we apart af)
   addStatic(steps(),HOUSE.x+50,HOUSE.y+111,null,null);
   addStatic(shippingBin(),BIN.x,BIN.y,[13,3],{x:BIN.x,y:BIN.y+12,w:28,h:10});
-  addStatic(mailbox(),HOUSE.x+134,HOUSE.y+102,[4,1],{x:HOUSE.x+134,y:HOUSE.y+116,w:12,h:6});
+  addStatic(mailbox(),HOUSE.x+86,HOUSE.y+102,[4,1],{x:HOUSE.x+86,y:HOUSE.y+116,w:12,h:6});
   addStatic(barrel(),HOUSE.x-14,HOUSE.y+96,[7,2],{x:HOUSE.x-14,y:HOUSE.y+106,w:16,h:8});
-  addStatic(woodpile(),HOUSE.x+104,HOUSE.y+102,null,null);
+  addStatic(woodpile(),HOUSE.x+104,HOUSE.y+102,null,{x:HOUSE.x+104,y:HOUSE.y+108,w:24,h:8});
   // hek boven de akker, met een poortje
   const fs=fenceSeg(),fe=fenceSeg(true);
   for(let x=FPX.x0-16;x<=FPX.x1+16;x+=16){if(x>=FPX.x0+80&&x<FPX.x0+112)continue;const end=x===FPX.x0+64||x===FPX.x1+16;addStatic(end?fe:fs,x,FPX.y0-34,null,{x,y:FPX.y0-22,w:end?6:18,h:6});}
@@ -329,7 +327,7 @@ function buildWorld(){
   for(let y=10;y<WPY-40;y+=30+Math.floor(rnd()*12))if(y<270||y>340)trees.push([WPX-28,y,rnd()<.4]);
   for(const[x,y]of[[220,-6],[480,40],[560,120],[540,380],[300,380],[200,360],[24,180],[160,215],[20,300]])trees.push([x,y,false]);
   for(const[x,y,isPine]of trees){const s=isPine?pine():oak();const tx=x+s.width/2-6;addStatic(s,x,y,[16,4],{x:tx,y:y+s.height-12,w:12,h:8});}
-  for(const[x,y,b]of[[HOUSE.x+128,HOUSE.y+70,10],[20,120,0],[180,420,8],[470,300,0],[600,200,10],[222,150,0]]){const s=bush(b);addStatic(s,x,y,[13,3],{x:x+4,y:y+s.height-10,w:s.width-8,h:8});}
+  for(const[x,y,b]of[[HOUSE.x+128,HOUSE.y+70,10],[20,120,0],[180,420,8],[610,352,0],[600,200,10],[222,150,0]]){const s=bush(b);addStatic(s,x,y,[13,3],{x:x+4,y:y+s.height-10,w:s.width-8,h:8});}
   for(const[x,y,c]of[[100,180,'#ff7aa8'],[180,180,'#ffd84a'],[60,250,'#ffffff'],[220,300,'#b07aff'],[470,260,'#ff7aa8'],[600,300,'#ffd84a'],[420,380,'#ffffff'],[160,440,'#ff7aa8']])addStatic(flowers(c),x,y,null,null);
   for(const[x,y]of[[118,370],[128,382],[12,372],[110,432],[30,440]])addStatic(reeds(),x,y,null,null);
   for(const[x,y,s]of[[170,250,4],[40,210,5],[520,420,3],[600,150,4],[350,420,6]]){const sp=stone(s);addStatic(sp,x,y,[s+2,2],{x,y:y+sp.height-6,w:sp.width,h:5});}
@@ -364,14 +362,14 @@ let camX=0,camY=0;
 function toast(t){const w=$('#toasts');const last=w.lastElementChild;if(last&&last.textContent===t)return;const d=document.createElement('div');d.className='toast wood';d.textContent=t;w.appendChild(d);
   while(w.children.length>3)w.firstChild.remove();setTimeout(()=>d.remove(),2900);}
 let dlgOpen=false;
-function dialog(html,buttons){$('#dlgBox').innerHTML=html+'<div class="row">'+buttons.map((b,i)=>`<button class="btn${b.plain?' plain':''}" data-i="${i}">${b.t}</button>`).join('')+'</div>';
+function dialog(html,buttons){resetInput();$('#dlgBox').innerHTML=html+'<div class="row">'+buttons.map((b,i)=>`<button class="btn${b.plain?' plain':''}" data-i="${i}">${b.t}</button>`).join('')+'</div>';
   $('#dlg').classList.add('on');dlgOpen=true;
   $('#dlgBox').querySelectorAll('button[data-i]').forEach(el=>el.onclick=()=>{$('#dlg').classList.remove('on');dlgOpen=false;const b=buttons[+el.dataset.i];if(b.fn)b.fn();});
   setTimeout(()=>$('#dlgBox').querySelector('button[data-i]')?.focus(),30);}
-function fade(fn){$('#fade').classList.add('on');setTimeout(()=>{fn();setTimeout(()=>$('#fade').classList.remove('on'),60);},380);}
+function fade(fn){resetInput(true);$('#fade').classList.add('on');setTimeout(()=>{fn();setTimeout(()=>$('#fade').classList.remove('on'),60);},380);}
 
 /* ---------------- invoer ---------------- */
-const keys=new Set();let joy={x:0,y:0};
+const keys=new Set();let joy={x:0,y:0},joyReset=()=>{};
 addEventListener('keydown',e=>{if(dlgOpen){if(e.key==='Escape'){$('#dlg').classList.remove('on');dlgOpen=false;}return;}
   const k=e.key.toLowerCase();keys.add(k);
   if(k===' '||k==='e'||k==='enter'){e.preventDefault();if(!e.repeat){actHeld=true;repT=.45;useTool();}}
@@ -393,8 +391,8 @@ addEventListener('wheel',e=>{if(dlgOpen)return;S.tool=(S.tool+(e.deltaY>0?1:4))%
     if(d<9){joy={x:0,y:0};return;}let ux=dx/d,uy=dy/d;
     if(Math.abs(ux)<Math.abs(uy)*.45)ux=0;else if(Math.abs(uy)<Math.abs(ux)*.45)uy=0;const l=Math.hypot(ux,uy);
     joy={x:ux/l,y:uy/l,aim:d<20};};
-  j.addEventListener('pointermove',mv);const end=e=>{if(e.pointerId!==id)return;id=null;joy={x:0,y:0};k.style.transform='';};j.addEventListener('pointerup',end);j.addEventListener('pointercancel',end);})();
-$('#act').addEventListener('pointerdown',e=>{e.preventDefault();actHeld=true;repT=.45;useTool();});
+  j.addEventListener('pointermove',mv);const end=e=>{if(e.pointerId!==id)return;id=null;joy={x:0,y:0};k.style.transform='';};joyReset=()=>{id=null;joy={x:0,y:0};k.style.transform='';};j.addEventListener('pointerup',end);j.addEventListener('pointercancel',end);})();
+$('#act').addEventListener('pointerdown',e=>{e.preventDefault();try{$('#act').setPointerCapture(e.pointerId);}catch(_){}actHeld=true;repT=.45;useTool();});
 for(const ev of['pointerup','pointercancel','pointerleave'])$('#act').addEventListener(ev,()=>actHeld=false);
 // tikken/klikken: op de gereedschapsbalk of op een tegel naast je
 cv.addEventListener('pointerdown',e=>{if(dlgOpen)return;const x=e.clientX/SCALE,y=e.clientY/SCALE;
@@ -466,29 +464,38 @@ function move(dt){player.moving=false;
   if(d<.5){S.px=tgt.x;S.py=tgt.y;
     if(step){step=null;arrive();return;}
     auto.path.shift();
-    if(!auto.path.length){const a=auto;auto=null;S.dir=a.face;player.anim=0;useToolAt(a.tx,a.ty);}
+    if(!auto.path.length){const a=auto;auto=null;player.anim=0;if(a.face!=null)S.dir=a.face;if(!a.noUse)useToolAt(a.tx,a.ty);}
     return;}
   if(auto)S.dir=dirOf(ex,ey);
   const k=Math.min(1,SPEED*dt/d);const r=moveBy(ex*k,ey*k);
   if(r==='door'){step=null;auto=null;return;}
   if(!r){const o=step||auto;o.t=(o.t||0)+dt;
-    if(o.t>.2){auto=null;   // vast: terug naar het midden van je eigen tegel, en anders gewoon stoppen
+    if(o.t>.2){if(auto&&!auto.noUse)toast('Daar kun je niet bij');auto=null;   // vast: terug naar het midden van je eigen tegel, en anders gewoon stoppen
       if(step&&!step.back){const [bx,by]=tileOf(S.px,S.py);step={x:bx*16+TC[0],y:by*16+TC[1],t:0,back:1};}else{step=null;queuedUse=false;}}}
   player.moving=true;player.anim+=dt*8;}
 // Tik/klik op een tegel verderop: loop er (om obstakels heen) naartoe en gebruik dan je gereedschap
-function walkable(tx,ty){return tx>=0&&ty>=0&&tx<MW&&ty<MH&&!blocked(tx*16+TC[0],ty*16+TC[1]);}
+function walkable(tx,ty){const x=tx*16+TC[0],y=ty*16+TC[1];return tx>=0&&ty>=0&&tx<MW&&ty<MH&&!blocked(x,y)&&!blocked(x,y-5)&&!blocked(x,y+3);}
 function goUse(tx,ty){if(dlgOpen||S.scene!=='farm')return;const [ptx,pty]=tileOf(S.px,S.py);
   if(Math.abs(tx-ptx)<=1&&Math.abs(ty-pty)<=1){S.dir=dirOf(tx-ptx,ty-pty);return useToolAt(tx,ty);}
   const goals=new Map([[tx+','+(ty+1),3],[(tx-1)+','+ty,2],[(tx+1)+','+ty,1],[tx+','+(ty-1),0]]);
+  const a=pathTo(goals);if(!a)return toast('Daar kun je niet bij');step=null;auto={...a,tx,ty,t:0};}
+// zoek een pad (over tegels) naar een van de doeltegels; geeft {path, face} terug
+function pathTo(goals){const [ptx,pty]=tileOf(S.px,S.py);
   const prev=new Map([[ptx+','+pty,null]]);const q=[[ptx,pty]];let hit=null;
   while(q.length&&prev.size<900){const [x,y]=q.shift();const k=x+','+y;if(goals.has(k)&&walkable(x,y)){hit=k;break;}
     for(const[ax,ay]of DIRV){const nx=x+ax,ny=y+ay,nk=nx+','+ny;if(!prev.has(nk)&&walkable(nx,ny)){prev.set(nk,k);q.push([nx,ny]);}}}
-  if(!hit)return toast('Daar kun je niet bij');
+  if(!hit)return null;
   const path=[];for(let k=hit;k;k=prev.get(k)){const [x,y]=k.split(',').map(Number);path.unshift({x:x*16+TC[0],y:y*16+TC[1]});}
-  step=null;auto={path,face:goals.get(hit),tx,ty,t:0};}
+  return {path,face:goals.get(hit)};}
+function walkTo(tx,ty){if(dlgOpen||S.scene!=='farm')return false;const a=pathTo(new Map([[tx+','+ty,null]]));if(!a)return false;step=null;auto={...a,tx,ty,t:0,noUse:1};return true;}
+// alle invoer loslaten (bij dialogen, overgangen en slapen), zodat je niet vanzelf doorloopt
+// soft (bij een deur): ingedrukte toetsen en de joystick blijven gelden, alleen half afgemaakte stappen vervallen
+function resetInput(soft){if(!soft){keys.clear();joyReset();actHeld=false;}step=null;auto=null;wasMoving=false;tapBuf=null;queuedUse=false;turnUntil=0;player.moving=false;player.anim=0;}
+// naast het bed (onder of links ervan) mag je gaan slapen
+const nearBed=()=>S.scene==="house"&&S.px>100&&S.py<104;
 function enterHouse(){fade(()=>{S.scene='house';S.px=80;S.py=ROOM.h-8;S.dir=3;});}
 function leaveHouse(){fade(()=>{S.scene="farm";S.px=120;S.py=140;S.dir=0;});}
-function facingTile(){if(auto)return [auto.tx,auto.ty];const [tx,ty]=step?tileOf(step.x,step.y):tileOf(S.px,S.py);const v=DIRV[S.dir];return [tx+v[0],ty+v[1]];}
+function facingTile(){if(auto&&!auto.noUse)return [auto.tx,auto.ty];const [tx,ty]=step?tileOf(step.x,step.y):tileOf(S.px,S.py);const v=DIRV[S.dir];return [tx+v[0],ty+v[1]];}
 
 /* ---------------- gereedschap ---------------- */
 const TOOLS=['hand','hoe','can','seed','axe'];
@@ -498,7 +505,7 @@ let pending=null;
 function cycleSeed(){const have=CROP_IDS.filter(id=>S.seeds[id]>0);if(!have.length){toast('Je hebt geen zaadjes meer');return;}const i=have.indexOf(S.seedSel);S.seedSel=have[(i+1)%have.length];toast(`Zaadjes: ${CROPS[S.seedSel].name} (${S.seeds[S.seedSel]})`);}
 function useTool(){if(dlgOpen||player.swing>0)return;
   if(step||auto){queuedUse=true;return;}   // eerst netjes op de tegel uitlopen
-  if(S.scene==='house'){const [tx,ty]=[S.px,S.py];if(tx>100&&ty<92)return askSleep();toast('Loop naar je bed om te slapen, of naar de deur om naar buiten te gaan');return;}
+  if(S.scene==='house'){const [tx,ty]=[S.px,S.py];if(nearBed())return askSleep();toast('Loop naar je bed om te slapen, of naar de deur om naar buiten te gaan');return;}
   const [tx,ty]=facingTile();useToolAt(tx,ty);}
 function tire(n){if(!n)return true;if(S.energy<n){toast('Je bent te moe. Ga slapen in je huisje 🛏️');return false;}S.energy=Math.max(0,S.energy-n);return true;}
 function useToolAt(tx,ty){if(player.swing>0||S.scene!=='farm')return;const tool=TOOLS[S.tool],k=tx+','+ty;
@@ -535,7 +542,7 @@ function shipAll(){const items=CROP_IDS.filter(id=>S.inv[id]>0);if(!items.length
 const MIN_PER_SEC=1/0.7;
 const fmtTime=m=>{const h=Math.floor(m/60)%24,mm=Math.floor(m%60/10)*10;return String(h).padStart(2,'0')+':'+String(mm).padStart(2,'0');};
 function askSleep(){dialog('<h2>🛏️ Gaan slapen?</h2><p>De dag is dan voorbij. Gewassen die water kregen groeien een dagje.</p>',[{t:'Slapen',fn:()=>sleep(false)},{t:'Nog even niet',plain:1}]);}
-function sleep(passOut){
+function sleep(passOut){resetInput();
   let grown=0,dry=0;
   for(const t of Object.values(S.tiles)){if(t.c){if(t.w&&t.c.age<CROPS[t.c.id].days){t.c.age++;grown++;}else if(!t.w&&t.c.age<CROPS[t.c.id].days)dry++;}t.w=0;}
   // af en toe nieuw onkruid op de akker
@@ -547,7 +554,7 @@ function sleep(passOut){
   S.scene='house';S.px=134;S.py=86;S.dir=0;save();
   fade(()=>{});
   setTimeout(()=>dialog(`<h2>☀️ Dag ${S.day}</h2>${passOut?'<p>Je viel om 02:00 in slaap van moeheid… (minder energie)</p>':''}
-    <p>${grown?`🌱 ${grown} ${grown===1?'gewas groeide':'gewassen groeiden'} een dagje.`:'Vannacht groeide er niets.'}${dry?` ${dry} kreeg${dry===1?'':'en'} geen water.`:''}</p>
+    <p>${grown?`🌱 ${grown} ${grown===1?'gewas groeide':'gewassen groeiden'} een dagje.`:'Vannacht groeide er niets.'}${dry?` ${dry} ${dry===1?'kreeg':'kregen'} geen water.`:''}</p>
     ${lines.length?'<p><b>Verkocht:</b><br>'+lines.join('<br>')+`</p><p><b>Totaal: ${earned} 🪙</b></p>`:''}`,[{t:'Nieuwe dag!'}]),420);}
 
 /* ---------------- geluid ---------------- */
@@ -649,7 +656,7 @@ function drawHouse(dt){
   ctx.drawImage(HERO[S.dir][fr],Math.round(S.px-9-camX),Math.round(S.py-33-camY));
   // vuurgloed van de kachel
   const fl=.5+.15*Math.sin(performance.now()/120);ctx.globalCompositeOperation='lighter';const gx=21-camX,gy=40-camY;const g=ctx.createRadialGradient(gx,gy,0,gx,gy,40);g.addColorStop(0,`rgba(255,150,60,${.35*fl})`);g.addColorStop(1,'rgba(0,0,0,0)');ctx.fillStyle=g;ctx.fillRect(gx-40,gy-40,80,80);ctx.globalCompositeOperation='source-over';
-  if(S.px>100&&S.py<92){CX=ctx;text('E',S.px-3-camX,S.py-44-camY,'#ffffff','#3a1e0c');}
+  if(nearBed()){CX=ctx;text('E',S.px-3-camX,S.py-44-camY,'#ffffff','#3a1e0c');}
   drawParticles(dt);}
 function drawToolInHand(){if(player.swing<=0||!pending)return;const ic=ICONS[pending.tool==='seed'?'seed':pending.tool];const v=DIRV[S.dir];const ph=1-player.swing/.28;
   const x=Math.round(S.px-camX+v[0]*10-7),y=Math.round(S.py-camY-22+v[1]*6-Math.sin(ph*Math.PI)*6);ctx.drawImage(ic,x,y);
@@ -690,7 +697,7 @@ setTimeout(()=>{
     <p>Maak de akker vrij, spit, zaai en geef water. Slaap in je huisje: dan groeien je gewassen. Leg je oogst in de verzendkist.</p>`,[{t:'Aan de slag!'}]),300);
   save();requestAnimationFrame(frame);},30);
 // Voor de automatische tests
-window.__sprout={get S(){return S;},tp(x,y,dir=0){S.px=x;S.py=y;S.dir=dir;},use:useTool,useAt:useToolAt,tool(i){S.tool=i;},sleep:()=>sleep(false),facing:facingTile,solidAt,blocked,goUse,get cam(){return [camX,camY,SCALE];},tileOf,get busy(){return !!(step||auto||wasMoving||player.swing>0);},
+window.__sprout={get S(){return S;},tp(x,y,dir=0){S.px=x;S.py=y;S.dir=dir;},use:useTool,useAt:useToolAt,tool(i){S.tool=i;},sleep:()=>sleep(false),facing:facingTile,solidAt,blocked,goUse,walkTo,COLL,isWaterTile,CROPS,get actHeld(){return actHeld;},get joy(){return joy;},get moving(){return player.moving;},get cam(){return [camX,camY,SCALE];},tileOf,get busy(){return !!(step||auto||wasMoving||player.swing>0);},
   wait:ms=>new Promise(r=>setTimeout(r,ms)),closeDlg(){$('#dlg').classList.remove('on');dlgOpen=false;},get dlg(){return dlgOpen?$('#dlgBox').innerText:'';},FIELD,BIN};
 </script>
 </body>
