@@ -400,7 +400,7 @@ cv.addEventListener('pointerdown',e=>{if(dlgOpen)return;const x=e.clientX/SCALE,
   if(S.scene==='house'){if(nearBed())useTool();else toast('Loop naar je bed om te slapen');return;}
   if(S.scene!=='farm')return;const wx=x+camX,wy=y+camY,tx=Math.floor(wx/16),ty=Math.floor(wy/16);
   const [ptx,pty]=tileOf(S.px,S.py);
-  if(tx===ptx&&ty===pty)return useTool();
+  if(tx===ptx&&ty===pty){if(step||auto||player.swing>0)return;S.dir=0;return useToolAt(tx,ty);}   // de tegel waar je op staat (net als in Stardew)
   goUse(tx,ty);});
 
 /* ---------------- speler en botsingen ---------------- */
