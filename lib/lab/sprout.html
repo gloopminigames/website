@@ -349,7 +349,7 @@ function freshState(){
   for(let ty=FIELD.ty0;ty<FIELD.ty0+3;ty++)for(let tx=FIELD.tx0;tx<FIELD.tx0+4;tx++)delete debris[tx+','+ty];
   return {v:1,day:1,time:360,coins:500,energy:100,water:12,tool:1,seedSel:'parsnip',
     seeds:{parsnip:15,carrot:0,pumpkin:0},inv:{parsnip:0,carrot:0,pumpkin:0},wood:0,ship:[],
-    tiles:{},debris,scene:'farm',px:121,py:150,dir:0,shippedTotal:0};}
+    tiles:{},debris,scene:"farm",px:120,py:140,dir:0,shippedTotal:0};}
 let S;try{S=JSON.parse(localStorage.getItem(SAVE)||'null');}catch(e){S=null;}
 if(!S||S.v!==1)S=freshState();
 function save(){try{localStorage.setItem(SAVE,JSON.stringify(S));}catch(e){}}
@@ -374,27 +374,35 @@ function fade(fn){$('#fade').classList.add('on');setTimeout(()=>{fn();setTimeout
 const keys=new Set();let joy={x:0,y:0};
 addEventListener('keydown',e=>{if(dlgOpen){if(e.key==='Escape'){$('#dlg').classList.remove('on');dlgOpen=false;}return;}
   const k=e.key.toLowerCase();keys.add(k);
-  if(k===' '||k==='e'||k==='enter'){e.preventDefault();useTool();}
+  if(k===' '||k==='e'||k==='enter'){e.preventDefault();if(!e.repeat){actHeld=true;repT=.45;useTool();}}
   if(k>='1'&&k<='5'){S.tool=+k-1;if(S.tool===3&&k==='4'&&lastToolKey==='4')cycleSeed();lastToolKey=k;}
   if(k==='q')cycleSeed();
+  // tik tijdens een zwaai onthouden, zodat hij niet verloren gaat
+  const KD={arrowdown:0,s:0,arrowleft:1,a:1,arrowright:2,d:2,arrowup:3,w:3};
+  if(!e.repeat&&k in KD&&player.swing>0)tapBuf={dir:KD[k],t:performance.now()};
   if(['arrowup','arrowdown','arrowleft','arrowright',' '].includes(k))e.preventDefault();});
 let lastToolKey='';
-addEventListener('keyup',e=>keys.delete(e.key.toLowerCase()));
-addEventListener('blur',()=>keys.clear());
+addEventListener('keyup',e=>{const k=e.key.toLowerCase();keys.delete(k);if(k===' '||k==='e'||k==='enter')actHeld=false;});
+addEventListener('blur',()=>{keys.clear();actHeld=false;});
 addEventListener('wheel',e=>{if(dlgOpen)return;S.tool=(S.tool+(e.deltaY>0?1:4))%5;},{passive:true});
 // joystick
 (()=>{const j=$('#joy'),k=j.querySelector('i');let id=null,cx=0,cy=0;
   j.addEventListener('pointerdown',e=>{id=e.pointerId;j.setPointerCapture(id);const r=j.getBoundingClientRect();cx=r.left+r.width/2;cy=r.top+r.height/2;mv(e);});
-  const mv=e=>{if(e.pointerId!==id)return;let dx=e.clientX-cx,dy=e.clientY-cy;const d=Math.hypot(dx,dy),m=44;if(d>m){dx*=m/d;dy*=m/d;}k.style.transform=`translate(${dx}px,${dy}px)`;joy={x:Math.abs(dx)>8?dx/m:0,y:Math.abs(dy)>8?dy/m:0};};
+  const mv=e=>{if(e.pointerId!==id)return;let dx=e.clientX-cx,dy=e.clientY-cy;const d=Math.hypot(dx,dy),m=44;if(d>m){dx*=m/d;dy*=m/d;}k.style.transform=`translate(${dx}px,${dy}px)`;
+    // dode zone; een klein duwtje draait je alleen (mikken), verder duwen is lopen. Bijna recht = precies recht.
+    if(d<9){joy={x:0,y:0};return;}let ux=dx/d,uy=dy/d;
+    if(Math.abs(ux)<Math.abs(uy)*.45)ux=0;else if(Math.abs(uy)<Math.abs(ux)*.45)uy=0;const l=Math.hypot(ux,uy);
+    joy={x:ux/l,y:uy/l,aim:d<20};};
   j.addEventListener('pointermove',mv);const end=e=>{if(e.pointerId!==id)return;id=null;joy={x:0,y:0};k.style.transform='';};j.addEventListener('pointerup',end);j.addEventListener('pointercancel',end);})();
-$('#act').addEventListener('pointerdown',e=>{e.preventDefault();useTool();});
+$('#act').addEventListener('pointerdown',e=>{e.preventDefault();actHeld=true;repT=.45;useTool();});
+for(const ev of['pointerup','pointercancel','pointerleave'])$('#act').addEventListener(ev,()=>actHeld=false);
 // tikken/klikken: op de gereedschapsbalk of op een tegel naast je
 cv.addEventListener('pointerdown',e=>{if(dlgOpen)return;const x=e.clientX/SCALE,y=e.clientY/SCALE;
   for(const sl of slotRects)if(x>=sl.x&&x<sl.x+sl.w&&y>=sl.y&&y<sl.y+sl.h){if(S.tool===sl.i&&sl.i===3)cycleSeed();S.tool=sl.i;return;}
   if(S.scene!=='farm')return;const wx=x+camX,wy=y+camY,tx=Math.floor(wx/16),ty=Math.floor(wy/16);
-  const fx=player.x,fy=player.y-6;const ptx=Math.floor(fx/16),pty=Math.floor(fy/16);
-  if(Math.abs(tx-ptx)<=1&&Math.abs(ty-pty)<=1&&!(tx===ptx&&ty===pty)){const dx=tx-ptx,dy=ty-pty;S.dir=Math.abs(dx)>=Math.abs(dy)?(dx<0?1:2):(dy<0?3:0);useToolAt(tx,ty);}
-  else if(Math.hypot(wx-fx,wy-fy)<14)useTool();});
+  const [ptx,pty]=tileOf(S.px,S.py);
+  if(tx===ptx&&ty===pty)return useTool();
+  goUse(tx,ty);});
 
 /* ---------------- speler en botsingen ---------------- */
 const player={get x(){return S.px;},get y(){return S.py;},anim:0,moving:false,swing:0};
@@ -408,22 +416,79 @@ function solidAt(x,y){ // voeten op wereldpositie (x,y)?
   const d=S.debris[tx+','+ty];if(d&&d.k!=='weed'&&d.k!=='twig'){const cx=tx*16+8,cy=ty*16+10;if(Math.abs(x-cx)<7&&Math.abs(y-cy)<5)return true;}
   return false;}
 const blocked=(x,y)=>solidAt(x-5,y)||solidAt(x+5,y)||solidAt(x-5,y-3)||solidAt(x+5,y-3);
-function move(dt){let dx=0,dy=0;
+// Besturing: vrij lopen, maar altijd netjes eindigen midden op een tegel (net als in Zelda/Stardew).
+// Kort tikken = precies één tegel; een korte tik in een andere richting = alleen draaien.
+const SPEED=74,TC=[8,12];          // tegelmidden voor de voeten: x 16k+8, y 16k+12
+const tileOf=(x,y)=>[Math.floor(x/16),Math.floor((y-2)/16)];
+let startC=null,tapBuf=null,step=null,auto=null,turnUntil=0,wasMoving=false,lastV=[0,0],queuedUse=false,actHeld=false,repT=0;
+function snapC(p,off,s){if(!s)return Math.round((p-off)/16)*16+off;const back=(s>0?Math.floor((p-off)/16):Math.ceil((p-off)/16))*16+off;return Math.abs(p-back)<4?back:back+16*s;}
+function readInput(){let dx=0,dy=0;
   if(keys.has('arrowleft')||keys.has('a'))dx-=1;if(keys.has('arrowright')||keys.has('d'))dx+=1;if(keys.has('arrowup')||keys.has('w'))dy-=1;if(keys.has('arrowdown')||keys.has('s'))dy+=1;
-  if(joy.x||joy.y){dx=joy.x;dy=joy.y;}
-  const len=Math.hypot(dx,dy);player.moving=len>.1&&player.swing<=0;if(!player.moving){player.anim=0;return;}
-  dx/=Math.max(1,len);dy/=Math.max(1,len);
-  S.dir=Math.abs(dx)>Math.abs(dy)?(dx<0?1:2):(dy<0?3:0);
-  const sp=74*dt;const nx=S.px+dx*sp,ny=S.py+dy*sp;
-  // deur van het huis in
-  if(S.scene==='farm'&&dy<0&&nx>DOOR.x0&&nx<DOOR.x1&&ny<DOOR.y+4&&S.py>=DOOR.y){enterHouse();return;}
-  if(S.scene==='house'&&ny>ROOM.h-2&&nx>64&&nx<96){leaveHouse();return;}
-  if(!blocked(nx,S.py))S.px=nx;if(!blocked(S.px,ny))S.py=ny;
+  if(joy.x||joy.y)return {dx:joy.x,dy:joy.y,aim:joy.aim};return {dx,dy,aim:false};}
+// één stukje bewegen met botsingen
+function moveBy(mx,my){const nx=S.px+mx,ny=S.py+my;
+  if(S.scene==='farm'&&my<0&&nx>DOOR.x0&&nx<DOOR.x1&&ny<DOOR.y+4&&S.py>=DOOR.y){enterHouse();return 'door';}
+  if(S.scene==='house'&&ny>ROOM.h-2&&nx>64&&nx<96){leaveHouse();return 'door';}
+  const ox=S.px,oy=S.py;
+  if(mx&&!blocked(nx,S.py))S.px=nx;
+  if(my&&!blocked(S.px,ny))S.py=ny;
   if(S.scene==='farm'&&S.px>WPX-24){S.px=WPX-26;toast('Naar Mossbrook… dat dorpje komt in een volgende versie!');}
-  player.anim+=dt*8;}
+  return S.px!==ox||S.py!==oy;}
+// houd je in de rij/kolom als je recht loopt
+function laneAssist(axis,dt){const c=axis?snapC(S.py,TC[1],0):snapC(S.px,TC[0],0);const cur=axis?S.py:S.px,d=c-cur;if(Math.abs(d)<.01)return;
+  const st=Math.sign(d)*Math.min(Math.abs(d),45*dt);if(axis){if(!blocked(S.px,S.py+st))S.py+=st;}else if(!blocked(S.px+st,S.py))S.px+=st;}
+function dirOf(dx,dy){return Math.abs(dx)>Math.abs(dy)?(dx<0?1:2):(dy<0?3:0);}
+function arrive(){player.anim=0;if(actHeld)repT=0;if(queuedUse){queuedUse=false;useTool();}}
+function move(dt){player.moving=false;
+  if(player.swing>0){player.anim=0;return;}
+  const {dx,dy,aim}=readInput();
+  if(dx||dy){auto=null;tapBuf=null;
+    const nd=dirOf(dx,dy);
+    if(!wasMoving&&!step&&nd!==S.dir){S.dir=nd;turnUntil=performance.now()+110;}   // eerst draaien, pas lopen als je de toets vasthoudt
+    S.dir=nd;
+    if(aim){player.anim=0;return;}
+    if(performance.now()<turnUntil)return;
+    if(!wasMoving)startC=step?{x:step.x,y:step.y}:{x:snapC(S.px,TC[0],0),y:snapC(S.py,TC[1],0)};
+    step=null;wasMoving=true;lastV=[Math.sign(Math.round(dx*100)),Math.sign(Math.round(dy*100))];
+    const l=Math.max(1,Math.hypot(dx,dy)),sp=SPEED*dt;
+    if(moveBy(dx/l*sp,dy/l*sp)==='door'){wasMoving=false;return;}
+    if(!lastV[1])laneAssist(1,dt);if(!lastV[0])laneAssist(0,dt);
+    player.moving=true;player.anim+=dt*8;return;}
+  turnUntil=0;
+  if(tapBuf&&!step&&!auto){const b=tapBuf;tapBuf=null;
+    if(performance.now()-b.t<600){if(b.dir!==S.dir)S.dir=b.dir;else{const v=DIRV[b.dir];step={x:snapC(S.px,TC[0],0)+v[0]*16,y:snapC(S.py,TC[1],0)+v[1]*16,t:0};}}}
+  if(wasMoving){wasMoving=false;step={x:snapC(S.px,TC[0],lastV[0]),y:snapC(S.py,TC[1],lastV[1]),t:0};
+    // een tik is altijd minstens één hele tegel
+    if(startC&&step.x===startC.x&&step.y===startC.y){step.x+=lastV[0]*16;step.y+=lastV[1]*16;}}
+  const tgt=step||(auto&&auto.path[0]);
+  if(!tgt){player.anim=0;return;}
+  const ex=tgt.x-S.px,ey=tgt.y-S.py,d=Math.hypot(ex,ey);
+  if(d<.5){S.px=tgt.x;S.py=tgt.y;
+    if(step){step=null;arrive();return;}
+    auto.path.shift();
+    if(!auto.path.length){const a=auto;auto=null;S.dir=a.face;player.anim=0;useToolAt(a.tx,a.ty);}
+    return;}
+  if(auto)S.dir=dirOf(ex,ey);
+  const k=Math.min(1,SPEED*dt/d);const r=moveBy(ex*k,ey*k);
+  if(r==='door'){step=null;auto=null;return;}
+  if(!r){const o=step||auto;o.t=(o.t||0)+dt;
+    if(o.t>.2){auto=null;   // vast: terug naar het midden van je eigen tegel, en anders gewoon stoppen
+      if(step&&!step.back){const [bx,by]=tileOf(S.px,S.py);step={x:bx*16+TC[0],y:by*16+TC[1],t:0,back:1};}else{step=null;queuedUse=false;}}}
+  player.moving=true;player.anim+=dt*8;}
+// Tik/klik op een tegel verderop: loop er (om obstakels heen) naartoe en gebruik dan je gereedschap
+function walkable(tx,ty){return tx>=0&&ty>=0&&tx<MW&&ty<MH&&!blocked(tx*16+TC[0],ty*16+TC[1]);}
+function goUse(tx,ty){if(dlgOpen||S.scene!=='farm')return;const [ptx,pty]=tileOf(S.px,S.py);
+  if(Math.abs(tx-ptx)<=1&&Math.abs(ty-pty)<=1){S.dir=dirOf(tx-ptx,ty-pty);return useToolAt(tx,ty);}
+  const goals=new Map([[tx+','+(ty+1),3],[(tx-1)+','+ty,2],[(tx+1)+','+ty,1],[tx+','+(ty-1),0]]);
+  const prev=new Map([[ptx+','+pty,null]]);const q=[[ptx,pty]];let hit=null;
+  while(q.length&&prev.size<900){const [x,y]=q.shift();const k=x+','+y;if(goals.has(k)&&walkable(x,y)){hit=k;break;}
+    for(const[ax,ay]of DIRV){const nx=x+ax,ny=y+ay,nk=nx+','+ny;if(!prev.has(nk)&&walkable(nx,ny)){prev.set(nk,k);q.push([nx,ny]);}}}
+  if(!hit)return toast('Daar kun je niet bij');
+  const path=[];for(let k=hit;k;k=prev.get(k)){const [x,y]=k.split(',').map(Number);path.unshift({x:x*16+TC[0],y:y*16+TC[1]});}
+  step=null;auto={path,face:goals.get(hit),tx,ty,t:0};}
 function enterHouse(){fade(()=>{S.scene='house';S.px=80;S.py=ROOM.h-8;S.dir=3;});}
-function leaveHouse(){fade(()=>{S.scene='farm';S.px=121;S.py=DOOR.y+12;S.dir=0;});}
-function facingTile(){const v=DIRV[S.dir];const fx=S.px+v[0]*14,fy=S.py-5+v[1]*14;return [Math.floor(fx/16),Math.floor(fy/16)];}
+function leaveHouse(){fade(()=>{S.scene="farm";S.px=120;S.py=140;S.dir=0;});}
+function facingTile(){if(auto)return [auto.tx,auto.ty];const [tx,ty]=step?tileOf(step.x,step.y):tileOf(S.px,S.py);const v=DIRV[S.dir];return [tx+v[0],ty+v[1]];}
 
 /* ---------------- gereedschap ---------------- */
 const TOOLS=['hand','hoe','can','seed','axe'];
@@ -432,6 +497,7 @@ const COST={hoe:2,can:1,axe:2};
 let pending=null;
 function cycleSeed(){const have=CROP_IDS.filter(id=>S.seeds[id]>0);if(!have.length){toast('Je hebt geen zaadjes meer');return;}const i=have.indexOf(S.seedSel);S.seedSel=have[(i+1)%have.length];toast(`Zaadjes: ${CROPS[S.seedSel].name} (${S.seeds[S.seedSel]})`);}
 function useTool(){if(dlgOpen||player.swing>0)return;
+  if(step||auto){queuedUse=true;return;}   // eerst netjes op de tegel uitlopen
   if(S.scene==='house'){const [tx,ty]=[S.px,S.py];if(tx>100&&ty<92)return askSleep();toast('Loop naar je bed om te slapen, of naar de deur om naar buiten te gaan');return;}
   const [tx,ty]=facingTile();useToolAt(tx,ty);}
 function tire(n){if(!n)return true;if(S.energy<n){toast('Je bent te moe. Ga slapen in je huisje 🛏️');return false;}S.energy=Math.max(0,S.energy-n);return true;}
@@ -558,7 +624,10 @@ function drawFarm(dt){
   // cursor op de tegel voor je
   const [ftx,fty]=facingTile();
   for(const o of list){
-    if(o.hero&&S.scene==='farm'){CX=ctx;const cx=ftx*16-camX,cy=fty*16-camY;ctx.globalAlpha=.65;R(cx,cy,16,1,'#fff6c0');R(cx,cy+15,16,1,'#fff6c0');R(cx,cy,1,16,'#fff6c0');R(cx+15,cy,1,16,'#fff6c0');ctx.globalAlpha=1;}
+    if(o.hero&&S.scene==='farm'){CX=ctx;const cx=ftx*16-camX,cy=fty*16-camY;   // doeltegel: hoekjes met donkere rand
+      ctx.globalAlpha=.18;R(cx+1,cy+1,14,14,'#fff6c0');ctx.globalAlpha=1;
+      for(const[x,y,w,h]of[[0,0,5,2],[0,0,2,5],[11,0,5,2],[14,0,2,5],[0,14,5,2],[0,11,2,5],[11,14,5,2],[14,11,2,5]]){R(cx+x-1,cy+y-1,w+2,h+2,'rgba(40,20,8,.55)');}
+      for(const[x,y,w,h]of[[0,0,5,2],[0,0,2,5],[11,0,5,2],[14,0,2,5],[0,14,5,2],[0,11,2,5],[11,14,5,2],[14,11,2,5]])R(cx+x,cy+y,w,h,'#fff6c0');}
     if(o.sh){const s=shadowSpr(o.sh[0],o.sh[1]);ctx.globalAlpha=.3;ctx.drawImage(s,Math.round(o.x+o.s.width/2-o.sh[0]+2-camX),Math.round(o.base-o.sh[1]-2-camY));ctx.globalAlpha=1;}
     const bob=o.ripe?Math.round(Math.sin(performance.now()/300+o.x)*.6):0;
     ctx.drawImage(o.s,Math.round(o.x-camX),Math.round(o.y-camY)+bob);
@@ -592,6 +661,7 @@ let last=performance.now(),saveT=0;
 function frame(now){const dt=Math.min(.05,(now-last)/1000);last=now;
   if(!dlgOpen){move(dt);
     if(player.swing>0){player.swing-=dt;if(player.swing<=0&&pending)applyTool();}
+    else if(actHeld&&S.scene==='farm'&&!player.moving&&!step&&!auto){repT-=dt;if(repT<=0){repT=.12;useTool();}}
     S.time+=dt*MIN_PER_SEC;if(S.time>=1560){S.time=1560;sleep(true);}
     saveT+=dt;if(saveT>20){saveT=0;save();}}
   if(S.scene==='farm')drawFarm(dt);else drawHouse(dt);
@@ -616,11 +686,11 @@ setTimeout(()=>{
   GROUND=buildGround();buildWorld();buildDebris();buildHero();buildIcons();ROOMSPR=buildRoom();
   $('#load').remove();
   if(!localStorage.getItem(SAVE))setTimeout(()=>dialog(`<h2>🌱 Sprout &amp; Sword</h2><p><b>Testlab v0.1</b>, alleen voor beheer.</p>
-    <p>${TOUCH?'Loop met de joystick. Tik op <b>Doe</b> of op een tegel naast je om je gereedschap te gebruiken.':'Loop met <b>WASD</b> of de pijltjes. <b>Spatie/E</b> gebruikt je gereedschap, <b>1–5</b> kiest gereedschap.'}</p>
+    <p>${TOUCH?'Loop met de joystick; een klein duwtje draait je alleen om. Tik op <b>Doe</b> (ingedrukt houden = blijven werken), of tik op een tegel: je loopt erheen en gebruikt je gereedschap.':'Loop met <b>WASD</b> of de pijltjes: kort tikken = één tegel, heel kort tikken = alleen omdraaien. <b>Spatie/E</b> gebruikt je gereedschap (ingedrukt houden = blijven werken), <b>1–5</b> kiest gereedschap. Je kunt ook op een tegel klikken.'}</p>
     <p>Maak de akker vrij, spit, zaai en geef water. Slaap in je huisje: dan groeien je gewassen. Leg je oogst in de verzendkist.</p>`,[{t:'Aan de slag!'}]),300);
   save();requestAnimationFrame(frame);},30);
 // Voor de automatische tests
-window.__sprout={get S(){return S;},tp(x,y,dir=0){S.px=x;S.py=y;S.dir=dir;},use:useTool,useAt:useToolAt,tool(i){S.tool=i;},sleep:()=>sleep(false),facing:facingTile,solidAt,blocked,
+window.__sprout={get S(){return S;},tp(x,y,dir=0){S.px=x;S.py=y;S.dir=dir;},use:useTool,useAt:useToolAt,tool(i){S.tool=i;},sleep:()=>sleep(false),facing:facingTile,solidAt,blocked,goUse,get cam(){return [camX,camY,SCALE];},tileOf,get busy(){return !!(step||auto||wasMoving||player.swing>0);},
   wait:ms=>new Promise(r=>setTimeout(r,ms)),closeDlg(){$('#dlg').classList.remove('on');dlgOpen=false;},get dlg(){return dlgOpen?$('#dlgBox').innerText:'';},FIELD,BIN};
 </script>
 </body>
