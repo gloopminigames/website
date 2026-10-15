@@ -272,7 +272,30 @@ function buildRoom(){return sprite(ROOM.w,ROOM.h,()=>{
   // kachel met vuur
   R(8,22,26,24,ST[1]);R(8,22,26,2,ST[3]);R(12,30,18,12,'#2a1a14');R(14,34,14,8,'#ff8a2a');R(16,37,10,5,'#ffd060');R(18,2,8,20,ST[2]);R(18,2,8,2,ST[3]);
   // bed (rechtsboven)
-  R(116,34,36,40,WD[2]);R(116,34,36,10,WD[3]);R(118,44,32,28,'#e8e0d0');R(118,46,32,4,'#ffffff');R(120,52,28,20,'#c84a4a');for(let y=54;y<72;y+=4)R(120,y,28,1,'#a83a3a');R(122,54,24,1,'#e87070');
+  // schaduw op de vloer
+  R(118,82,36,3,'rgba(20,8,0,.35)');R(153,44,3,38,'rgba(20,8,0,.25)');
+  // hoofdeinde tegen de muur: plank met boogje en twee palen met knoppen
+  R(120,27,28,15,WD[3]);R(122,25,24,2,WD[3]);R(126,23,16,2,WD[3]);
+  R(126,23,16,1,WD[5]);R(122,25,4,1,WD[5]);R(142,25,4,1,WD[5]);R(120,27,2,1,WD[5]);R(146,27,2,1,WD[5]);
+  R(123,31,22,1,WD[2]);R(123,35,22,1,WD[2]);R(123,39,22,1,WD[2]);R(127,29,5,1,WD[4]);R(136,33,6,1,WD[4]);
+  for(const x of[115,148]){R(x,23,5,25,WD[1]);R(x+1,23,1,25,WD[3]);R(x-1,21,7,3,WD[4]);R(x,21,4,1,WD[5]);}
+  // zijplanken van het bed
+  R(115,46,4,30,WD[2]);R(115,46,1,30,WD[4]);R(149,46,4,30,WD[2]);R(152,46,1,30,WD[1]);
+  // matras met laken
+  R(119,42,30,34,'#efe8da');R(119,42,30,1,'#d8d0c0');
+  // kussen (rond, met schaduw en deukje)
+  R(123,44,22,9,'#ffffff');R(122,45,24,7,'#ffffff');R(123,53,22,1,'#c4c4d4');R(122,52,1,1,'#d0d0dc');R(145,52,1,1,'#d0d0dc');
+  R(144,45,1,7,'#e0e0ea');R(133,46,2,5,'#e6e6ee');R(124,45,6,1,'#f8f8ff');
+  // omgeslagen laken
+  R(119,56,30,4,'#ffffff');R(119,56,30,1,'#f8f8ff');R(119,59,30,1,'#cfc6b4');
+  // lappendeken
+  R(118,60,32,16,'#c84a4a');
+  for(let r=0;r<2;r++)for(let c=0;c<4;c++){const x=118+c*8,y=60+r*8;R(x,y,8,8,(r+c)%2?'#a83a3a':'#c84a4a');if((r===0&&c===2)||(r===1&&c===0)){R(x+1,y+1,6,6,'#f0d8a8');R(x+3,y+3,2,2,'#c84a4a');}}
+  for(let x=125;x<150;x+=8)R(x,60,1,16,'#8a2a2a');R(118,67,32,1,'#8a2a2a');
+  R(118,60,32,1,'#e87070');R(118,60,1,16,'#e06060');R(149,60,1,16,'#7a2424');R(118,75,32,1,'#7a2424');
+  // voeteneinde met korte paaltjes
+  R(116,76,36,6,WD[3]);R(116,76,36,1,WD[5]);R(116,81,36,1,WD[0]);R(120,78,28,1,WD[2]);
+  for(const x of[115,149]){R(x,74,4,9,WD[1]);R(x+1,74,1,9,WD[3]);R(x,73,4,2,WD[4]);}
   // tafel met stoel
   R(54,72,34,18,WD[4]);R(54,72,34,2,WD[5]);R(56,90,4,8,WD[2]);R(82,90,4,8,WD[2]);R(66,66,8,8,'#fff0d0');R(68,64,4,3,'#ffd060');
   R(44,80,8,14,WD[3]);R(44,80,8,2,WD[4]);
@@ -378,7 +401,7 @@ const player={get x(){return S.px;},get y(){return S.py;},anim:0,moving:false,sw
 const DIRV=[[0,1],[-1,0],[1,0],[0,-1]];
 function solidAt(x,y){ // voeten op wereldpositie (x,y)?
   if(S.scene==='house'){if(x<6||x>ROOM.w-6||y<46||y>ROOM.h-2)return !(y>ROOM.h-2&&x>64&&x<96);
-    for(const r of[{x:114,y:34,w:40,h:40},{x:52,y:68,w:38,h:30},{x:6,y:22,w:30,h:26},{x:42,y:80,w:12,h:16}])if(x>r.x&&x<r.x+r.w&&y>r.y&&y<r.y+r.h)return true;return false;}
+    for(const r of[{x:114,y:34,w:40,h:48},{x:52,y:68,w:38,h:30},{x:6,y:22,w:30,h:26},{x:42,y:80,w:12,h:16}])if(x>r.x&&x<r.x+r.w&&y>r.y&&y<r.y+r.h)return true;return false;}
   if(x<8||x>WPX-8||y<30||y>WPY-6)return true;
   for(const r of COLL)if(x>r.x&&x<r.x+r.w&&y>r.y&&y<r.y+r.h)return true;
   const tx=Math.floor(x/16),ty=Math.floor(y/16);if(isWaterTile(tx,ty))return true;
